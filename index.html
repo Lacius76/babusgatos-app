@@ -1,0 +1,1484 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Babusgatós webapp mockup</title>
+  <style>
+    :root {
+      --ink: #201916;
+      --muted: #74655d;
+      --brown: #684f40;
+      --milk: #fbf7f1;
+      --paper: #fffdf8;
+      --line: rgba(65, 47, 38, .14);
+      --green: #5f7b4a;
+      --raspberry: #a2324f;
+      --gold: #d7a447;
+      --blue: #315f78;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 8%, rgba(215, 164, 71, .22), transparent 28%),
+        linear-gradient(135deg, #fff9ef 0%, #f4eee6 45%, #eef3ee 100%);
+    }
+
+    button, input, select { font: inherit; }
+
+    .page {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 250px;
+    }
+
+    .brand-mark {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--brown);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 16px 34px rgba(104, 79, 64, .22);
+      overflow: hidden;
+    }
+
+    .brand-mark img {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+      filter: drop-shadow(0 1px 0 rgba(255,255,255,.2));
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.05;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .style-switcher {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(170px, 1fr));
+      gap: 8px;
+      width: min(640px, 100%);
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.62);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 12px 30px rgba(58, 45, 37, .08);
+    }
+
+    .style-switcher button {
+      border: 0;
+      border-radius: 6px;
+      padding: 12px 14px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      text-align: left;
+      transition: .2s ease;
+    }
+
+    .style-switcher button strong {
+      display: block;
+      color: inherit;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .style-switcher button span {
+      display: block;
+      font-size: 12px;
+    }
+
+    .style-switcher button.active {
+      background: var(--ink);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(31, 23, 18, .18);
+    }
+
+    .shell {
+      border: 1px solid rgba(65, 47, 38, .13);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: 0 26px 70px rgba(54, 38, 28, .18);
+      min-height: 760px;
+    }
+
+    .app {
+      display: none;
+      min-height: 760px;
+    }
+
+    .app.active { display: block; }
+
+    .app-nav {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 0 32px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn, .primary-btn, .secondary-btn {
+      height: 44px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: .2s ease;
+      white-space: nowrap;
+    }
+
+    .icon-btn {
+      width: 44px;
+      background: #fff;
+      border-color: var(--line);
+      color: var(--ink);
+    }
+
+    .primary-btn {
+      padding: 0 18px;
+      background: var(--brown);
+      color: #fff;
+      font-weight: 750;
+      box-shadow: 0 12px 24px rgba(104, 79, 64, .18);
+    }
+
+    .secondary-btn {
+      padding: 0 16px;
+      background: #fff;
+      border-color: var(--line);
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(420px, .95fr);
+      gap: 34px;
+      padding: 38px 38px 30px;
+      align-items: stretch;
+    }
+
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 510px;
+      padding: 14px 0 18px;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(44px, 6vw, 82px);
+      line-height: .9;
+      margin: 0 0 22px;
+      letter-spacing: 0;
+      max-width: 760px;
+    }
+
+    .lead {
+      max-width: 620px;
+      margin: 0 0 28px;
+      font-size: 18px;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .quick-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+      max-width: 760px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.76);
+      box-shadow: 0 18px 40px rgba(45, 34, 28, .08);
+    }
+
+    .field label {
+      display: block;
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .field select, .field input {
+      width: 100%;
+      height: 46px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 0 12px;
+      color: var(--ink);
+      outline: none;
+    }
+
+    .media-stage {
+      position: relative;
+      min-height: 530px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #d7c3aa;
+    }
+
+    .media-stage img {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      object-fit: cover;
+    }
+
+    .floating-card {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 22px;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 10px;
+      background: rgba(255,253,248,.91);
+      box-shadow: 0 20px 40px rgba(31, 23, 18, .22);
+      backdrop-filter: blur(14px);
+    }
+
+    .floating-card img {
+      position: static;
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .floating-card strong, .cart-line strong, .product strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .floating-card span, .cart-line span, .product span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .content-band {
+      padding: 4px 38px 38px;
+      display: grid;
+      grid-template-columns: 1.55fr .75fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .section-title h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 32px;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    .section-title a {
+      color: var(--brown);
+      font-weight: 800;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .product {
+      min-height: 230px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.72);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product .photo {
+      height: 124px;
+      background: #eee;
+      overflow: hidden;
+    }
+
+    .product img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .product .meta {
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .price {
+      color: var(--ink);
+      font-weight: 850;
+      font-size: 17px;
+    }
+
+    .mini-add {
+      align-self: end;
+      height: 34px;
+      border-radius: 7px;
+      border: 0;
+      background: var(--ink);
+      color: #fff;
+      padding: 0 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .cart {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 18px;
+      position: sticky;
+      top: 18px;
+    }
+
+    .cart h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .cart-line {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cart-line img {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 16px 0;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .full { width: 100%; }
+
+    .app.craft {
+      background: linear-gradient(180deg, #fffaf0 0%, #f6eadb 100%);
+    }
+
+    .craft .media-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 52%, rgba(39, 28, 20, .34));
+      pointer-events: none;
+    }
+
+    .app.modern {
+      background: #f7f8f4;
+    }
+
+    .modern h1 {
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      font-size: clamp(42px, 5.6vw, 78px);
+      line-height: .92;
+      font-weight: 900;
+    }
+
+    .modern .app-nav {
+      background: #ffffff;
+    }
+
+    .modern .primary-btn,
+    .modern .mini-add {
+      background: var(--green);
+      box-shadow: 0 12px 24px rgba(95,123,74,.2);
+    }
+
+    .modern .media-stage {
+      background: #e9efe2;
+      border: 1px solid rgba(95,123,74,.16);
+    }
+
+    .modern .media-stage img {
+      object-fit: contain;
+      padding: 42px 30px 20px;
+      background:
+        radial-gradient(circle at 50% 46%, rgba(215,164,71,.32), transparent 38%),
+        #f0f4ea;
+    }
+
+    .modern .floating-card {
+      grid-template-columns: 1fr auto;
+    }
+
+    .modern .floating-card img { display: none; }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 24px;
+      max-width: 760px;
+    }
+
+    .status {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(255,255,255,.66);
+    }
+
+    .status b {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 2px;
+    }
+
+    .status span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .app.patisserie {
+      background: linear-gradient(135deg, #2a1618 0%, #3a2320 43%, #fff9f5 43%, #fff9f5 100%);
+      color: #fdf4e9;
+    }
+
+    .patisserie .app-nav {
+      background: rgba(42,22,24,.86);
+      border-bottom-color: rgba(255,255,255,.14);
+      color: #fff8ee;
+    }
+
+    .patisserie .app-nav .brand-mark {
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .patisserie .app-nav .brand-mark img {
+      width: 62px;
+      height: 56px;
+      filter: none;
+    }
+
+    .patisserie .nav-links,
+    .patisserie .lead,
+    .patisserie .brand span {
+      color: rgba(255,248,238,.72);
+    }
+
+    .patisserie .icon-btn,
+    .patisserie .secondary-btn {
+      background: rgba(255,255,255,.1);
+      border-color: rgba(255,255,255,.18);
+      color: #fff;
+    }
+
+    .patisserie .primary-btn,
+    .patisserie .mini-add {
+      background: var(--raspberry);
+      box-shadow: 0 12px 24px rgba(162,50,79,.28);
+    }
+
+    .patisserie .quick-panel,
+    .patisserie .status {
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.16);
+    }
+
+    .patisserie .field label,
+    .patisserie .status span {
+      color: rgba(255,248,238,.66);
+    }
+
+    .patisserie .content-band {
+      color: var(--ink);
+    }
+
+    .patisserie .media-stage {
+      background: #fff4ee;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.16);
+    }
+
+    .patisserie .media-stage img {
+      object-fit: contain;
+      padding: 38px;
+      background: radial-gradient(circle at 45% 50%, #fff 0%, #fff3ee 44%, #edd7ce 100%);
+    }
+
+    .patisserie .floating-card {
+      background: rgba(42,22,24,.88);
+      color: #fff8ee;
+    }
+
+    .patisserie .floating-card span { color: rgba(255,248,238,.68); }
+
+    .patisserie-feature {
+      margin: 0 38px 38px;
+      display: grid;
+      grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+      gap: 24px;
+      align-items: center;
+      color: var(--ink);
+    }
+
+    .patisserie-feature .media-stage {
+      min-height: 460px;
+    }
+
+    .feature-copy {
+      padding: 10px 0;
+    }
+
+    .feature-copy h2 {
+      margin: 0 0 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: .95;
+      letter-spacing: 0;
+    }
+
+    .feature-copy p {
+      margin: 0;
+      max-width: 560px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 17px;
+    }
+
+    .van-tracker {
+      margin: 0 38px 38px;
+      color: var(--ink);
+      border: 1px solid rgba(72, 42, 39, .14);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fffaf6;
+      box-shadow: 0 20px 50px rgba(42,22,24,.13);
+    }
+
+    .tracker-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 24px 24px 18px;
+      border-bottom: 1px solid rgba(72, 42, 39, .12);
+    }
+
+    .tracker-head h2 {
+      margin: 0 0 6px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: .95;
+      letter-spacing: 0;
+    }
+
+    .tracker-head p {
+      max-width: 680px;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .live-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: #2f6c44;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+      box-shadow: 0 12px 24px rgba(47,108,68,.2);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #9bffad;
+      box-shadow: 0 0 0 5px rgba(155,255,173,.16);
+    }
+
+    .tracker-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
+      gap: 18px;
+      padding: 18px;
+    }
+
+    .map-card {
+      position: relative;
+      min-height: 420px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(72, 42, 39, .14);
+      background:
+        linear-gradient(90deg, rgba(104,79,64,.07) 1px, transparent 1px) 0 0 / 54px 54px,
+        linear-gradient(0deg, rgba(104,79,64,.06) 1px, transparent 1px) 0 0 / 54px 54px,
+        radial-gradient(circle at 18% 26%, rgba(95,123,74,.22), transparent 18%),
+        radial-gradient(circle at 78% 70%, rgba(162,50,79,.18), transparent 21%),
+        #efe7dc;
+    }
+
+    .map-card::before {
+      content: "";
+      position: absolute;
+      inset: 64px 44px 86px 52px;
+      border: 12px solid transparent;
+      border-top-color: rgba(162,50,79,.72);
+      border-right-color: rgba(162,50,79,.72);
+      border-radius: 38% 44% 46% 42%;
+      transform: rotate(-14deg);
+      filter: drop-shadow(0 8px 0 rgba(255,255,255,.58));
+    }
+
+    .map-road {
+      position: absolute;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.68);
+      box-shadow: inset 0 0 0 1px rgba(72,42,39,.08);
+    }
+
+    .road-one { width: 78%; left: 8%; top: 32%; transform: rotate(-10deg); }
+    .road-two { width: 68%; right: 4%; top: 58%; transform: rotate(17deg); }
+    .road-three { width: 48%; left: 17%; bottom: 20%; transform: rotate(-24deg); }
+
+    .village {
+      position: absolute;
+      display: grid;
+      gap: 4px;
+      justify-items: center;
+      color: #49342e;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .village::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fffaf6;
+      border: 4px solid var(--raspberry);
+      box-shadow: 0 8px 18px rgba(42,22,24,.18);
+    }
+
+    .village.current::before {
+      width: 18px;
+      height: 18px;
+      background: var(--raspberry);
+      box-shadow: 0 0 0 8px rgba(162,50,79,.16), 0 12px 24px rgba(42,22,24,.2);
+    }
+
+    .v1 { left: 12%; top: 19%; }
+    .v2 { left: 47%; top: 35%; }
+    .v3 { right: 13%; top: 18%; }
+    .v4 { left: 20%; bottom: 16%; }
+    .v5 { right: 16%; bottom: 24%; }
+
+    .van-marker {
+      position: absolute;
+      left: 46%;
+      top: 48%;
+      width: 76px;
+      height: 44px;
+      border-radius: 12px 16px 10px 10px;
+      background: #fff8ef;
+      border: 2px solid #2a1618;
+      box-shadow: 0 16px 30px rgba(42,22,24,.24);
+      transform: rotate(-8deg);
+      display: grid;
+      place-items: center;
+      color: var(--raspberry);
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 900;
+    }
+
+    .van-marker::before,
+    .van-marker::after {
+      content: "";
+      position: absolute;
+      bottom: -8px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #2a1618;
+      border: 3px solid #fff8ef;
+    }
+
+    .van-marker::before { left: 10px; }
+    .van-marker::after { right: 10px; }
+
+    .map-toolbar {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 2;
+    }
+
+    .map-toolbar span {
+      padding: 9px 11px;
+      border-radius: 8px;
+      background: rgba(255,250,246,.88);
+      border: 1px solid rgba(72,42,39,.12);
+      color: #49342e;
+      font-size: 13px;
+      font-weight: 850;
+      box-shadow: 0 10px 20px rgba(42,22,24,.1);
+    }
+
+    .route-panel {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .route-now,
+    .route-list {
+      border: 1px solid rgba(72, 42, 39, .14);
+      border-radius: 10px;
+      background: #fff;
+      padding: 18px;
+    }
+
+    .route-now h3,
+    .route-list h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .route-now strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .gps-readout {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .gps-row {
+      display: grid;
+      grid-template-columns: 102px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border-radius: 8px;
+      background: #fff7f1;
+      border: 1px solid rgba(72,42,39,.09);
+    }
+
+    .gps-row span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .gps-row b {
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .route-now p,
+    .route-list p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .stop {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-top: 1px solid rgba(72,42,39,.1);
+    }
+
+    .stop:first-of-type { border-top: 0; }
+
+    .stop time {
+      color: var(--raspberry);
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .stop b {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 15px;
+    }
+
+    .stop span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stock-dock {
+      border-top: 1px solid rgba(72, 42, 39, .12);
+      padding: 18px;
+      background: linear-gradient(180deg, #fff 0%, #fff5ee 100%);
+    }
+
+    .stock-dock h3 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+
+    .stock-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stock-tab {
+      border: 1px solid rgba(72, 42, 39, .12);
+      border-radius: 10px;
+      min-height: 132px;
+      padding: 0;
+      text-align: left;
+      cursor: pointer;
+      color: var(--ink);
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+      position: relative;
+      transition: .2s ease;
+      background-size: cover;
+      background-position: center;
+      background-color: #4b3028;
+    }
+
+    .stock-tab::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 78% 22%, rgba(255,255,255,.12), transparent 26%),
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(42,22,24,.08));
+    }
+
+    .stock-tab[data-stock="bread"] {
+      background: linear-gradient(135deg, #d6607d, #944458);
+    }
+
+    .stock-tab[data-stock="pastry"] {
+      background: linear-gradient(135deg, #d6607d, #944458);
+    }
+
+    .stock-tab-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      width: 72px;
+      height: 72px;
+      transform: translateY(-50%);
+      object-fit: contain;
+      opacity: .96;
+      z-index: 1;
+    }
+
+    .stock-tab.active {
+      color: #fff8ee;
+      border-color: var(--raspberry);
+      background: linear-gradient(135deg, var(--raspberry), #6f2436);
+      box-shadow: 0 14px 28px rgba(42,22,24,.16);
+    }
+
+    .stock-tab.active::before {
+      background: linear-gradient(180deg, rgba(42,22,24,.04), rgba(42,22,24,.84));
+    }
+
+    .stock-tab > span:first-child {
+      position: relative;
+      z-index: 2;
+      display: block;
+      padding: 14px;
+    }
+
+    .stock-tab strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 16px;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0,0,0,.28);
+    }
+
+    .stock-tab span {
+      color: rgba(255,255,255,.78);
+      font-size: 13px;
+    }
+
+    .stock-tab.active span { color: rgba(255,248,238,.68); }
+
+    .stock-list {
+      display: none;
+      gap: 10px;
+    }
+
+    .stock-list.active {
+      display: grid;
+    }
+
+    .stock-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      min-height: 74px;
+      border: 1px solid rgba(72, 42, 39, .12);
+      border-radius: 10px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .stock-row strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
+      line-height: 1.15;
+    }
+
+    .stock-row span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stock-row b {
+      min-width: 64px;
+      text-align: right;
+      font-size: 30px;
+      line-height: .9;
+      color: var(--ink);
+    }
+
+    .stock-row small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .note-strip {
+      margin: 0 38px 32px;
+      padding: 16px 18px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.7);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .note-strip strong { color: var(--ink); }
+
+    @media (max-width: 1100px) {
+      .topbar { align-items: stretch; flex-direction: column; }
+      .style-switcher { width: 100%; }
+      .hero-grid, .content-band {
+        grid-template-columns: 1fr;
+      }
+      .tracker-body {
+        grid-template-columns: 1fr;
+      }
+      .patisserie-feature {
+        grid-template-columns: 1fr;
+      }
+      .hero-copy { min-height: auto; }
+      .cart { position: static; }
+    }
+
+    @media (max-width: 760px) {
+      .page { padding: 10px; }
+      .brand { min-width: 0; }
+      .style-switcher { grid-template-columns: 1fr; }
+      .app-nav {
+        height: auto;
+        padding: 16px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .app-nav .brand {
+        flex: 1 1 100%;
+        min-width: 0;
+      }
+      .app-nav .actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .app-nav .actions .primary-btn {
+        flex: 1;
+      }
+      .nav-links { display: none; }
+      .hero-grid, .content-band { padding: 22px 16px; }
+      .quick-panel, .products, .status-row {
+        grid-template-columns: 1fr;
+      }
+      .van-tracker {
+        margin: 0 16px 24px;
+      }
+      .patisserie-feature {
+        margin: 0 16px 24px;
+        gap: 16px;
+      }
+      .patisserie-feature .media-stage {
+        min-height: 360px;
+      }
+      .tracker-head {
+        padding: 20px 16px 16px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .tracker-body {
+        padding: 12px;
+      }
+      .map-card {
+        min-height: 360px;
+      }
+      .map-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .map-toolbar span {
+        max-width: 100%;
+      }
+      .van-marker {
+        left: 39%;
+        top: 49%;
+      }
+      .stock-dock {
+        padding: 16px 12px 12px;
+      }
+      .stock-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .stock-tab {
+        min-height: 104px;
+      }
+      .stock-tab > span:first-child {
+        padding: 12px;
+      }
+      .stock-tab strong {
+        font-size: 14px;
+      }
+      .stock-tab span {
+        font-size: 12px;
+      }
+      .stock-tab-icon {
+        width: 58px;
+        height: 58px;
+        right: 8px;
+        opacity: .9;
+      }
+      .stock-row { grid-template-columns: 1fr auto; }
+      .gps-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+      .media-stage { min-height: 420px; }
+      .floating-card {
+        grid-template-columns: 56px 1fr;
+      }
+      .floating-card .secondary-btn { grid-column: 1 / -1; }
+      .note-strip {
+        margin: 0 16px 22px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark"><img src="assets/logo.png" alt="Babusgatós logó"></div>
+        <div>
+          <strong>Babusgatós webapp mockup</strong>
+          <span>Három stílusirány rendeléshez és átvételhez</span>
+        </div>
+      </div>
+      <div class="style-switcher" role="tablist" aria-label="Stílusválasztó">
+        <button data-target="craft" role="tab" aria-selected="false">
+          <strong>1. Kézműves meleg</strong>
+          <span>Kovász, műhely, családi bizalom</span>
+        </button>
+        <button data-target="modern" role="tab" aria-selected="false">
+          <strong>2. Modern rendelős</strong>
+          <span>Gyors Click & Collect webapp</span>
+        </button>
+        <button class="active" data-target="patisserie" role="tab" aria-selected="true">
+          <strong>3. Prémium cukrászda</strong>
+          <span>Torták, kávézó, elegáns élmény</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="shell">
+      <article class="app craft" id="craft">
+        <nav class="app-nav">
+          <div class="brand">
+            <div class="brand-mark"><img src="assets/logo.png" alt="Babusgatós logó"></div>
+            <div><strong>Babusgatós</strong><span>Cukrász- és Pékműhely</span></div>
+          </div>
+          <div class="nav-links"><span>Tortarendelés</span><span>Kenyerek</span><span>Péksütemények</span><span>Kapcsolat</span></div>
+          <div class="actions"><button class="icon-btn" aria-label="Keresés">⌕</button><button class="primary-btn">Kosár · 7 490 Ft</button></div>
+        </nav>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <h1>Frissen félretéve, kézzel babusgatva.</h1>
+            <p class="lead">Online válaszd ki a kovászos kenyeret, tortát vagy péksütit, mi pedig névre szólóan előkészítjük a Vépi úti átvételre.</p>
+            <div class="quick-panel">
+              <div class="field"><label>Kategória</label><select><option>Vadkovászos kenyerek</option><option>Torták</option><option>Sós péksütemények</option></select></div>
+              <div class="field"><label>Átvétel</label><input value="Ma, 16:30 - 17:00"></div>
+              <button class="primary-btn">Kínálat megnyitása</button>
+            </div>
+            <div class="status-row">
+              <div class="status"><b>1986</b><span>Vas megye első magánpéksége</span></div>
+              <div class="status"><b>05:00</b><span>Mai nyitás Szombathelyen</span></div>
+              <div class="status"><b>100%</b><span>Kézzel készített választék</span></div>
+            </div>
+          </div>
+          <div class="media-stage">
+            <img src="assets/bread-hero.jpg" alt="Friss kovászos kenyerek">
+            <div class="floating-card">
+              <img src="assets/pastry.jpg" alt="Péksütemény">
+              <div><strong>Mai ropogós ajánlat</strong><span>Vadkovászos burgonyás kenyér + reggeli péksüti</span></div>
+              <button class="secondary-btn">Hozzáadom</button>
+            </div>
+          </div>
+        </div>
+        <div class="content-band">
+          <section>
+            <div class="section-title"><h2>Népszerű ma</h2><a href="#">Összes termék</a></div>
+            <div class="products">
+              <div class="product"><div class="photo"><img src="assets/cake-cutout.png" alt="Málnás túrótorta"></div><div class="meta"><strong>Málnás túrótorta</strong><span>Átvétel holnaptól</span><div class="price">14 690 Ft-tól</div><button class="mini-add">Opciók</button></div></div>
+              <div class="product"><div class="photo"><img src="assets/bread-hero.jpg" alt="Kovászos kenyér"></div><div class="meta"><strong>Vadkovászos burgonyás</strong><span>500 g, kézzel készítve</span><div class="price">1 390 Ft</div><button class="mini-add">Kosárba</button></div></div>
+              <div class="product"><div class="photo"><img src="assets/pastry.jpg" alt="Édes péksütemény"></div><div class="meta"><strong>Macaron box 5 db</strong><span>Színes desszertválogatás</span><div class="price">2 500 Ft</div><button class="mini-add">Kosárba</button></div></div>
+            </div>
+          </section>
+          <aside class="cart">
+            <h3>Átvételi kosár</h3>
+            <div class="cart-line"><img src="assets/bread-hero.jpg" alt=""><div><strong>Vadkovászos kenyér</strong><span>1 db · ma 16:30</span></div></div>
+            <div class="cart-line"><img src="assets/cake-cutout.png" alt=""><div><strong>Málnás túrótorta</strong><span>8 szeletes · szombat</span></div></div>
+            <div class="total"><span>Összesen</span><span>16 080 Ft</span></div>
+            <button class="primary-btn full">Átvételi időpont foglalása</button>
+          </aside>
+        </div>
+        <div class="note-strip"><strong>Stílus karaktere:</strong><span>Barátságos, családi, kézműves. Jó, ha a márka történetét és a kovászos pékárukat szeretnénk előtérbe tenni.</span></div>
+      </article>
+
+      <article class="app modern" id="modern">
+        <nav class="app-nav">
+          <div class="brand">
+            <div class="brand-mark"><img src="assets/logo.png" alt="Babusgatós logó"></div>
+            <div><strong>Babusgatós</strong><span>Click & Collect</span></div>
+          </div>
+          <div class="nav-links"><span>Termékek</span><span>Idősávok</span><span>Rendeléseim</span><span>Üzletek</span></div>
+          <div class="actions"><button class="icon-btn" aria-label="Profil">◎</button><button class="primary-btn">3 tétel</button></div>
+        </nav>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <h1>Rendeld meg most, ugorj be érte később.</h1>
+            <p class="lead">Mobilról is gyors rendelési felület: kategóriák, átvételi idősávok, tortaopciók és kosár egy képernyőn.</p>
+            <div class="quick-panel">
+              <div class="field"><label>Átvételi hely</label><select><option>Szombathely, Vépi út 17.</option></select></div>
+              <div class="field"><label>Idősáv</label><input value="Ma 17:00"></div>
+              <button class="primary-btn">Rendelés indítása</button>
+            </div>
+            <div class="status-row">
+              <div class="status"><b>12</b><span>mai szabad idősáv</span></div>
+              <div class="status"><b>8 perc</b><span>átlagos átvétel</span></div>
+              <div class="status"><b>4.9</b><span>vendégélmény</span></div>
+            </div>
+          </div>
+          <div class="media-stage">
+            <img src="assets/cake-cutout.png" alt="Torta rendelési kiemelés">
+            <div class="floating-card">
+              <div><strong>Tortarendelés konfigurátor</strong><span>Méret, íz, felirat és átvételi nap egy folyamatban.</span></div>
+              <button class="secondary-btn">Megnyitás</button>
+            </div>
+          </div>
+        </div>
+        <div class="content-band">
+          <section>
+            <div class="section-title"><h2>Gyors kategóriák</h2><a href="#">Szűrők</a></div>
+            <div class="products">
+              <div class="product"><div class="photo"><img src="assets/cake-cutout.png" alt="Torta"></div><div class="meta"><strong>Torták</strong><span>Felirattal és méretválasztással</span><div class="price">5 990 Ft-tól</div><button class="mini-add">Nézem</button></div></div>
+              <div class="product"><div class="photo"><img src="assets/bread-hero.jpg" alt="Kenyér"></div><div class="meta"><strong>Kenyerek</strong><span>Napi készlet alapján</span><div class="price">1 190 Ft-tól</div><button class="mini-add">Nézem</button></div></div>
+              <div class="product"><div class="photo"><img src="assets/cafe.jpg" alt="Kávézó"></div><div class="meta"><strong>Kávézó</strong><span>Elviteles reggeli csomagok</span><div class="price">2 990 Ft-tól</div><button class="mini-add">Nézem</button></div></div>
+            </div>
+          </section>
+          <aside class="cart">
+            <h3>Mai rendelés</h3>
+            <div class="cart-line"><img src="assets/cake-cutout.png" alt=""><div><strong>Babusgatós krémes torta</strong><span>6 szeletes · felirat nélkül</span></div></div>
+            <div class="cart-line"><img src="assets/pastry.jpg" alt=""><div><strong>Macaron box</strong><span>1 doboz · ma 17:00</span></div></div>
+            <div class="total"><span>Fizetendő</span><span>7 490 Ft</span></div>
+            <button class="primary-btn full">Tovább a fizetéshez</button>
+          </aside>
+        </div>
+        <div class="note-strip"><strong>Stílus karaktere:</strong><span>Funkcionális, gyors, app-szerű. Jó, ha a fő cél az online rendelés és az átvételi folyamat egyszerűsítése.</span></div>
+      </article>
+
+      <article class="app patisserie active" id="patisserie">
+        <nav class="app-nav">
+          <div class="brand">
+            <div class="brand-mark"><img src="assets/logo-white.png?v=2" alt="Babusgatós logó"></div>
+            <div><strong>Babusgatós</strong><span>Torták és kávéélmény</span></div>
+          </div>
+          <div class="nav-links"><span>Mozgó furgon</span><span>Torták</span><span>Desszertek</span><span>Kávézó</span></div>
+          <div class="actions"><button class="icon-btn" aria-label="Kedvencek">♡</button><button class="primary-btn">Furgon követése</button></div>
+        </nav>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <h1>Alkalomhoz illő torta, friss műhelyből.</h1>
+            <p class="lead">Elegánsabb online élmény tortarendeléshez és a falvakat járó mobilüzlet követéséhez: lásd merre jár a furgon, és miből mennyi maradt még a pulton.</p>
+            <div class="quick-panel">
+              <div class="field"><label>Keresett település</label><select><option>Torony</option><option>Sé</option><option>Ják</option><option>Nárai</option></select></div>
+              <div class="field"><label>Következő érkezés</label><input value="Ma, 10:35 körül"></div>
+              <button class="primary-btn">Mutasd a furgont</button>
+            </div>
+            <div class="status-row">
+              <div class="status"><b>Élő</b><span>furgonpozíció térképen</span></div>
+              <div class="status"><b>6 termék</b><span>készlet figyelése</span></div>
+            </div>
+          </div>
+        </div>
+        <section class="van-tracker" aria-label="Mozgó furgon követése">
+          <div class="tracker-head">
+            <div>
+              <h2>Merre jár a Babusgatós furgon?</h2>
+              <p>A mobilüzlet útvonala élő térképen követhető. A panel azt is mutatja, mennyi kenyér és sütemény maradt még a furgonban, mielőtt megérkezik a következő faluba.</p>
+            </div>
+            <div class="live-chip"><span class="live-dot"></span> Élő követés</div>
+          </div>
+          <div class="tracker-body">
+            <div class="map-card" role="img" aria-label="Térképes mockup a Babusgatós kiszállító furgon aktuális útvonalával">
+              <div class="map-toolbar">
+                <span>GPS alapján: Torony környéke</span>
+                <span>Frissítve: 2 perce</span>
+              </div>
+              <div class="map-road road-one"></div>
+              <div class="map-road road-two"></div>
+              <div class="map-road road-three"></div>
+              <div class="village v1">Sé</div>
+              <div class="village current v2">Torony</div>
+              <div class="village v3">Nárai</div>
+              <div class="village v4">Ják</div>
+              <div class="village v5">Balogunyom</div>
+              <div class="van-marker" aria-hidden="true">B</div>
+            </div>
+            <aside class="route-panel">
+              <div class="route-now">
+                <h3>GPS jel feldolgozva</h3>
+                <strong>Torony környéke</strong>
+                <p>A pontos utca/tér csak akkor jelenik meg, ha a furgon GPS-rendszere kiolvasható, és a koordinátát címre tudjuk fordítani.</p>
+                <div class="gps-readout">
+                  <div class="gps-row"><span>GPS adat</span><b>Koordináta + időbélyeg</b></div>
+                  <div class="gps-row"><span>Cím becslés</span><b>Torony, Fő utca környéke</b></div>
+                  <div class="gps-row"><span>Frissítés</span><b>30-60 másodpercenként, ha az eszköz engedi</b></div>
+                </div>
+              </div>
+              <div class="route-list">
+                <h3>Következő megállók</h3>
+                <div class="stop"><time>10:35</time><div><b>Torony</b><span>Főtér, templom mellett</span></div></div>
+                <div class="stop"><time>11:20</time><div><b>Nárai</b><span>Vegyesbolt előtti parkoló</span></div></div>
+                <div class="stop"><time>12:05</time><div><b>Ják</b><span>Iskola melletti megálló</span></div></div>
+              </div>
+            </aside>
+          </div>
+          <div class="stock-dock">
+            <h3>Furgonban maradt készlet</h3>
+            <div class="stock-tabs" role="tablist" aria-label="Furgon készlet kategóriák">
+              <button class="stock-tab active" type="button" data-stock="bread" role="tab" aria-selected="true">
+                <span><strong>Kenyerek</strong><span>friss kovászos áruk</span></span>
+                <img class="stock-tab-icon" src="assets/kenyer.png?v=4" alt="">
+              </button>
+              <button class="stock-tab" type="button" data-stock="pastry" role="tab" aria-selected="false">
+                <span><strong>Sütemények</strong><span>édes és sós pult</span></span>
+                <img class="stock-tab-icon" src="assets/suti.png?v=4" alt="">
+              </button>
+            </div>
+            <div class="stock-lists">
+              <div class="stock-list active" data-stock-list="bread">
+                <div class="stock-row"><div><strong>Babusgatós kenyér</strong><span>klasszikus kovászos</span></div><div><b>18</b><small>db maradt</small></div></div>
+                <div class="stock-row"><div><strong>Burgonyás kenyér</strong><span>500 g, ropogós héj</span></div><div><b>9</b><small>db maradt</small></div></div>
+                <div class="stock-row"><div><strong>Kendermagos kenyér</strong><span>500 g, díjnyertes vonal</span></div><div><b>6</b><small>db maradt</small></div></div>
+              </div>
+              <div class="stock-list" data-stock-list="pastry">
+                <div class="stock-row"><div><strong>Almás rétes</strong><span>szeletes, porcukorral</span></div><div><b>14</b><small>szelet maradt</small></div></div>
+                <div class="stock-row"><div><strong>Kakaós csiga</strong><span>puha, reggeli kedvenc</span></div><div><b>22</b><small>db maradt</small></div></div>
+                <div class="stock-row"><div><strong>Pogácsa</strong><span>sós aprósütemény</span></div><div><b>31</b><small>db maradt</small></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="patisserie-feature" aria-label="Kiemelt cukrász termék">
+          <div class="feature-copy">
+            <h2>Torta és desszert rendelés</h2>
+            <p>A furgon követése után jöhetnek az előrendelhető torták és cukrász kedvencek: méret, íz, felirat és átvétel egy folyamatban.</p>
+          </div>
+          <div class="media-stage">
+            <img src="assets/cake-cutout.png" alt="Málnás túrótorta">
+            <div class="floating-card">
+              <img src="assets/cafe.jpg" alt="Kávézó belső">
+              <div><strong>Málnás túrótorta</strong><span>Könnyed, ünnepi, látványos szeleteléshez.</span></div>
+              <button class="secondary-btn">Részletek</button>
+            </div>
+          </div>
+        </section>
+        <div class="content-band">
+          <section>
+            <div class="section-title"><h2>Cukrász kedvencek</h2><a href="#">Tortaválasztó</a></div>
+            <div class="products">
+              <div class="product"><div class="photo"><img src="assets/cake-cutout.png" alt="Málnás túrótorta"></div><div class="meta"><strong>Málnás túrótorta</strong><span>Friss, gyümölcsös választás</span><div class="price">14 690 Ft-tól</div><button class="mini-add">Testreszabom</button></div></div>
+              <div class="product"><div class="photo"><img src="assets/pastry.jpg" alt="Macaron"></div><div class="meta"><strong>Macaron box</strong><span>5 db-os ajándékdoboz</span><div class="price">2 500 Ft</div><button class="mini-add">Kosárba</button></div></div>
+              <div class="product"><div class="photo"><img src="assets/cafe.jpg" alt="Kávézó"></div><div class="meta"><strong>Kávé mellé</strong><span>Szelet sütik és pultos ajánlatok</span><div class="price">1 190 Ft-tól</div><button class="mini-add">Nézem</button></div></div>
+            </div>
+          </section>
+          <aside class="cart">
+            <h3>Torta összeállítás</h3>
+            <div class="cart-line"><img src="assets/cake-cutout.png" alt=""><div><strong>Málnás túrótorta</strong><span>10 szelet · “Boldog szülinapot”</span></div></div>
+            <div class="cart-line"><img src="assets/pastry.jpg" alt=""><div><strong>Macaron box</strong><span>Ajándék kiegészítő</span></div></div>
+            <div class="total"><span>Várható ár</span><span>17 190 Ft</span></div>
+            <button class="primary-btn full">Rendelés véglegesítése</button>
+          </aside>
+        </div>
+        <div class="note-strip"><strong>Stílus karaktere:</strong><span>Elegáns, alkalomközpontú, fotó- és tortavezérelt. Jó, ha a cukrász termékek és a kávézó prémiumabb élménye a fő irány.</span></div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const tabs = document.querySelectorAll(".style-switcher button");
+    const apps = document.querySelectorAll(".app");
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const target = tab.dataset.target;
+        tabs.forEach((item) => {
+          item.classList.toggle("active", item === tab);
+          item.setAttribute("aria-selected", item === tab ? "true" : "false");
+        });
+        apps.forEach((app) => app.classList.toggle("active", app.id === target));
+      });
+    });
+
+    const stockTabs = document.querySelectorAll(".stock-tab");
+    const stockLists = document.querySelectorAll(".stock-list");
+    stockTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const target = tab.dataset.stock;
+        stockTabs.forEach((item) => {
+          item.classList.toggle("active", item === tab);
+          item.setAttribute("aria-selected", item === tab ? "true" : "false");
+        });
+        stockLists.forEach((list) => {
+          list.classList.toggle("active", list.dataset.stockList === target);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
