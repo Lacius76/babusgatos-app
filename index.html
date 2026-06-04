@@ -1330,8 +1330,8 @@
           <div class="tracker-body">
             <div class="map-card" aria-label="Babusgatós furgon – élő térkép (OpenStreetMap)">
               <div class="map-toolbar">
-                <span>GPS alapján: Torony környéke</span>
-                <span>Frissítve: 2 perce</span>
+                <span id="map-gps-label">GPS alapján: várakozás jelre…</span>
+                <span id="map-updated-label">Frissítve: —</span>
               </div>
               <div id="van-map" role="application" aria-label="Térkép a furgon útvonalával"></div>
             </div>
@@ -1475,9 +1475,62 @@
         iconAnchor: [26, 18],
       });
 
-      L.marker([vanHere.lat, vanHere.lng], { icon: vanIcon, zIndexOffset: 1000 })
+      const vanMarker = L.marker([vanHere.lat, vanHere.lng], { icon: vanIcon, zIndexOffset: 1000 })
         .addTo(map)
-        .bindPopup("<strong>Babusgatós furgon</strong><br>Jelenleg: Torony környéke");
+        .bindPopup("<strong>Babusgatós furgon</strong><br>Jelenleg: Torony környéke (demo)");
+
+      const gpsLabel = document.getElementById("map-gps-label");
+      const updatedLabel = document.getElementById("map-updated-label");
+      const LOCATION_API = "/api/location";
+      const POLL_MS = 10000;
+      let userMovedMap = false;
+
+      map.on("dragstart zoomstart", () => {
+        userMovedMap = true;
+      });
+
+      function formatAgo(isoString) {
+        const diffSec = Math.max(0, Math.floor((Date.now() - new Date(isoString).getTime()) / 1000));
+        if (diffSec < 60) return `${diffSec} mp`;
+        const mins = Math.floor(diffSec / 60);
+        if (mins < 60) return `${mins} perce`;
+        const hours = Math.floor(mins / 60);
+        return `${hours} órája`;
+      }
+
+      function updateLocationUI(data) {
+        const lat = Number(data.lat).toFixed(5);
+        const lon = Number(data.lon).toFixed(5);
+        if (gpsLabel) {
+          gpsLabel.textContent = `GPS: ${lat}, ${lon}`;
+        }
+        if (updatedLabel && data.updatedAt) {
+          updatedLabel.textContent = `Frissítve: ${formatAgo(data.updatedAt)}`;
+        }
+        vanMarker.setLatLng([data.lat, data.lon]);
+        vanMarker.setPopupContent(
+          `<strong>Babusgatós furgon</strong><br>Élő pozíció<br>${lat}, ${lon}`
+        );
+        if (!userMovedMap) {
+          map.panTo([data.lat, data.lon], { animate: true, duration: 0.35 });
+        }
+      }
+
+      async function pollVanLocation() {
+        try {
+          const res = await fetch(LOCATION_API, { cache: "no-store" });
+          if (!res.ok) return;
+          const data = await res.json();
+          if (Number.isFinite(data.lat) && Number.isFinite(data.lon)) {
+            updateLocationUI(data);
+          }
+        } catch {
+          /* offline vagy még nincs adat */
+        }
+      }
+
+      pollVanLocation();
+      window.setInterval(pollVanLocation, POLL_MS);
 
       const applyView = () => {
         map.invalidateSize({ animate: false });
