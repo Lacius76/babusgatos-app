@@ -68,11 +68,15 @@
       display: block;
       font-size: 18px;
       line-height: 1.05;
+      margin-left: 3px;
+      margin-right: 3px;
     }
 
     .brand span {
       color: var(--muted);
       font-size: 13px;
+      margin-left: 3px;
+      margin-right: 3px;
     }
 
     .shell {
@@ -437,8 +441,12 @@
     }
 
     .patisserie .app-nav .brand-mark img {
-      width: 62px;
-      height: 56px;
+      display: flex;
+      flex-wrap: wrap;
+      width: 70px;
+      height: 65px;
+      padding: 10px 0;
+      margin: -10px 0;
       filter: none;
     }
 
@@ -646,11 +654,16 @@
       z-index: 0;
     }
 
-    #van-map .leaflet-pane,
+    #van-map .leaflet-pane:not(.leaflet-popup-pane),
     #van-map .leaflet-map-pane,
     #van-map .leaflet-tile-pane {
       width: 100%;
       height: 100%;
+    }
+
+    #van-map .leaflet-popup-pane {
+      left: unset;
+      top: unset;
     }
 
     .map-card .leaflet-control-attribution {
