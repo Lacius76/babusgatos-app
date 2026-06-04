@@ -1309,8 +1309,8 @@
             <h1>Alkalomhoz illő torta, friss műhelyből.</h1>
             <p class="lead">Elegánsabb online élmény tortarendeléshez és a falvakat járó mobilüzlet követéséhez: lásd merre jár a furgon, és miből mennyi maradt még a pulton.</p>
             <div class="quick-panel">
-              <div class="field"><label>Keresett település</label><select><option>Torony</option><option>Sé</option><option>Ják</option><option>Nárai</option></select></div>
-              <div class="field"><label>Következő érkezés</label><input value="Ma, 10:35 körül"></div>
+              <div class="field"><label>Keresett település</label><select><option>Nagycenk</option><option>Sopronkövesd</option><option>Lövő</option><option>Csepreg</option><option>Bük</option><option>Szombathely</option></select></div>
+              <div class="field"><label>Következő érkezés</label><input value="Ma, 12:05 körül"></div>
               <button class="primary-btn">Mutasd a furgont</button>
             </div>
             <div class="status-row">
@@ -1338,19 +1338,21 @@
             <aside class="route-panel">
               <div class="route-now">
                 <h3>GPS jel feldolgozva</h3>
-                <strong>Torony környéke</strong>
+                <strong>Nagycenk környéke</strong>
                 <p>A pontos utca/tér csak akkor jelenik meg, ha a furgon GPS-rendszere kiolvasható, és a koordinátát címre tudjuk fordítani.</p>
                 <div class="gps-readout">
                   <div class="gps-row"><span>GPS adat</span><b>Koordináta + időbélyeg</b></div>
-                  <div class="gps-row"><span>Cím becslés</span><b>Torony, Fő utca környéke</b></div>
+                  <div class="gps-row"><span>Cím becslés</span><b>Nagycenk, Dózsa körút környéke</b></div>
                   <div class="gps-row"><span>Frissítés</span><b>30-60 másodpercenként, ha az eszköz engedi</b></div>
                 </div>
               </div>
               <div class="route-list">
                 <h3>Következő megállók</h3>
-                <div class="stop"><time>10:35</time><div><b>Torony</b><span>Főtér, templom mellett</span></div></div>
-                <div class="stop"><time>11:20</time><div><b>Nárai</b><span>Vegyesbolt előtti parkoló</span></div></div>
-                <div class="stop"><time>12:05</time><div><b>Ják</b><span>Iskola melletti megálló</span></div></div>
+                <div class="stop"><time>09:15</time><div><b>Bük</b><span>Főút, buszmegálló</span></div></div>
+                <div class="stop"><time>10:00</time><div><b>Csepreg</b><span>Központ, műút mellett</span></div></div>
+                <div class="stop"><time>10:35</time><div><b>Lövő</b><span>Főtér</span></div></div>
+                <div class="stop"><time>11:20</time><div><b>Sopronkövesd</b><span>87-es út, átkelő</span></div></div>
+                <div class="stop"><time>12:05</time><div><b>Nagycenk</b><span>Dózsa körút környéke</span></div></div>
               </div>
             </aside>
           </div>
@@ -1422,17 +1424,19 @@
       const el = document.getElementById("van-map");
       if (!el || typeof L === "undefined" || el.dataset.mapReady === "1") return;
 
+      // Szombathely → Nagycenk: egy irányú demo útvonal (87-es / 84-es környéke)
       const stops = [
-        { name: "Sé", lat: 47.0089, lng: 16.3314 },
-        { name: "Torony", lat: 47.2647, lng: 16.6228, current: true },
-        { name: "Nárai", lat: 47.2183, lng: 16.5789 },
-        { name: "Ják", lat: 47.1444, lng: 16.5844 },
-        { name: "Balogunyom", lat: 47.264, lng: 16.512 },
+        { name: "Szombathely", lat: 47.2307, lng: 16.6218 },
+        { name: "Bük", lat: 47.3842, lng: 16.7504 },
+        { name: "Csepreg", lat: 47.4006, lng: 16.7086 },
+        { name: "Lövő", lat: 47.4081, lng: 16.7017 },
+        { name: "Sopronkövesd", lat: 47.5519, lng: 16.6518 },
+        { name: "Nagycenk", lat: 47.6071, lng: 16.6913, current: true },
       ];
 
-      const vanHere = stops.find((s) => s.current) || stops[1];
+      const vanHere = stops.find((s) => s.current) || stops[stops.length - 1];
       const route = stops.map((s) => [s.lat, s.lng]);
-      const nearbyStops = stops.filter((s) => s.name !== "Sé");
+      const routeBounds = L.latLngBounds(route);
       const nearbyBounds = L.latLngBounds(nearbyStops.map((s) => [s.lat, s.lng]));
 
       const map = L.map(el, {
@@ -1445,14 +1449,36 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }).addTo(map);
 
-      L.polyline(route, {
+      const routeStyle = {
         color: "#a2324f",
         weight: 5,
         opacity: 0.85,
         lineCap: "round",
         lineJoin: "round",
         dashArray: "10 14",
-      }).addTo(map);
+      };
+
+      let routeLine = L.polyline(route, routeStyle).addTo(map);
+
+      async function drawRoadRoute() {
+        const osrmCoords = stops.map((s) => `${s.lng},${s.lat}`).join(";");
+        try {
+          const res = await fetch(
+            `https://router.project-osrm.org/route/v1/driving/${osrmCoords}?overview=full&geometries=geojson`
+          );
+          const data = await res.json();
+          const geometry = data?.routes?.[0]?.geometry?.coordinates;
+          if (!geometry?.length) return;
+
+          const roadPath = geometry.map(([lng, lat]) => [lat, lng]);
+          map.removeLayer(routeLine);
+          routeLine = L.polyline(roadPath, routeStyle).addTo(map);
+        } catch {
+          /* marad az egyenes demo vonal */
+        }
+      }
+
+      drawRoadRoute();
 
       const stopIcon = (current) =>
         L.divIcon({
@@ -1477,17 +1503,33 @@
 
       const vanMarker = L.marker([vanHere.lat, vanHere.lng], { icon: vanIcon, zIndexOffset: 1000 })
         .addTo(map)
-        .bindPopup("<strong>Babusgatós furgon</strong><br>Jelenleg: Torony környéke (demo)");
+        .bindPopup("<strong>Babusgatós furgon</strong><br>Jelenleg: Nagycenk környéke (demo)");
 
       const gpsLabel = document.getElementById("map-gps-label");
       const updatedLabel = document.getElementById("map-updated-label");
       const LOCATION_API = "/api/location";
       const POLL_MS = 10000;
+      const LIVE_ZOOM = 15;
       let userMovedMap = false;
+      let hasLiveLocation = false;
+      let lastLive = null;
 
       map.on("dragstart zoomstart", () => {
         userMovedMap = true;
       });
+
+      function liveAreaLabel(lat, lon) {
+        if (lat >= 47.58 && lat <= 47.64 && lon >= 16.65 && lon <= 16.74) {
+          return "Nagycenk környéke";
+        }
+        if (lat >= 47.20 && lat <= 47.26 && lon >= 16.57 && lon <= 16.66) {
+          return "Szombathely környéke";
+        }
+        if (lat >= 47.37 && lat <= 47.42 && lon >= 16.69 && lon <= 16.76) {
+          return "Bük / Csepreg környéke";
+        }
+        return `${Number(lat).toFixed(5)}, ${Number(lon).toFixed(5)}`;
+      }
 
       function formatAgo(isoString) {
         const diffSec = Math.max(0, Math.floor((Date.now() - new Date(isoString).getTime()) / 1000));
@@ -1499,20 +1541,31 @@
       }
 
       function updateLocationUI(data) {
-        const lat = Number(data.lat).toFixed(5);
-        const lon = Number(data.lon).toFixed(5);
+        const lat = Number(data.lat);
+        const lon = Number(data.lon);
+        const area = liveAreaLabel(lat, lon);
+        const firstLive = !hasLiveLocation;
+
+        hasLiveLocation = true;
+        lastLive = { lat, lon };
+
         if (gpsLabel) {
-          gpsLabel.textContent = `GPS: ${lat}, ${lon}`;
+          gpsLabel.textContent = `GPS alapján: ${area}`;
         }
         if (updatedLabel && data.updatedAt) {
           updatedLabel.textContent = `Frissítve: ${formatAgo(data.updatedAt)}`;
         }
-        vanMarker.setLatLng([data.lat, data.lon]);
+        vanMarker.setLatLng([lat, lon]);
         vanMarker.setPopupContent(
-          `<strong>Babusgatós furgon</strong><br>Élő pozíció<br>${lat}, ${lon}`
+          `<strong>Babusgatós furgon</strong><br>Élő pozíció: ${area}`
         );
+
         if (!userMovedMap) {
-          map.panTo([data.lat, data.lon], { animate: true, duration: 0.35 });
+          if (firstLive) {
+            map.setView([lat, lon], LIVE_ZOOM);
+          } else {
+            map.panTo([lat, lon], { animate: true, duration: 0.35 });
+          }
         }
       }
 
@@ -1534,10 +1587,11 @@
 
       const applyView = () => {
         map.invalidateSize({ animate: false });
-        map.fitBounds(nearbyBounds, { padding: [24, 24], maxZoom: 16 });
-        if (map.getZoom() < 14) {
-          map.setView([vanHere.lat, vanHere.lng], 14);
+        if (hasLiveLocation && lastLive) {
+          map.setView([lastLive.lat, lastLive.lon], Math.max(map.getZoom(), LIVE_ZOOM));
+          return;
         }
+        map.fitBounds(routeBounds, { padding: [28, 28], maxZoom: 11 });
       };
 
       el.dataset.mapReady = "1";
