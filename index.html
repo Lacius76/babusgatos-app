@@ -898,15 +898,27 @@
     }
 
     .stock-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 14px;
+      display: flex;
       align-items: center;
+      justify-content: space-between;
+      gap: 16px;
       min-height: 74px;
       border: 1px solid rgba(72, 42, 39, .12);
       border-radius: 10px;
       background: #fff;
       padding: 14px;
+    }
+
+    .stock-row-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .stock-row-qty {
+      flex-shrink: 0;
+      margin-left: auto;
+      text-align: right;
+      line-height: 1;
     }
 
     .stock-row strong {
@@ -921,15 +933,14 @@
       font-size: 13px;
     }
 
-    .stock-row b {
-      min-width: 64px;
-      text-align: right;
+    .stock-row-qty b {
+      display: block;
       font-size: 30px;
       line-height: .9;
       color: var(--ink);
     }
 
-    .stock-row small {
+    .stock-row-qty small {
       display: block;
       margin-top: 4px;
       color: var(--muted);
@@ -1054,7 +1065,6 @@
         right: 8px;
         opacity: .9;
       }
-      .stock-row { grid-template-columns: 1fr auto; }
       .gps-row {
         grid-template-columns: 1fr;
         gap: 4px;
@@ -1141,14 +1151,14 @@
               </div>
               <div class="stock-lists">
                 <div class="stock-list active" data-stock-list="bread">
-                  <div class="stock-row"><div><strong>Babusgatós kenyér</strong><span>klasszikus kovászos</span></div><div><b>18</b><small>db maradt</small></div></div>
-                  <div class="stock-row"><div><strong>Burgonyás kenyér</strong><span>500 g, ropogós héj</span></div><div><b>9</b><small>db maradt</small></div></div>
-                  <div class="stock-row"><div><strong>Kendermagos kenyér</strong><span>500 g, díjnyertes vonal</span></div><div><b>6</b><small>db maradt</small></div></div>
+                  <div class="stock-row"><div class="stock-row-info"><strong>Babusgatós kenyér</strong><span>klasszikus kovászos</span></div><div class="stock-row-qty"><b>18</b><small>db maradt</small></div></div>
+                  <div class="stock-row"><div class="stock-row-info"><strong>Burgonyás kenyér</strong><span>500 g, ropogós héj</span></div><div class="stock-row-qty"><b>9</b><small>db maradt</small></div></div>
+                  <div class="stock-row"><div class="stock-row-info"><strong>Kendermagos kenyér</strong><span>500 g, díjnyertes vonal</span></div><div class="stock-row-qty"><b>6</b><small>db maradt</small></div></div>
                 </div>
                 <div class="stock-list" data-stock-list="pastry">
-                  <div class="stock-row"><div><strong>Almás rétes</strong><span>szeletes, porcukorral</span></div><div><b>14</b><small>szelet maradt</small></div></div>
-                  <div class="stock-row"><div><strong>Kakaós csiga</strong><span>puha, reggeli kedvenc</span></div><div><b>22</b><small>db maradt</small></div></div>
-                  <div class="stock-row"><div><strong>Pogácsa</strong><span>sós aprósütemény</span></div><div><b>31</b><small>db maradt</small></div></div>
+                  <div class="stock-row"><div class="stock-row-info"><strong>Almás rétes</strong><span>szeletes, porcukorral</span></div><div class="stock-row-qty"><b>14</b><small>szelet maradt</small></div></div>
+                  <div class="stock-row"><div class="stock-row-info"><strong>Kakaós csiga</strong><span>puha, reggeli kedvenc</span></div><div class="stock-row-qty"><b>22</b><small>db maradt</small></div></div>
+                  <div class="stock-row"><div class="stock-row-info"><strong>Pogácsa</strong><span>sós aprósütemény</span></div><div class="stock-row-qty"><b>31</b><small>db maradt</small></div></div>
                 </div>
               </div>
             </div>
