@@ -586,19 +586,15 @@
       letter-spacing: 0;
     }
 
-    .tracker-head p {
-      max-width: 680px;
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.55;
-    }
-
     .live-chip {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: 12px;
+      width: 128px;
       min-height: 38px;
-      padding: 0 12px;
+      margin: 4px 0;
+      padding: 12px;
       border-radius: 999px;
       background: #2f6c44;
       color: #fff;
@@ -1142,6 +1138,12 @@
           <div class="actions"><button class="icon-btn" aria-label="Kedvencek">♡</button><button class="primary-btn">Furgon követése</button></div>
         </nav>
         <section class="van-tracker" aria-label="Mozgó furgon követése">
+          <div class="tracker-head">
+            <div>
+              <h2>Merre jár a Babusgatós furgon?</h2>
+            </div>
+            <div class="live-chip"><span class="live-dot"></span> Élő követés</div>
+          </div>
           <div class="tracker-toolbar">
             <div class="quick-panel">
               <div class="field"><label>Keresett település</label><select><option>Nagycenk</option><option>Sopronkövesd</option><option>Lövő</option><option>Csepreg</option><option>Bük</option><option>Szombathely</option></select></div>
@@ -1150,13 +1152,6 @@
             </div>
             <div class="status"><b>Élő</b><span>furgonpozíció térképen</span></div>
             <div class="status"><b>6 termék</b><span>készlet figyelése</span></div>
-          </div>
-          <div class="tracker-head">
-            <div>
-              <h2>Merre jár a Babusgatós furgon?</h2>
-              <p>A mobilüzlet útvonala élő térképen követhető. A panel azt is mutatja, mennyi kenyér és sütemény maradt még a furgonban, mielőtt megérkezik a következő faluba.</p>
-            </div>
-            <div class="live-chip"><span class="live-dot"></span> Élő követés</div>
           </div>
           <div class="tracker-body">
             <div class="map-card" aria-label="Babusgatós furgon – élő térkép (OpenStreetMap)">
