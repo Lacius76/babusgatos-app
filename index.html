@@ -1338,12 +1338,12 @@
             <aside class="route-panel">
               <div class="route-now">
                 <h3>GPS jel feldolgozva</h3>
-                <strong>Nagycenk környéke</strong>
+                <strong id="route-gps-area">Várakozás GPS jelre…</strong>
                 <p>A pontos utca/tér csak akkor jelenik meg, ha a furgon GPS-rendszere kiolvasható, és a koordinátát címre tudjuk fordítani.</p>
                 <div class="gps-readout">
-                  <div class="gps-row"><span>GPS adat</span><b>Koordináta + időbélyeg</b></div>
-                  <div class="gps-row"><span>Cím becslés</span><b>Nagycenk, Dózsa körút környéke</b></div>
-                  <div class="gps-row"><span>Frissítés</span><b>30-60 másodpercenként, ha az eszköz engedi</b></div>
+                  <div class="gps-row"><span>GPS adat</span><b id="route-gps-coords">—</b></div>
+                  <div class="gps-row"><span>Cím becslés</span><b id="route-gps-address">—</b></div>
+                  <div class="gps-row"><span>Frissítés</span><b id="route-gps-refresh">10 másodpercenként</b></div>
                 </div>
               </div>
               <div class="route-list">
@@ -1437,7 +1437,6 @@
       const vanHere = stops.find((s) => s.current) || stops[stops.length - 1];
       const route = stops.map((s) => [s.lat, s.lng]);
       const routeBounds = L.latLngBounds(route);
-      const nearbyBounds = L.latLngBounds(nearbyStops.map((s) => [s.lat, s.lng]));
 
       const map = L.map(el, {
         scrollWheelZoom: true,
@@ -1507,12 +1506,17 @@
 
       const gpsLabel = document.getElementById("map-gps-label");
       const updatedLabel = document.getElementById("map-updated-label");
+      const routeGpsArea = document.getElementById("route-gps-area");
+      const routeGpsCoords = document.getElementById("route-gps-coords");
+      const routeGpsAddress = document.getElementById("route-gps-address");
+      const routeGpsRefresh = document.getElementById("route-gps-refresh");
       const LOCATION_API = "/api/location";
       const POLL_MS = 10000;
       const LIVE_ZOOM = 15;
       let userMovedMap = false;
       let hasLiveLocation = false;
       let lastLive = null;
+      let lastGeocodeKey = null;
 
       map.on("dragstart zoomstart", () => {
         userMovedMap = true;
@@ -1540,11 +1544,60 @@
         return `${hours} órája`;
       }
 
+      function formatSignalTime(data) {
+        const when = data.updatedAt
+          ? new Date(data.updatedAt)
+          : data.tst
+            ? new Date(data.tst * 1000)
+            : null;
+        if (!when || Number.isNaN(when.getTime())) return "—";
+        return when.toLocaleString("hu-HU", {
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      }
+
+      async function updateAddressEstimate(lat, lon, fallback) {
+        if (!routeGpsAddress) return;
+
+        const key = `${lat.toFixed(4)},${lon.toFixed(4)}`;
+        if (key === lastGeocodeKey) return;
+        lastGeocodeKey = key;
+        routeGpsAddress.textContent = fallback;
+
+        try {
+          const url = new URL("https://nominatim.openstreetmap.org/reverse");
+          url.searchParams.set("lat", String(lat));
+          url.searchParams.set("lon", String(lon));
+          url.searchParams.set("format", "json");
+          url.searchParams.set("accept-language", "hu");
+
+          const res = await fetch(url, { headers: { Accept: "application/json" } });
+          if (!res.ok) return;
+
+          const place = await res.json();
+          const parts = (place.display_name || "")
+            .split(",")
+            .map((p) => p.trim())
+            .filter(Boolean);
+          const shortAddress = parts.slice(0, 4).join(", ");
+          if (shortAddress) {
+            routeGpsAddress.textContent = shortAddress;
+          }
+        } catch {
+          /* marad a környék-becslés */
+        }
+      }
+
       function updateLocationUI(data) {
         const lat = Number(data.lat);
         const lon = Number(data.lon);
         const area = liveAreaLabel(lat, lon);
         const firstLive = !hasLiveLocation;
+        const ago = data.updatedAt ? formatAgo(data.updatedAt) : null;
 
         hasLiveLocation = true;
         lastLive = { lat, lon };
@@ -1552,9 +1605,23 @@
         if (gpsLabel) {
           gpsLabel.textContent = `GPS alapján: ${area}`;
         }
-        if (updatedLabel && data.updatedAt) {
-          updatedLabel.textContent = `Frissítve: ${formatAgo(data.updatedAt)}`;
+        if (updatedLabel && ago) {
+          updatedLabel.textContent = `Frissítve: ${ago}`;
         }
+        if (routeGpsArea) {
+          routeGpsArea.textContent = area;
+        }
+        if (routeGpsCoords) {
+          routeGpsCoords.textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)} · ${formatSignalTime(data)}`;
+        }
+        if (routeGpsRefresh) {
+          routeGpsRefresh.textContent = ago
+            ? `Utolsó jel: ${ago} · követés ${POLL_MS / 1000} mp-enként`
+            : `Követés ${POLL_MS / 1000} mp-enként`;
+        }
+
+        updateAddressEstimate(lat, lon, area);
+
         vanMarker.setLatLng([lat, lon]);
         vanMarker.setPopupContent(
           `<strong>Babusgatós furgon</strong><br>Élő pozíció: ${area}`
