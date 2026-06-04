@@ -731,19 +731,19 @@
     }
 
     .van-map-pin {
-      width: 52px;
-      height: 36px;
-      border-radius: 10px 14px 8px 8px;
-      background: #fff8ef;
-      border: 2px solid #2a1618;
-      box-shadow: 0 12px 24px rgba(42, 22, 24, .28);
-      display: grid;
-      place-items: center;
-      color: var(--raspberry);
-      font-family: Georgia, "Times New Roman", serif;
-      font-weight: 900;
-      font-size: 18px;
-      transform: rotate(-6deg);
+      width: 64px;
+      line-height: 0;
+      background: transparent;
+      border: 0;
+      transform: rotate(-4deg);
+    }
+
+    .van-map-pin img {
+      width: 64px;
+      height: auto;
+      display: block;
+      pointer-events: none;
+      filter: drop-shadow(0 10px 18px rgba(42, 22, 24, .32));
     }
 
     .stop-map-pin-wrap {
@@ -1337,9 +1337,9 @@
             </div>
             <aside class="route-panel">
               <div class="route-now">
-                <h3>GPS jel feldolgozva</h3>
-                <strong id="route-gps-area">Várakozás GPS jelre…</strong>
-                <p>A pontos utca/tér csak akkor jelenik meg, ha a furgon GPS-rendszere kiolvasható, és a koordinátát címre tudjuk fordítani.</p>
+                <h3>Hol jár a furgon?</h3>
+                <strong id="route-gps-area">Pozíció betöltése…</strong>
+                <p>A furgon pontos helyét (utca, tér) kb. 10 másodpercenként frissítjük.</p>
                 <div class="gps-readout">
                   <div class="gps-row"><span>GPS adat</span><b id="route-gps-coords">—</b></div>
                   <div class="gps-row"><span>Cím becslés</span><b id="route-gps-address">—</b></div>
@@ -1495,9 +1495,9 @@
 
       const vanIcon = L.divIcon({
         className: "van-map-pin-wrap",
-        html: '<div class="van-map-pin" aria-hidden="true">B</div>',
-        iconSize: [52, 36],
-        iconAnchor: [26, 18],
+        html: '<div class="van-map-pin" aria-hidden="true"><img src="assets/van.png" alt=""></div>',
+        iconSize: [64, 48],
+        iconAnchor: [32, 39],
       });
 
       const vanMarker = L.marker([vanHere.lat, vanHere.lng], { icon: vanIcon, zIndexOffset: 1000 })
