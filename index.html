@@ -189,6 +189,7 @@
       grid-template-columns: 1fr 1fr auto;
       gap: 10px;
       align-items: end;
+      width: fit-content;
       max-width: 760px;
       padding: 12px;
       border: 1px solid var(--line);
@@ -460,15 +461,47 @@
       box-shadow: 0 12px 24px rgba(162,50,79,.28);
     }
 
-    .patisserie .quick-panel,
-    .patisserie .status {
-      background: rgba(255,255,255,.08);
-      border-color: rgba(255,255,255,.16);
+    .patisserie .van-tracker .quick-panel,
+    .patisserie .van-tracker .status {
+      background: #fff;
+      border-color: rgba(72, 42, 39, .14);
+    }
+
+    .tracker-toolbar {
+      display: flex;
+      flex-flow: row;
+      flex-wrap: nowrap;
+      align-items: flex-end;
+      justify-content: flex-start;
+      gap: 14px;
+      padding: 18px 18px 18px;
+      border-bottom: 1px solid rgba(72, 42, 39, .1);
+      background: #fffaf6;
+    }
+
+    .tracker-toolbar .quick-panel {
+      flex: 1 1 0;
+      min-width: 0;
+      width: auto;
+      max-width: none;
+      margin: 0;
+    }
+
+    .tracker-toolbar .status {
+      width: 200px;
+      height: 93px;
+      flex: 0 0 200px;
+      margin: 0;
     }
 
     .patisserie .field label,
     .patisserie .status span {
       color: rgba(255,248,238,.66);
+    }
+
+    .patisserie .tracker-toolbar .field label,
+    .patisserie .tracker-toolbar .status span {
+      color: var(--muted);
     }
 
     .patisserie .content-band {
@@ -709,6 +742,10 @@
 
     .route-now {
       height: 420px;
+    }
+
+    .route-list {
+      height: 461px;
     }
 
     .route-now h3,
@@ -1013,6 +1050,16 @@
       .patisserie-feature .media-stage {
         min-height: 360px;
       }
+      .tracker-toolbar {
+        flex-wrap: wrap;
+        padding: 12px 12px 12px;
+      }
+      .tracker-toolbar .quick-panel,
+      .tracker-toolbar .status {
+        flex: 1 1 100%;
+        width: 100%;
+        margin: 0;
+      }
       .tracker-head {
         padding: 20px 16px 16px;
         align-items: flex-start;
@@ -1094,22 +1141,16 @@
           <div class="nav-links"><span>Mozgó furgon</span><span>Torták</span><span>Desszertek</span><span>Kávézó</span></div>
           <div class="actions"><button class="icon-btn" aria-label="Kedvencek">♡</button><button class="primary-btn">Furgon követése</button></div>
         </nav>
-        <div class="hero-grid">
-          <div class="hero-copy">
-            <h1>Alkalomhoz illő torta, friss műhelyből.</h1>
-            <p class="lead">Elegánsabb online élmény tortarendeléshez és a falvakat járó mobilüzlet követéséhez: lásd merre jár a furgon, és miből mennyi maradt még a pulton.</p>
+        <section class="van-tracker" aria-label="Mozgó furgon követése">
+          <div class="tracker-toolbar">
             <div class="quick-panel">
               <div class="field"><label>Keresett település</label><select><option>Nagycenk</option><option>Sopronkövesd</option><option>Lövő</option><option>Csepreg</option><option>Bük</option><option>Szombathely</option></select></div>
               <div class="field"><label>Következő érkezés</label><input value="Ma, 12:05 körül"></div>
               <button class="primary-btn">Mutasd a furgont</button>
             </div>
-            <div class="status-row">
-              <div class="status"><b>Élő</b><span>furgonpozíció térképen</span></div>
-              <div class="status"><b>6 termék</b><span>készlet figyelése</span></div>
-            </div>
+            <div class="status"><b>Élő</b><span>furgonpozíció térképen</span></div>
+            <div class="status"><b>6 termék</b><span>készlet figyelése</span></div>
           </div>
-        </div>
-        <section class="van-tracker" aria-label="Mozgó furgon követése">
           <div class="tracker-head">
             <div>
               <h2>Merre jár a Babusgatós furgon?</h2>
