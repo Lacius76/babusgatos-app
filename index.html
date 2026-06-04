@@ -1564,8 +1564,12 @@
         if (!routeGpsAddress) return;
 
         const key = `${lat.toFixed(4)},${lon.toFixed(4)}`;
-        if (key === lastGeocodeKey) return;
-        lastGeocodeKey = key;
+        if (key === lastGeocodedKey) return;
+
+        geocodeAbort?.abort();
+        geocodeAbort = new AbortController();
+        const seq = ++geocodeSeq;
+
         routeGpsAddress.textContent = fallback;
 
         try {
@@ -1575,10 +1579,16 @@
           url.searchParams.set("format", "json");
           url.searchParams.set("accept-language", "hu");
 
-          const res = await fetch(url, { headers: { Accept: "application/json" } });
+          const res = await fetch(url, {
+            signal: geocodeAbort.signal,
+            headers: { Accept: "application/json" },
+          });
+          if (seq !== geocodeSeq) return;
           if (!res.ok) return;
 
           const place = await res.json();
+          if (seq !== geocodeSeq) return;
+
           const parts = (place.display_name || "")
             .split(",")
             .map((p) => p.trim())
@@ -1586,8 +1596,10 @@
           const shortAddress = parts.slice(0, 4).join(", ");
           if (shortAddress) {
             routeGpsAddress.textContent = shortAddress;
+            lastGeocodedKey = key;
           }
-        } catch {
+        } catch (err) {
+          if (err?.name === "AbortError") return;
           /* marad a környék-becslés */
         }
       }
