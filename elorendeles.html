@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Babusgatós — Torta és desszert előrendelés</title>
+  <style>
+    :root {
+      --ink: #201916;
+      --muted: #74655d;
+      --brown: #684f40;
+      --paper: #fffdf8;
+      --line: rgba(65, 47, 38, .14);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: linear-gradient(135deg, #fff9ef 0%, #f4eee6 45%, #eef3ee 100%);
+    }
+    button { font: inherit; cursor: pointer; }
+    .page { width: min(1440px, 100%); margin: 0 auto; padding: 24px; }
+    .shell {
+      border: 1px solid rgba(65, 47, 38, .13);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: 0 26px 70px rgba(54, 38, 28, .18);
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.85);
+    }
+    .top-bar a {
+      color: var(--brown);
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .top-bar strong { font-size: 18px; }
+    .patisserie-feature {
+      margin: 38px;
+      display: grid;
+      grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+      gap: 24px;
+      align-items: center;
+    }
+    .feature-copy h2 {
+      margin: 0 0 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: .95;
+    }
+    .feature-copy p {
+      margin: 0;
+      max-width: 560px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 17px;
+    }
+    .media-stage {
+      position: relative;
+      min-height: 460px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #d7c3aa;
+    }
+    .media-stage > img {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      object-fit: cover;
+    }
+    .floating-card {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 22px;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 10px;
+      background: rgba(255,253,248,.91);
+      box-shadow: 0 20px 40px rgba(31, 23, 18, .22);
+      backdrop-filter: blur(14px);
+    }
+    .floating-card img {
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .floating-card strong, .cart-line strong, .product strong {
+      display: block;
+      font-size: 15px;
+    }
+    .floating-card span, .cart-line span, .product span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .secondary-btn, .primary-btn {
+      height: 44px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      font-weight: 700;
+    }
+    .secondary-btn { background: #fff; color: var(--ink); }
+    .primary-btn {
+      background: var(--brown);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 12px 24px rgba(104, 79, 64, .18);
+    }
+    .content-band {
+      padding: 4px 38px 38px;
+      display: grid;
+      grid-template-columns: 1.55fr .75fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .section-title h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 32px;
+      margin: 0;
+    }
+    .section-title a {
+      color: var(--brown);
+      font-weight: 800;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .product {
+      min-height: 230px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.72);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .product .photo { height: 124px; background: #eee; overflow: hidden; }
+    .product img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .product .meta { padding: 12px; display: grid; gap: 8px; flex: 1; }
+    .price { color: var(--ink); font-weight: 850; font-size: 17px; }
+    .mini-add {
+      align-self: end;
+      height: 34px;
+      border-radius: 7px;
+      border: 0;
+      background: var(--ink);
+      color: #fff;
+      padding: 0 12px;
+      font-weight: 800;
+    }
+    .cart {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 18px;
+      position: sticky;
+      top: 18px;
+    }
+    .cart h3 { margin: 0 0 12px; font-size: 18px; }
+    .cart-line {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .cart-line img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; }
+    .total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 16px 0;
+      font-size: 20px;
+      font-weight: 900;
+    }
+    .full { width: 100%; }
+    .placeholder-note {
+      margin: 0 38px 32px;
+      padding: 16px 18px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.7);
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    @media (max-width: 1100px) {
+      .patisserie-feature, .content-band { grid-template-columns: 1fr; }
+      .products { grid-template-columns: 1fr; }
+      .cart { position: static; }
+    }
+    @media (max-width: 760px) {
+      .page { padding: 10px; }
+      .patisserie-feature, .content-band { margin-left: 16px; margin-right: 16px; padding-left: 0; padding-right: 0; }
+      .placeholder-note { margin: 0 16px 22px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="shell">
+      <header class="top-bar">
+        <a href="index.html">← Vissza a furgonhoz</a>
+        <strong>Torta és desszert előrendelés</strong>
+        <span></span>
+      </header>
+
+      <section class="patisserie-feature" aria-label="Kiemelt cukrász termék">
+        <div class="feature-copy">
+          <h2>Torta és desszert rendelés</h2>
+          <p>A furgon követése után jöhetnek az előrendelhető torták és cukrász kedvencek: méret, íz, felirat és átvétel egy folyamatban.</p>
+        </div>
+        <div class="media-stage">
+          <img src="assets/cake-cutout.png" alt="Málnás túrótorta">
+          <div class="floating-card">
+            <img src="assets/cafe.jpg" alt="Kávézó belső">
+            <div><strong>Málnás túrótorta</strong><span>Könnyed, ünnepi, látványos szeleteléshez.</span></div>
+            <button class="secondary-btn" type="button">Részletek</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="content-band">
+        <section>
+          <div class="section-title">
+            <h2>Cukrász kedvencek</h2>
+            <a href="#">Tortaválasztó</a>
+          </div>
+          <div class="products">
+            <div class="product">
+              <div class="photo"><img src="assets/cake-cutout.png" alt="Málnás túrótorta"></div>
+              <div class="meta">
+                <strong>Málnás túrótorta</strong>
+                <span>Friss, gyümölcsös választás</span>
+                <div class="price">14 690 Ft-tól</div>
+                <button class="mini-add" type="button">Testreszabom</button>
+              </div>
+            </div>
+            <div class="product">
+              <div class="photo"><img src="assets/pastry.jpg" alt="Macaron"></div>
+              <div class="meta">
+                <strong>Macaron box</strong>
+                <span>5 db-os ajándékdoboz</span>
+                <div class="price">2 500 Ft</div>
+                <button class="mini-add" type="button">Kosárba</button>
+              </div>
+            </div>
+            <div class="product">
+              <div class="photo"><img src="assets/cafe.jpg" alt="Kávézó"></div>
+              <div class="meta">
+                <strong>Kávé mellé</strong>
+                <span>Szelet sütik és pultos ajánlatok</span>
+                <div class="price">1 190 Ft-tól</div>
+                <button class="mini-add" type="button">Nézem</button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <aside class="cart">
+          <h3>Torta összeállítás</h3>
+          <div class="cart-line">
+            <img src="assets/cake-cutout.png" alt="">
+            <div><strong>Málnás túrótorta</strong><span>10 szelet · „Boldog szülinapot”</span></div>
+          </div>
+          <div class="cart-line">
+            <img src="assets/pastry.jpg" alt="">
+            <div><strong>Macaron box</strong><span>Ajándék kiegészítő</span></div>
+          </div>
+          <div class="total"><span>Várható ár</span><span>17 190 Ft</span></div>
+          <button class="primary-btn full" type="button">Rendelés véglegesítése</button>
+        </aside>
+      </div>
+
+      <p class="placeholder-note">Ez az oldal ideiglenes helyőrző a régi <code>index.html</code> cukrász részeiből. A végleges tartalmat a hivatalos cukrász műhely oldaláról töltjük fel.</p>
+    </section>
+  </main>
+</body>
+</html>

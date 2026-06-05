@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="hu" style=""><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Babusgatós — mozgó furgon</title>
+<title>Babusgatós — Stitch előnézet</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -107,6 +107,99 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(214, 195, 184, 0.3);
         }
+        .dev-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 80;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 16px;
+            padding: 10px 16px;
+            background: #1e1b18;
+            color: #fff8f5;
+            font-family: Work Sans, ui-sans-serif, system-ui, sans-serif;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255, 248, 245, .12);
+        }
+        .dev-toolbar strong { font-weight: 600; }
+        .dev-toolbar a, .dev-toolbar button {
+            color: #ffdf96;
+            text-decoration: none;
+            background: transparent;
+            border: 1px solid rgba(255, 223, 150, .35);
+            border-radius: 999px;
+            padding: 5px 12px;
+            cursor: pointer;
+            font: inherit;
+        }
+        .dev-toolbar a:hover, .dev-toolbar button:hover { background: rgba(255, 223, 150, .12); }
+        .dev-toolbar button.active {
+            background: #7d4e2d;
+            border-color: #7d4e2d;
+            color: #fff8f5;
+        }
+        .dev-toolbar .status-pill {
+            margin-left: auto;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(95, 123, 74, .35);
+            color: #e8f0e2;
+            font-size: 12px;
+        }
+        .preview-shell {
+            display: none;
+            min-height: calc(100vh - 48px);
+            background: #efe6e2;
+        }
+        .preview-shell.active { display: block; }
+        .preview-frame {
+            width: 100%;
+            min-height: calc(100vh - 48px);
+            border: 0;
+        }
+        .mobile-preview-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 24px 16px 40px;
+            min-height: calc(100vh - 48px);
+        }
+        .mobile-device {
+            width: 390px;
+            max-width: 100%;
+            height: calc(100vh - 100px);
+            max-height: 900px;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 10px solid #1e1b18;
+            box-shadow: 0 24px 60px rgba(30, 27, 24, .22);
+            background: #fff8f5;
+        }
+        .mobile-device iframe {
+            display: block;
+            width: 390px;
+            height: 100%;
+            max-width: 100%;
+            border: 0;
+        }
+        .mobile-preview-note {
+            width: min(320px, 100%);
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #fff8f5;
+            border: 1px solid #d6c3b8;
+            font-size: 13px;
+            color: #51443c;
+            line-height: 1.45;
+        }
+        .mobile-preview-note strong { color: #623718; }
+        #integrated-view.hidden { display: none; }
+        .stock-tab-btn.active {
+            background: #ffd87c;
+            color: #795d08;
+        }
         .stock-row.unavailable { opacity: .55; }
         .stock-empty {
             padding: 16px;
@@ -117,14 +210,7 @@
             text-align: center;
         }
         #tracker-map, #tracker-map-mobile { min-height: 420px; }
-
-        html[data-layout-boot="desktop"] #layout-mobile,
-        body[data-layout="desktop"] #layout-mobile { display: none !important; }
-        html[data-layout-boot="mobile"] #layout-desktop,
-        body[data-layout="mobile"] #layout-desktop { display: none !important; }
-        html[data-layout-boot="mobile"] #layout-mobile,
-        body[data-layout="mobile"] #layout-mobile { display: block !important; }
-        #layout-mobile {
+        #integrated-mobile-view {
             max-width: 390px;
             margin: 0 auto;
             background: #fff8f5;
@@ -169,11 +255,36 @@
             background: rgba(255, 250, 246, .9);
             border-radius: 6px 0 0 0;
         }
+        .dev-toolbar button:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen">
-<script>document.documentElement.dataset.layoutBoot=(matchMedia("(min-width:900px)").matches?"desktop":"mobile");</script>
-<div id="layout-desktop">
+<div class="dev-toolbar">
+  <strong>Stitch sandbox</strong>
+  <span>babusgatos · projekt 3026717101430551691</span>
+  <button type="button" class="view-btn active" data-view="integrated">Integrált (asztal)</button>
+  <button type="button" class="view-btn" data-view="integrated-mobile">Integrált (mobil)</button>
+  <button type="button" class="view-btn" data-view="desktop">Stitch nyers (asztal)</button>
+  <button type="button" class="view-btn" data-view="mobile">Stitch nyers (mobil)</button>
+  <a href="index.html">← Éles oldal</a>
+  <button type="button" disabled title="Később: több furgon, tulajdonosi nézet">Flotta (hamarosan)</button>
+  <span class="status-pill" id="stock-sync-label">Készlet: betöltés…</span>
+</div>
+<div class="preview-shell" id="shell-desktop">
+  <iframe class="preview-frame" id="frame-desktop" title="Stitch asztali nyers export" src=".stitch/desktop.html"></iframe>
+</div>
+<div class="preview-shell" id="shell-mobile">
+  <div class="mobile-preview-wrap">
+    <p class="mobile-preview-note"><strong>Mobil előnézet</strong> — a Stitch exportban az <code>overflow: hidden</code> miatt nem görgethető; itt javítva. Görgess a telefonkereten belül.</p>
+    <div class="mobile-device">
+      <iframe id="frame-mobile" title="Stitch mobil nyers export" src=".stitch/mobile-terkep.html" scrolling="yes"></iframe>
+    </div>
+  </div>
+</div>
+<div id="integrated-view">
 <header class="bg-surface shadow-sm sticky top-0 z-[60]">
 <div class="flex items-center justify-between px-margin-mobile h-16 w-full max-w-container-max mx-auto">
 <div class="flex items-center gap-2">
@@ -181,7 +292,7 @@
 <span class="font-headline-lg text-headline-lg text-primary tracking-tight">Merre jár a Babusgatós furgon?</span>
 </div>
 
-<div class="flex items-center gap-4"><div class="hidden md:flex gap-8 mr-4"><a class="font-label-lg text-label-lg text-primary border-b-2 border-primary py-1" href="#">Tracker</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="#">Inventory</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="elorendeles.html">Pre-order</a></div>
+<div class="flex items-center gap-4"><div class="hidden md:flex gap-8 mr-4"><a class="font-label-lg text-label-lg text-primary border-b-2 border-primary py-1" href="#">Tracker</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="#">Inventory</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="#">Pre-order</a></div>
 <button class="material-symbols-outlined text-primary p-2 hover:bg-surface-variant rounded-full transition-colors">shopping_basket</button>
 </div>
 </div>
@@ -275,10 +386,10 @@
 <span class="bg-on-primary-container text-primary-container px-3 py-1 rounded-full text-label-sm font-bold uppercase tracking-widest">Előrendelés</span>
 <h3 class="font-headline-lg text-headline-lg leading-tight">Ünnepi Torták &amp; Desszertek</h3>
 <p class="text-body-md opacity-90 max-w-[70%]">Kézműves süteményeinket és tortáinkat már előre is lefoglalhatja különleges alkalmakra.</p>
-<a href="elorendeles.html" class="bg-on-primary-container text-primary-container px-6 py-3 rounded-lg font-label-lg hover:bg-on-primary-container/90 transition-colors inline-flex items-center gap-2 no-underline">
+<button class="bg-on-primary-container text-primary-container px-6 py-3 rounded-lg font-label-lg hover:bg-on-primary-container/90 transition-colors flex items-center gap-2">
                             Megnézem a kínálatot
                             <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
+</button>
 </div>
 </div>
 </div>
@@ -297,17 +408,17 @@
 <span class="material-symbols-outlined">inventory_2</span>
 <span class="font-label-sm text-label-sm">Inventory</span>
 </button>
-<a href="elorendeles.html" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all no-underline">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all">
 <span class="material-symbols-outlined">cake</span>
 <span class="font-label-sm text-label-sm">Pre-order</span>
-</a>
+</button>
 <button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all">
 <span class="material-symbols-outlined">person</span>
 <span class="font-label-sm text-label-sm">Profile</span>
 </button>
 </nav>
 </div>
-<div id="layout-mobile">
+<div id="integrated-mobile-view" class="hidden">
 <main class="pb-24 max-w-container-max mx-auto">
 <section id="tracker-map-mobile" class="relative overflow-hidden shadow-sm border border-outline-variant" style="height: 520px;">
 <div id="map-static-mobile" class="absolute inset-0 overflow-hidden">
@@ -358,36 +469,19 @@
 <div class="inline-block bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-label-sm font-label-sm mb-3">Prémium ajánlat</div>
 <h2 class="font-headline-lg text-headline-lg text-primary leading-tight mb-3">Torta és desszert rendelés</h2>
 <p class="text-body-md text-on-surface-variant mb-4">Kézműves tortáinkat és desszertjeinket előre is lefoglalhatod.</p>
-<a href="elorendeles.html" class="bg-primary text-on-primary px-6 py-3 rounded-xl font-label-lg text-label-lg inline-flex items-center gap-2 no-underline">Rendelés <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
+<button type="button" class="bg-primary text-on-primary px-6 py-3 rounded-xl font-label-lg text-label-lg inline-flex items-center gap-2">Rendelés <span class="material-symbols-outlined text-sm">arrow_forward</span></button>
 </div>
 </section>
 </main>
 <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50 bg-surface border-t border-outline-variant shadow-lg flex justify-around items-center px-4 py-3">
 <button type="button" class="flex flex-col items-center bg-secondary-container text-on-secondary-container rounded-full px-5 py-1"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_shipping</span><span class="font-label-sm text-label-sm">Tracker</span></button>
 <button type="button" class="flex flex-col items-center text-on-surface-variant"><span class="material-symbols-outlined">inventory_2</span><span class="font-label-sm text-label-sm">Készlet</span></button>
-<a href="elorendeles.html" class="flex flex-col items-center text-on-surface-variant no-underline"><span class="material-symbols-outlined">cake</span><span class="font-label-sm text-label-sm">Pre-order</span></a>
+<button type="button" class="flex flex-col items-center text-on-surface-variant"><span class="material-symbols-outlined">cake</span><span class="font-label-sm text-label-sm">Pre-order</span></button>
 </nav>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
     window.BabusgatosFleet = { enabled: false };
-
-    const LAYOUT_BREAKPOINT = window.matchMedia("(min-width: 900px)");
-
-    function applySiteLayout() {
-      const mode = LAYOUT_BREAKPOINT.matches ? "desktop" : "mobile";
-      document.body.dataset.layout = mode;
-      document.documentElement.dataset.layoutBoot = mode;
-      requestAnimationFrame(() => {
-        if (mode === "mobile") {
-          mobileTracker?.activatePending();
-        } else {
-          desktopTracker?.activatePending();
-          trackers.desktop?.map?.invalidateSize({ animate: false });
-        }
-      });
-    }
-
 
     const STOCK_CSV_BREAD_URL =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vTRnimU6TVZDlbAO1F8ESK6lLAn2As8R1AJYuFaE97aamFCNuCGbVpLV2jVdxuLaPwU8HhlH4XcObRo/pub?output=csv";
@@ -571,6 +665,7 @@
     }
 
     async function loadVanStock() {
+      const syncLabel = document.getElementById("stock-sync-label");
       const loadError = "A készletlista nem tölthető be.";
       const [breadResult, pastryResult] = await Promise.allSettled([
         fetchStockItems(STOCK_CSV_BREAD_URL),
@@ -588,6 +683,12 @@
         total += pastryResult.value.length;
       } else {
         renderStockLists("pastry", [], loadError, loadError, false);
+      }
+      if (syncLabel) {
+        const now = new Date().toLocaleTimeString("hu-HU", { hour: "2-digit", minute: "2-digit" });
+        syncLabel.textContent = breadResult.status === "fulfilled" && pastryResult.status === "fulfilled"
+          ? `Készlet: ${total} termék · frissítve ${now}`
+          : "Készlet: részleges hiba";
       }
     }
 
@@ -798,7 +899,7 @@
         }, 50);
       }
 
-      desktopTracker = initTownTracker({
+      const desktopTracker = initTownTracker({
         id: "desktop",
         selectId: "town-select",
         mapStaticId: "map-static",
@@ -806,10 +907,9 @@
         statusId: "tracker-status",
         arrivalId: "arrival-estimate",
         routeTownId: "route-current-town",
-        deferLive: true,
       });
 
-      mobileTracker = initTownTracker({
+      const mobileTracker = initTownTracker({
         id: "mobile",
         selectId: "town-select-mobile",
         mapStaticId: "map-static-mobile",
@@ -849,6 +949,27 @@
         });
       });
 
+      const integrated = document.getElementById("integrated-view");
+      const integratedMobile = document.getElementById("integrated-mobile-view");
+      const shellDesktop = document.getElementById("shell-desktop");
+      const shellMobile = document.getElementById("shell-mobile");
+
+      function setPreviewView(view) {
+        integrated.classList.toggle("hidden", view !== "integrated");
+        integratedMobile.classList.toggle("hidden", view !== "integrated-mobile");
+        shellDesktop.classList.toggle("active", view === "desktop");
+        shellMobile.classList.toggle("active", view === "mobile");
+        if (view === "integrated-mobile") {
+          requestAnimationFrame(() => mobileTracker?.activatePending());
+        }
+        if (view === "integrated") {
+          requestAnimationFrame(() => {
+            trackers.desktop?.map?.invalidateSize({ animate: false });
+            if (trackers.desktop?.townKey) fitTrackerView(trackers.desktop);
+          });
+        }
+      }
+
       document.querySelectorAll(".mobile-stock-tab").forEach((tab) => {
         tab.addEventListener("click", () => {
           const isBread = tab.dataset.stock === "bread";
@@ -861,7 +982,7 @@
             btn.classList.toggle("active", active);
             btn.setAttribute("aria-selected", active ? "true" : "false");
           });
-          document.querySelectorAll("#layout-mobile [data-stock-list]").forEach((panel) => {
+          document.querySelectorAll("#integrated-mobile-view [data-stock-list]").forEach((panel) => {
             const show = panel.dataset.stockList === (isBread ? "bread" : "pastry");
             panel.classList.toggle("hidden", !show);
             panel.classList.toggle("grid", show);
@@ -869,8 +990,13 @@
         });
       });
 
-      applySiteLayout();
-      LAYOUT_BREAKPOINT.addEventListener("change", applySiteLayout);
+      document.querySelectorAll(".view-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".view-btn").forEach((b) => b.classList.toggle("active", b === btn));
+          setPreviewView(btn.dataset.view);
+        });
+      });
+
       loadVanStock();
       window.setInterval(loadVanStock, STOCK_REFRESH_MS);
     });
