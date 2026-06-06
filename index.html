@@ -169,6 +169,36 @@
             background: rgba(255, 250, 246, .9);
             border-radius: 6px 0 0 0;
         }
+        .town-select-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            max-width: 100%;
+            vertical-align: middle;
+        }
+        #town-select,
+        #town-select-mobile {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: none;
+            width: auto;
+            max-width: 100%;
+            padding-right: 1.625rem;
+        }
+        #town-select::-ms-expand,
+        #town-select-mobile::-ms-expand { display: none; }
+        .town-select-chevron {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 22px;
+            line-height: 1;
+            color: #623718;
+            pointer-events: none;
+            font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
     </style>
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen">
@@ -207,8 +237,8 @@
 </div>
 <div class="min-w-0 flex-1">
 <p class="font-label-lg text-label-lg text-on-surface">Településem</p>
-<div class="relative mt-1">
-    <select id="town-select" data-town-sync class="appearance-none bg-transparent border-none p-0 pr-8 font-headline-md text-headline-md text-primary focus:ring-0 cursor-pointer w-full outline-none">
+<div class="town-select-wrap mt-1">
+    <select id="town-select" data-town-sync class="appearance-none bg-transparent border-none p-0 font-headline-md text-headline-md text-primary focus:ring-0 cursor-pointer outline-none">
         <option value="">Válassz települést…</option>
         <option value="Nagycenk">Nagycenk</option>
         <option value="Sopronkövesd">Sopronkövesd</option>
@@ -217,7 +247,7 @@
         <option value="Bük">Bük</option>
         <option value="Szombathely">Szombathely</option>
     </select>
-    <span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-primary">expand_more</span>
+    <span class="material-symbols-outlined town-select-chevron" aria-hidden="true">expand_more</span>
 </div>
 <p id="tracker-status" class="text-label-sm text-on-surface-variant mt-1">Válassz települést az élő követéshez</p>
 </div>
@@ -259,12 +289,12 @@
 </section>
 <section class="md:col-span-5 bg-surface-container-low p-margin-mobile md:p-gutter flex flex-col gap-gutter border-l border-outline-variant relative overflow-y-auto max-h-screen">
 <div class="flex flex-col items-center text-center gap-2 mb-4">
-<img alt="Babusgatós logó" class="h-20 w-auto opacity-90" src="assets/logo-white.png?v=2">
+<img alt="Babusgatós logó" class="h-20 w-auto" src="assets/logo-black.png">
 <h2 class="font-headline-lg text-headline-lg text-primary">Napi Készlet</h2>
 <p class="font-body-md text-on-surface-variant max-w-xs">Tekintse meg mozgó pékségünk aktuális választékát.</p>
 </div>
 <div class="space-y-8"><div class="flex gap-2 p-1 bg-surface-container rounded-full mb-6" role="tablist" aria-label="Készlet kategóriák">
-    <button type="button" class="stock-tab-btn flex-1 py-2 px-4 rounded-full font-label-lg transition-all active" data-stock="bread" role="tab" aria-selected="true">Kenyerek</button>
+    <button type="button" class="stock-tab-btn flex-1 py-2 px-4 rounded-full font-label-lg transition-all bg-secondary-container text-on-secondary-container active" data-stock="bread" role="tab" aria-selected="true">Kenyerek</button>
     <button type="button" class="stock-tab-btn flex-1 py-2 px-4 rounded-full text-on-surface-variant hover:text-primary font-label-lg transition-all" data-stock="pastry" role="tab" aria-selected="false">Sütemények</button>
 </div>
 <div id="tab-kenyerek" class="block" data-stock-list="bread" aria-live="polite"></div>
@@ -325,7 +355,8 @@
 <span class="material-symbols-outlined text-primary shrink-0" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
 <p class="text-body-md font-bold text-primary min-w-0 flex-1">
 <span class="whitespace-nowrap">Élő követés:</span>
-<select id="town-select-mobile" data-town-sync class="bg-transparent border-none p-0 mx-1 font-headline-md text-on-surface focus:ring-0 cursor-pointer appearance-none max-w-[9rem] outline-none" style="font-family: 'Libre Caslon Text', serif; font-size: inherit;">
+<span class="town-select-wrap mx-1">
+<select id="town-select-mobile" data-town-sync class="bg-transparent border-none p-0 font-headline-md text-on-surface focus:ring-0 cursor-pointer appearance-none max-w-[10rem] outline-none" style="font-family: 'Libre Caslon Text', serif; font-size: inherit;">
 <option value="">Válassz…</option>
 <option value="Nagycenk">Nagycenk</option>
 <option value="Sopronkövesd">Sopronkövesd</option>
@@ -334,6 +365,8 @@
 <option value="Bük">Bük</option>
 <option value="Szombathely">Szombathely</option>
 </select>
+<span class="material-symbols-outlined town-select-chevron" aria-hidden="true">expand_more</span>
+</span>
 <span id="arrival-estimate-mobile" class="text-outline font-normal text-label-sm">—</span>
 </p>
 </div>
@@ -452,6 +485,26 @@
       return rowsToStockItems(parseCsv(await res.text()));
     }
 
+    function formatPrice(price) {
+      if (!price) return "—";
+      const p = String(price).trim();
+      return /\bFt\b/i.test(p) ? p : `${p} Ft`;
+    }
+
+    function desktopStockHtml(item) {
+      if (!item.available) {
+        return `<p class="font-headline-md text-headline-md text-primary opacity-60"><span class="text-label-sm font-medium opacity-60">készleten:</span> —</p><p class="text-label-sm text-on-surface-variant font-medium">nem elérhető</p>`;
+      }
+      return `<p class="font-headline-md text-headline-md text-primary"><span class="text-label-sm font-medium opacity-60">készleten:</span> ${item.stock}db</p><p class="text-label-sm text-on-surface-variant font-medium">${formatPrice(item.price)}</p>`;
+    }
+
+    function mobileStockPriceHtml(item) {
+      if (!item.available) {
+        return `<span class="text-label-sm text-on-surface-variant">nem elérhető</span><span class="text-on-surface-variant font-label-lg opacity-60">—</span>`;
+      }
+      return `<span class="text-headline-md text-primary font-bold"><span class="font-bold">${item.stock}db</span> <span class="text-label-sm font-normal">készleten</span></span><span class="text-on-surface-variant font-label-lg">${formatPrice(item.price)}</span>`;
+    }
+
     function renderBreadList(listEl, items, emptyLabel) {
       listEl.replaceChildren();
       if (!items.length) {
@@ -472,16 +525,10 @@
             <h4 class="font-body-lg text-body-lg font-semibold text-primary"></h4>
             <p class="text-on-surface-variant font-label-sm"></p>
           </div>
-          <div class="text-right">
-            <p class="font-headline-md text-headline-md text-primary"></p>
-            <p class="text-label-sm text-on-surface-variant font-medium"></p>
-          </div>`;
+          <div class="text-right"></div>`;
         row.querySelector("h4").textContent = item.name;
         row.querySelector("p.font-label-sm").textContent = item.weight || "—";
-        row.querySelector(".text-right .font-headline-md").textContent = item.price || "—";
-        row.querySelector(".text-right .font-medium").textContent = item.available
-          ? `${item.stock} db készleten`
-          : "jelenleg nem elérhető";
+        row.querySelector(".text-right").innerHTML = desktopStockHtml(item);
         grid.appendChild(row);
       });
       listEl.appendChild(grid);
@@ -498,19 +545,20 @@
       }
       const grid = document.createElement("div");
       grid.className = "grid grid-cols-2 gap-3";
-      items.forEach((item) => {
+      items.forEach((item, idx) => {
         const card = document.createElement("div");
-        card.className = "bg-surface p-4 rounded-xl shadow-sm border border-outline-variant hover:border-secondary transition-colors";
+        card.className = "bg-surface p-4 rounded-xl shadow-sm border border-outline-variant hover:border-secondary transition-colors" + (idx === 0 ? " cursor-pointer group" : "");
         if (!item.available) card.classList.add("stock-row", "unavailable");
         card.innerHTML = `
-          <span class="material-symbols-outlined text-secondary-fixed-dim block mb-2">bakery_dining</span>
+          <span class="material-symbols-outlined text-secondary-fixed-dim${idx === 0 ? " group-hover:scale-110 transition-transform" : ""} block mb-2">bakery_dining</span>
           <h4 class="font-label-lg text-label-lg text-primary"></h4>
           <p class="font-headline-md text-headline-md text-primary"></p>
           <p class="text-label-sm text-on-surface-variant"></p>`;
         card.querySelector("h4").textContent = item.name;
-        card.querySelector(".font-headline-md").textContent = item.price || "—";
-        card.querySelector(".text-label-sm").textContent = item.available
-          ? `${item.stock} db készleten`
+        card.querySelector(".font-headline-md").textContent = formatPrice(item.price);
+        const stockEl = card.querySelector(".text-label-sm");
+        stockEl.innerHTML = item.available
+          ? `${item.stock}db <span class="font-normal opacity-60">készleten</span>`
           : "nem elérhető";
         grid.appendChild(card);
       });
@@ -526,33 +574,60 @@
         listEl.appendChild(empty);
         return;
       }
-      items.forEach((item) => {
+      items.forEach((item, idx) => {
         const card = document.createElement("div");
-        card.className = "border border-outline-variant rounded-xl p-5 shadow-sm bg-surface-container-low flex flex-col justify-between";
-        if (!item.available) card.classList.add("unavailable");
-        card.innerHTML = `
-          <div>
-            <div class="flex justify-between items-start mb-2 gap-2">
-              <h3 class="font-headline-md text-headline-md text-primary leading-tight"></h3>
-              <span class="bg-surface-variant text-on-surface-variant px-2 py-1 rounded text-label-sm font-label-sm shrink-0"></span>
-            </div>
-          </div>
-          <div class="flex justify-between items-center mt-4">
-            <span class="text-headline-md text-primary font-bold"></span>
-            <span class="text-on-surface-variant font-label-lg"></span>
+        if (!item.available) card.classList.add("stock-row", "unavailable");
+        const weightBadge = item.weight
+          ? `<div class="mt-2 shrink-0"><span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant text-label-lg rounded-full inline-block">${item.weight}</span></div>`
+          : "";
+        const header = `
+          <div class="flex justify-between items-start mb-2 gap-2">
+            <h3 class="font-headline-md text-headline-md text-primary leading-tight"></h3>
+            ${weightBadge}
           </div>`;
+        const footer = `<div class="flex justify-between items-center ${idx === 0 ? "mt-4" : "mt-4"}"></div>`;
+
+        if (idx === 0) {
+          card.className = "border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group bg-surface-container-low";
+          card.innerHTML = `
+            <div class="h-48 overflow-hidden bg-surface-container">
+              <img alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="assets/bread-hero.jpg">
+            </div>
+            <div class="p-5">
+              ${header}
+              ${footer}
+            </div>`;
+        } else {
+          card.className = "border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between bg-surface-container-low p-3";
+          card.innerHTML = `<div>${header}</div>${footer}`;
+        }
         card.querySelector("h3").textContent = item.name;
-        card.querySelector("span.bg-surface-variant").textContent = item.weight || "—";
-        card.querySelector(".font-bold").textContent = item.price || "—";
-        card.querySelector(".font-label-lg").textContent = item.available
-          ? `${item.stock} db készleten`
-          : "nem elérhető";
+        card.querySelector(".flex.justify-between.items-center").innerHTML = mobileStockPriceHtml(item);
         listEl.appendChild(card);
       });
     }
 
     function renderMobilePastryList(listEl, items, emptyLabel) {
-      renderMobileBreadList(listEl, items, emptyLabel);
+      listEl.replaceChildren();
+      if (!items.length) {
+        const empty = document.createElement("p");
+        empty.className = "stock-empty";
+        empty.textContent = emptyLabel;
+        listEl.appendChild(empty);
+        return;
+      }
+      items.forEach((item, idx) => {
+        const card = document.createElement("div");
+        card.className = "border border-outline-variant rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between bg-surface-container-low" + (idx === 0 ? " relative overflow-hidden" : "");
+        if (!item.available) card.classList.add("stock-row", "unavailable");
+        card.innerHTML = `
+          ${idx === 0 ? '<img alt="" class="absolute -right-4 -top-4 w-20 h-20 opacity-10 pointer-events-none" src="assets/suti.png">' : ""}
+          <div><h3 class="font-headline-md text-headline-md text-primary mb-2"></h3></div>
+          <div class="flex justify-between items-center mt-6"></div>`;
+        card.querySelector("h3").textContent = item.name;
+        card.querySelector(".flex.justify-between.items-center").innerHTML = mobileStockPriceHtml(item);
+        listEl.appendChild(card);
+      });
     }
 
     function renderStockLists(kind, items, emptyLabel, loadError, ok) {

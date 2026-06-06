@@ -5,3 +5,7 @@ Thumbs.db
 .env.*
 node_modules/
 .vercel
+
+# Stitch dev exports (MCP sync — lokálisan marad, nem megy élesre)
+.stitch/
+stitch-preview.html
