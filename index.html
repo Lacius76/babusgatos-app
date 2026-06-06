@@ -141,6 +141,59 @@
         #van-map.is-live, #van-map-mobile.is-live { opacity: 1; }
         #map-static, #map-static-mobile { z-index: 1; transition: opacity .35s ease; }
         #map-static.is-hidden, #map-static-mobile.is-hidden { opacity: 0; pointer-events: none; }
+        .map-static-not-today {
+            position: absolute;
+            inset: 0;
+            z-index: 12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem 1.5rem 7rem;
+            pointer-events: none;
+        }
+        .map-static-not-today.hidden { display: none; }
+        .map-static-not-today-card {
+            max-width: 28rem;
+            text-align: center;
+            line-height: 1.45;
+        }
+        .map-static-not-today-slot {
+            margin-top: .75rem;
+            font-weight: 600;
+            color: #623718;
+        }
+        #map-static-van.is-hidden,
+        #map-static-van-mobile.is-hidden { display: none; }
+        .town-search-row {
+            display: flex;
+            align-items: flex-start;
+            gap: .5rem;
+        }
+        .town-map-btn {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            padding: 0;
+            border: none;
+            border-radius: 9999px;
+            background: #7d4e2d;
+            color: #fff8f5;
+            cursor: pointer;
+            transition: background .15s ease, opacity .15s ease, transform .15s ease;
+        }
+        .town-map-btn:hover:not(:disabled) {
+            background: #623718;
+            transform: scale(1.03);
+        }
+        .town-map-btn:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+        .town-map-btn .material-symbols-outlined { font-size: 1.5rem; }
+        .town-map-btn-icon.hidden { display: none; }
         .van-map-pin-wrap { background: transparent; border: 0; }
         .van-map-pin {
             width: 64px;
@@ -268,13 +321,20 @@
 </div>
 </div>
 <p id="map-pick-hint" class="absolute top-4 left-4 right-4 glass-effect rounded-xl px-4 py-3 text-center text-body-md text-on-surface-variant">Keress települést — menetrend és térkép betöltése.</p>
+<div id="map-static-not-today" class="map-static-not-today hidden" aria-live="polite">
+<div class="map-static-not-today-card glass-effect rounded-xl px-4 py-4">
+<p class="text-body-md text-on-surface-variant">Ezen a napon nem látogatunk el hozzátok, de az alábbi időpontban megtalálsz minket a településeden:</p>
+<p id="map-static-not-today-slot" class="map-static-not-today-slot text-body-md"></p>
+</div>
+</div>
 </div>
 <div id="van-map" class="absolute inset-0 hidden" role="application" aria-label="Élő furgon térkép"></div>
 <div class="absolute bottom-6 left-6 right-6 z-20">
 <div class="glass-effect p-4 rounded-xl flex items-center gap-4">
-<div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary shrink-0">
-<span class="material-symbols-outlined">local_shipping</span>
-</div>
+<button type="button" id="town-map-btn" class="town-map-btn" aria-label="Térkép megnyitása" title="Térkép megnyitása" disabled>
+<span class="material-symbols-outlined town-map-btn-icon town-map-btn-icon--map">map</span>
+<span class="material-symbols-outlined town-map-btn-icon town-map-btn-icon--van hidden" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</button>
 <div class="min-w-0 flex-1">
 <p class="font-label-lg text-label-lg text-on-surface">Településem</p>
 <div class="town-autocomplete mt-1">
@@ -381,11 +441,20 @@
 </div>
 </div>
 <p id="map-pick-hint-mobile" class="absolute top-3 left-3 right-3 glass-effect rounded-xl px-3 py-2 text-center text-label-sm text-on-surface-variant">Keress települést — menetrend és térkép.</p>
+<div id="map-static-not-today-mobile" class="map-static-not-today hidden" aria-live="polite">
+<div class="map-static-not-today-card glass-effect rounded-xl px-3 py-3">
+<p class="text-label-sm text-on-surface-variant">Ezen a napon nem látogatunk el hozzátok, de az alábbi időpontban megtalálsz minket a településeden:</p>
+<p id="map-static-not-today-slot-mobile" class="map-static-not-today-slot text-label-sm"></p>
+</div>
+</div>
 </div>
 <div id="van-map-mobile" class="absolute inset-0 hidden" role="application" aria-label="Élő furgon térkép"></div>
 <div class="absolute bottom-6 left-4 right-4 z-20 glass-effect px-4 py-3 rounded-2xl shadow-lg mobile-tracker-panel flex bg-surface/60 backdrop-blur-md border border-outline-variant/30">
 <div class="mobile-tracker-row">
-<span class="material-symbols-outlined text-primary shrink-0" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+<button type="button" id="town-map-btn-mobile" class="town-map-btn" aria-label="Térkép megnyitása" title="Térkép megnyitása" disabled>
+<span class="material-symbols-outlined town-map-btn-icon town-map-btn-icon--map">map</span>
+<span class="material-symbols-outlined town-map-btn-icon town-map-btn-icon--van hidden" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</button>
 <span class="whitespace-nowrap text-body-md font-bold text-primary">Település:</span>
 <div class="town-autocomplete min-w-0 flex-1">
 <input type="text" id="town-search-mobile" data-town-sync class="town-search-input" placeholder="Keresés…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="town-suggestions-mobile" aria-autocomplete="list">
@@ -425,6 +494,7 @@
 <a href="elorendeles.html" class="flex flex-col items-center text-on-surface-variant no-underline"><span class="material-symbols-outlined">cake</span><span class="font-label-sm text-label-sm">Előrendelés</span></a>
 </nav>
 </div>
+<script src="data/town-coords.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
     window.BabusgatosFleet = { enabled: false };
@@ -710,12 +780,23 @@
       Szombathely: { lat: 47.2307, lng: 16.6218 },
       Acsád: { lat: 47.4132, lng: 16.3856 },
     };
+    const HU_WEEKDAYS = [
+      { index: 0, keys: ["vasarnap", "vasárnap"] },
+      { index: 1, keys: ["hetfo", "hétfő"] },
+      { index: 2, keys: ["kedd"] },
+      { index: 3, keys: ["szerda"] },
+      { index: 4, keys: ["csutortok", "csütörtök"] },
+      { index: 5, keys: ["pentek", "péntek"] },
+      { index: 6, keys: ["szombat"] },
+    ];
 
     let townSchedule = {};
     let townNames = [];
-    const townCoordsCache = { ...TOWN_COORDS_SEED };
+    const townCoordsCache = {};
+    let townCoordsReference = null;
     const trackers = {};
     let sharedPollTimer = null;
+    let preferLiveMapView = false;
 
     function isKnownTown(town) {
       return Boolean(town && Object.prototype.hasOwnProperty.call(townSchedule, town));
@@ -725,9 +806,54 @@
       return town === LIVE_GPS_TOWN;
     }
 
+    function stripDiacritics(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/\p{M}/gu, "")
+        .toLowerCase();
+    }
+
+    function getScheduleSlot(town) {
+      return townSchedule[town] || "";
+    }
+
+    function hasScheduleSlot(town) {
+      const slot = getScheduleSlot(town).trim();
+      return Boolean(slot && stripDiacritics(slot) !== "nem");
+    }
+
+    function findDayIndicesInText(text) {
+      const norm = stripDiacritics(text);
+      const indices = [];
+      HU_WEEKDAYS.forEach((day) => {
+        if (day.keys.some((key) => norm.includes(stripDiacritics(key)))) {
+          indices.push(day.index);
+        }
+      });
+      return [...new Set(indices)].sort((a, b) => a - b);
+    }
+
+    function isVisitingTodaySchedule(slot) {
+      if (!slot || !slot.trim() || stripDiacritics(slot) === "nem") return false;
+      const dayPart = (slot.match(/^([^0-9]+)/)?.[1] || slot).trim();
+      const days = findDayIndicesInText(dayPart);
+      if (!days.length) return true;
+      const today = new Date().getDay();
+      if (days.length === 1) return days[0] === today;
+      if (days.length === 2) {
+        const [start, end] = days;
+        if (start <= end) return today >= start && today <= end;
+      }
+      return days.includes(today);
+    }
+
+    function isVisitingToday(town) {
+      return hasScheduleSlot(town) && isVisitingTodaySchedule(getScheduleSlot(town));
+    }
+
     function formatArrival(town) {
-      const slot = townSchedule[town];
-      if (!slot || !slot.trim() || slot.trim().toLowerCase() === "nem") {
+      const slot = getScheduleSlot(town);
+      if (!slot || !slot.trim() || stripDiacritics(slot.trim()) === "nem") {
         return "Időpont egyenlőre nem elérhető";
       }
       return slot;
@@ -769,23 +895,76 @@
       return matches.length === 1 ? matches[0] : null;
     }
 
-    async function resolveTownCoords(town) {
+    function loadTownCoordsReference() {
+      if (townCoordsReference) return townCoordsReference;
+      if (window.BabusgatosTownCoordsReference && typeof window.BabusgatosTownCoordsReference === "object") {
+        townCoordsReference = window.BabusgatosTownCoordsReference;
+        return townCoordsReference;
+      }
+      townCoordsReference = {};
+      return townCoordsReference;
+    }
+
+    function preloadTownCoords() {
+      const ref = loadTownCoordsReference();
+      Object.assign(townCoordsCache, ref, TOWN_COORDS_SEED);
+    }
+
+    async function fetchTownCoordsFromApi(town) {
       if (townCoordsCache[town]) return townCoordsCache[town];
+      const ref = loadTownCoordsReference();
+      if (ref[town]) {
+        townCoordsCache[town] = ref[town];
+        return townCoordsCache[town];
+      }
+      if (TOWN_COORDS_SEED[town]) {
+        townCoordsCache[town] = TOWN_COORDS_SEED[town];
+        return townCoordsCache[town];
+      }
       try {
         const res = await fetch(`${GEOCODE_API}?name=${encodeURIComponent(town)}`, { cache: "no-store" });
-        if (!res.ok) throw new Error("coords");
-        const data = await res.json();
-        const coords = { lat: Number(data.lat), lng: Number(data.lng) };
-        if (!Number.isFinite(coords.lat) || !Number.isFinite(coords.lng)) throw new Error("coords");
-        townCoordsCache[town] = coords;
-        return coords;
-      } catch {
-        if (TOWN_COORDS_SEED[town]) {
-          townCoordsCache[town] = TOWN_COORDS_SEED[town];
-          return townCoordsCache[town];
+        if (res.ok) {
+          const data = await res.json();
+          const coords = { lat: Number(data.lat), lng: Number(data.lng) };
+          if (Number.isFinite(coords.lat) && Number.isFinite(coords.lng)) {
+            townCoordsCache[town] = coords;
+            return coords;
+          }
         }
-        throw new Error("coords");
+      } catch {
+        /* API nem elérhető */
       }
+      return null;
+    }
+
+    function updateMapButtonIcons(townKey) {
+      const live = isLiveGpsTown(townKey);
+      ["town-map-btn", "town-map-btn-mobile"].forEach((id) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.querySelector(".town-map-btn-icon--map")?.classList.toggle("hidden", live);
+        btn.querySelector(".town-map-btn-icon--van")?.classList.toggle("hidden", !live);
+        const label = live ? "Élő furgon térkép" : "Térkép megnyitása";
+        btn.setAttribute("aria-label", label);
+        btn.title = label;
+      });
+    }
+
+    async function updateAllMapButtons(townKey) {
+      if (!townKey || !isKnownTown(townKey)) {
+        updateMapButtonIcons(null);
+        ["town-map-btn", "town-map-btn-mobile"].forEach((id) => {
+          document.getElementById(id)?.setAttribute("disabled", "");
+        });
+        return null;
+      }
+      updateMapButtonIcons(townKey);
+      const coords = townCoordsCache[townKey] || (await fetchTownCoordsFromApi(townKey));
+      ["town-map-btn", "town-map-btn-mobile"].forEach((id) => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = !coords;
+      });
+      return coords;
     }
 
     function fitTrackerView(tracker) {
@@ -877,7 +1056,7 @@
       listbox.style.maxHeight = `${maxHeight}px`;
     }
 
-    function initTownAutocomplete(input, listbox, onPick) {
+    function initTownAutocomplete(input, listbox, onPick, mapBtn) {
       let activeIndex = -1;
 
       function closeList() {
@@ -924,11 +1103,14 @@
 
       input.addEventListener("blur", () => {
         window.setTimeout(() => {
+          if (document.activeElement?.closest(".town-map-btn")) return;
           const resolved = resolveTownFromQuery(input.value);
-          if (resolved) onPick(resolved);
+          if (resolved) onPick(resolved, { fromBlur: true });
           closeList();
         }, 120);
       });
+
+      mapBtn?.addEventListener("mousedown", (e) => e.preventDefault());
 
       input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
@@ -969,6 +1151,55 @@
       });
     }
 
+    function getOtherTrackerSurface(id) {
+      return id === "desktop"
+        ? {
+            trackerId: "mobile",
+            mapStaticId: "map-static-mobile",
+            mapId: "van-map-mobile",
+            vanStaticId: "map-static-van-mobile",
+            hintId: "map-pick-hint-mobile",
+            notTodayId: "map-static-not-today-mobile",
+            notTodaySlotId: "map-static-not-today-slot-mobile",
+          }
+        : {
+            trackerId: "desktop",
+            mapStaticId: "map-static",
+            mapId: "van-map",
+            vanStaticId: "map-static-van",
+            hintId: "map-pick-hint",
+            notTodayId: "map-static-not-today",
+            notTodaySlotId: "map-static-not-today-slot",
+          };
+    }
+
+    function updateStaticPresentationFor(surface, townKey) {
+      const vanEl = surface.vanStaticId ? document.getElementById(surface.vanStaticId) : null;
+      const hintEl = surface.hintId ? document.getElementById(surface.hintId) : null;
+      const notTodayEl = surface.notTodayId ? document.getElementById(surface.notTodayId) : null;
+      const notTodaySlotEl = surface.notTodaySlotId ? document.getElementById(surface.notTodaySlotId) : null;
+
+      if (!townKey) {
+        hintEl?.classList.remove("hidden");
+        vanEl?.classList.remove("is-hidden");
+        notTodayEl?.classList.add("hidden");
+        return;
+      }
+
+      const slot = getScheduleSlot(townKey);
+      const notToday = hasScheduleSlot(townKey) && !isVisitingTodaySchedule(slot);
+      hintEl?.classList.add("hidden");
+      vanEl?.classList.toggle("is-hidden", notToday);
+      notTodayEl?.classList.toggle("hidden", !notToday);
+      if (notToday && notTodaySlotEl) notTodaySlotEl.textContent = slot;
+    }
+
+    function hideStaticPresentationFor(surface) {
+      document.getElementById(surface.vanStaticId)?.classList.add("is-hidden");
+      document.getElementById(surface.hintId)?.classList.add("hidden");
+      document.getElementById(surface.notTodayId)?.classList.add("hidden");
+    }
+
     function initTownTracker(opts) {
       const input = document.getElementById(opts.inputId);
       const listbox = document.getElementById(opts.listboxId);
@@ -977,21 +1208,57 @@
       const statusEl = opts.statusId ? document.getElementById(opts.statusId) : null;
       const arrivalEl = document.getElementById(opts.arrivalId);
       const routeTownEl = opts.routeTownId ? document.getElementById(opts.routeTownId) : null;
+      const mapBtn = opts.mapBtnId ? document.getElementById(opts.mapBtnId) : null;
+      const surface = {
+        vanStaticId: opts.vanStaticId,
+        hintId: opts.hintId,
+        notTodayId: opts.notTodayId,
+        notTodaySlotId: opts.notTodaySlotId,
+      };
+      const otherSurface = getOtherTrackerSurface(opts.id);
       if (!input || !listbox || !mapStatic || !mapEl || typeof L === "undefined") return null;
 
       let tracker = trackers[opts.id] || null;
 
-      function showStatic() {
-        mapStatic.classList.remove("is-hidden");
-        mapEl.classList.add("hidden");
-        mapEl.classList.remove("is-live");
-        if (statusEl) statusEl.textContent = "Írj be településnevet a menetrendhez";
-        if (arrivalEl) arrivalEl.textContent = "—";
-        if (routeTownEl) routeTownEl.textContent = "—";
+      function isLayoutActive() {
+        return (opts.id === "desktop") === LAYOUT_BREAKPOINT.matches;
       }
 
       function updateArrivalUi(townKey) {
-        if (arrivalEl) arrivalEl.textContent = formatArrival(townKey);
+        if (arrivalEl) arrivalEl.textContent = townKey ? formatArrival(townKey) : "—";
+      }
+
+      function updateStatusUi(townKey) {
+        if (statusEl) {
+          statusEl.textContent = townKey
+            ? (isLiveGpsTown(townKey) ? `Élő követés: ${townKey}` : `Menetrend: ${townKey}`)
+            : "Írj be településnevet a menetrendhez";
+        }
+        if (routeTownEl) routeTownEl.textContent = townKey || "—";
+      }
+
+      async function updateMapBtnState(townKey) {
+        return updateAllMapButtons(townKey);
+      }
+
+      function resetToDefault() {
+        mapStatic.classList.remove("is-hidden");
+        mapEl.classList.add("hidden");
+        mapEl.classList.remove("is-live");
+        updateStaticPresentationFor(surface, null);
+        updateArrivalUi(null);
+        updateStatusUi(null);
+        updateMapBtnState(null);
+      }
+
+      function showStaticForTown(townKey) {
+        mapStatic.classList.remove("is-hidden");
+        mapEl.classList.add("hidden");
+        mapEl.classList.remove("is-live");
+        updateStaticPresentationFor(surface, townKey);
+        updateArrivalUi(townKey);
+        updateStatusUi(townKey);
+        updateMapBtnState(townKey);
       }
 
       function setVanMarkerEnabled(enabled, townKey, coords) {
@@ -1015,12 +1282,7 @@
         tracker.townCoords = coords;
         tracker.townMarker.setLatLng([coords.lat, coords.lng]);
         tracker.townMarker.setTooltipContent(townKey);
-        if (routeTownEl) routeTownEl.textContent = townKey;
-        if (statusEl) {
-          statusEl.textContent = isLiveGpsTown(townKey)
-            ? `Élő követés: ${townKey}`
-            : `Menetrend: ${townKey}`;
-        }
+        updateStatusUi(townKey);
         updateArrivalUi(townKey);
         setVanMarkerEnabled(isLiveGpsTown(townKey), townKey, coords);
         fitTrackerView(tracker);
@@ -1068,69 +1330,128 @@
         mapEl.dataset.mapReady = "1";
       }
 
-      async function showLiveMap(townKey) {
-        try {
-          const coords = await resolveTownCoords(townKey);
-          mapStatic.classList.add("is-hidden");
-          mapEl.classList.remove("hidden");
-          ensureMap(townKey, coords);
+      function showLiveMap(townKey, coords) {
+        mapStatic.classList.add("is-hidden");
+        hideStaticPresentationFor(surface);
+        mapEl.classList.remove("hidden");
+        ensureMap(townKey, coords);
+        requestAnimationFrame(() => {
+          mapEl.classList.add("is-live");
+          tracker?.map.invalidateSize({ animate: false });
+          fitTrackerView(tracker);
+        });
+        updateMapBtnState(townKey);
+        return coords;
+      }
+
+      function syncOtherStaticForTown(townKey) {
+        const otherMapStatic = document.getElementById(otherSurface.mapStaticId);
+        const otherMapEl = document.getElementById(otherSurface.mapId);
+        otherMapStatic?.classList.remove("is-hidden");
+        otherMapEl?.classList.add("hidden");
+        otherMapEl?.classList.remove("is-live");
+        updateStaticPresentationFor(otherSurface, townKey);
+      }
+
+      function syncOtherReset() {
+        const otherMapStatic = document.getElementById(otherSurface.mapStaticId);
+        const otherMapEl = document.getElementById(otherSurface.mapId);
+        otherMapStatic?.classList.remove("is-hidden");
+        otherMapEl?.classList.add("hidden");
+        otherMapEl?.classList.remove("is-live");
+        updateStaticPresentationFor(otherSurface, null);
+      }
+
+      function syncOtherLive(townKey, coords) {
+        const otherMapStatic = document.getElementById(otherSurface.mapStaticId);
+        const otherMapEl = document.getElementById(otherSurface.mapId);
+        otherMapStatic?.classList.add("is-hidden");
+        hideStaticPresentationFor(otherSurface);
+        otherMapEl?.classList.remove("hidden");
+        const otherTracker = trackers[otherSurface.trackerId];
+        if (otherTracker?.map) {
+          otherTracker.setTown(townKey, coords);
           requestAnimationFrame(() => {
-            mapEl.classList.add("is-live");
-            tracker?.map.invalidateSize({ animate: false });
-            fitTrackerView(tracker);
+            otherMapEl?.classList.add("is-live");
+            otherTracker.map.invalidateSize({ animate: false });
+            fitTrackerView(otherTracker);
           });
-          return coords;
-        } catch {
-          mapStatic.classList.remove("is-hidden");
-          mapEl.classList.add("hidden");
-          mapEl.classList.remove("is-live");
-          if (statusEl) statusEl.textContent = "A térkép ehhez a településhez nem tölthető be";
-          updateArrivalUi(townKey);
-          return null;
+        } else {
+          otherMapEl?.classList.remove("is-live");
         }
       }
 
-      async function applyTown(town) {
+      async function applyTown(town, options = {}) {
         const normalized = (town || "").trim();
         syncTownInputs(normalized);
         if (!normalized || !isKnownTown(normalized)) {
+          preferLiveMapView = false;
           localStorage.removeItem(TOWN_STORAGE_KEY);
-          showStatic();
-          const otherStaticId = opts.id === "desktop" ? "map-static-mobile" : "map-static";
-          const otherMapId = opts.id === "desktop" ? "van-map-mobile" : "van-map";
-          document.getElementById(otherStaticId)?.classList.remove("is-hidden");
-          document.getElementById(otherMapId)?.classList.add("hidden");
-          document.getElementById(otherMapId)?.classList.remove("is-live");
+          resetToDefault();
+          syncOtherReset();
           return;
         }
+
+        if (!options.fromLayoutSwitch && !options.fromBlur) preferLiveMapView = false;
+
         localStorage.setItem(TOWN_STORAGE_KEY, normalized);
-        const coords = await showLiveMap(normalized);
-        const otherId = opts.id === "desktop" ? "mobile" : "desktop";
-        if (coords && trackers[otherId]?.map) {
-          trackers[otherId].setTown(normalized, coords);
+        const coords = await updateAllMapButtons(normalized);
+        const shouldShowLive = Boolean(
+          coords && isLayoutActive() && (isLiveGpsTown(normalized) || preferLiveMapView)
+        );
+
+        if (shouldShowLive) {
+          showLiveMap(normalized, coords);
+          syncOtherLive(normalized, coords);
+        } else {
+          showStaticForTown(normalized);
+          syncOtherStaticForTown(normalized);
+          if (!coords && statusEl) {
+            statusEl.textContent = "A térkép ehhez a településhez nem tölthető be";
+          }
         }
       }
 
-      initTownAutocomplete(input, listbox, (town) => applyTown(town));
+      async function openMapView() {
+        const town = input.value.trim();
+        if (!town || !isKnownTown(town)) return;
+        preferLiveMapView = true;
+        const coords = townCoordsCache[town] || (await fetchTownCoordsFromApi(town));
+        if (!coords) {
+          preferLiveMapView = false;
+          if (statusEl) statusEl.textContent = "A térkép ehhez a településhez nem tölthető be";
+          return;
+        }
+        showLiveMap(town, coords);
+        syncOtherLive(town, coords);
+      }
+
+      initTownAutocomplete(input, listbox, (town, opts) => applyTown(town, opts), mapBtn);
+      mapBtn?.addEventListener("click", () => void openMapView());
 
       const saved = localStorage.getItem(TOWN_STORAGE_KEY);
       if (saved && isKnownTown(saved)) {
         input.value = saved;
-        if (opts.deferLive) {
-          /* activatePending */
+        if (isLayoutActive()) {
+          void applyTown(saved);
         } else {
-          showLiveMap(saved);
+          updateArrivalUi(saved);
+          updateStatusUi(saved);
+          updateStaticPresentationFor(surface, saved);
+          void updateAllMapButtons(saved);
         }
       } else {
-        showStatic();
+        resetToDefault();
       }
 
       return {
         activatePending() {
           const town = input.value.trim();
-          if (town && isKnownTown(town)) {
-            showLiveMap(town);
-          } else if (tracker?.map) {
+          if (town && isKnownTown(town) && isLayoutActive()) {
+            void applyTown(town, { fromLayoutSwitch: true });
+            return;
+          }
+          if (tracker?.map && mapEl.classList.contains("is-live")) {
             tracker.map.invalidateSize({ animate: false });
             if (tracker.townKey) fitTrackerView(tracker);
           }
@@ -1150,6 +1471,7 @@
 
       applySiteLayout();
       loadTownSchedule().then(() => {
+        preloadTownCoords();
         desktopTracker = initTownTracker({
           id: "desktop",
           inputId: "town-search",
@@ -1159,6 +1481,11 @@
           statusId: "tracker-status",
           arrivalId: "arrival-estimate",
           routeTownId: "route-current-town",
+          vanStaticId: "map-static-van",
+          hintId: "map-pick-hint",
+          notTodayId: "map-static-not-today",
+          notTodaySlotId: "map-static-not-today-slot",
+          mapBtnId: "town-map-btn",
           deferLive: true,
         });
 
@@ -1169,6 +1496,11 @@
           mapStaticId: "map-static-mobile",
           mapId: "van-map-mobile",
           arrivalId: "arrival-estimate-mobile",
+          vanStaticId: "map-static-van-mobile",
+          hintId: "map-pick-hint-mobile",
+          notTodayId: "map-static-not-today-mobile",
+          notTodaySlotId: "map-static-not-today-slot-mobile",
+          mapBtnId: "town-map-btn-mobile",
           deferLive: true,
         });
 
