@@ -116,7 +116,7 @@
             font-size: 13px;
             text-align: center;
         }
-        #tracker-map, #tracker-map-mobile { min-height: 420px; }
+        #tracker-map, #terkep { min-height: 420px; }
 
         html[data-layout-boot="desktop"] #layout-mobile,
         body[data-layout="desktop"] #layout-mobile { display: none !important; }
@@ -339,7 +339,7 @@
 </div>
 <div id="layout-mobile">
 <main class="pb-24 max-w-container-max mx-auto">
-<section id="tracker-map-mobile" class="relative overflow-hidden shadow-sm border border-outline-variant" style="height: 520px;">
+<section id="terkep" class="relative overflow-hidden shadow-sm border border-outline-variant" style="height: 520px;">
 <div id="map-static-mobile" class="absolute inset-0 overflow-hidden">
 <img alt="Falu térképes illusztráció" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA94P3KrYZkGtJYuwsNoYK6kfD0a5A4wE8XM80imkb0bJE_2N69mvOqcS5L6M2c1K9oTfWfNAmUQNh9DwEsY-ElfVyCAxRdqjX_6bTVZqbyNqg0tV6jojEmVZmJCqQNe-bOMVqGPyD1nIEcqcTvqgLlDhIhxfterS41oBDdLS60Bdb7fwWB_aqWcN2rTNoiPtV605Ez_nj7KvSSzVtY0Sl15Wgxc_Mg1Qk_lnarSgHOAtk4JNZ8ZO9x0X2pyttrJqSG9EFoqubbmhE">
 <div id="map-static-van-mobile" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center pointer-events-none">
@@ -371,7 +371,7 @@
 </p>
 </div>
 </section>
-<section class="mt-12 px-4">
+<section id="keszlet" class="mt-12 px-4">
 <div class="flex flex-col gap-4 mb-8">
 <div>
 <h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Aktuális Készlet</h2>
@@ -396,8 +396,8 @@
 </section>
 </main>
 <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50 bg-surface border-t border-outline-variant shadow-lg flex justify-around items-center px-4 py-3">
-<button type="button" class="flex flex-col items-center bg-secondary-container text-on-secondary-container rounded-full px-5 py-1"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_shipping</span><span class="font-label-sm text-label-sm">Térkép</span></button>
-<button type="button" class="flex flex-col items-center text-on-surface-variant"><span class="material-symbols-outlined">inventory_2</span><span class="font-label-sm text-label-sm">Készlet</span></button>
+<a href="index.html#terkep" class="flex flex-col items-center bg-secondary-container text-on-secondary-container rounded-full px-5 py-1 no-underline"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_shipping</span><span class="font-label-sm text-label-sm">Térkép</span></a>
+<a href="index.html#keszlet" class="flex flex-col items-center text-on-surface-variant no-underline"><span class="material-symbols-outlined">inventory_2</span><span class="font-label-sm text-label-sm">Készlet</span></a>
 <a href="elorendeles.html" class="flex flex-col items-center text-on-surface-variant no-underline"><span class="material-symbols-outlined">cake</span><span class="font-label-sm text-label-sm">Előrendelés</span></a>
 </nav>
 </div>

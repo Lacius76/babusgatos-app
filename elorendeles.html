@@ -4,14 +4,29 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Babusgatós — Torta és desszert előrendelés</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&family=Work+Sans:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <style>
     :root {
-      --ink: #201916;
-      --muted: #74655d;
-      --brown: #684f40;
-      --paper: #fffdf8;
-      --line: rgba(65, 47, 38, .14);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --primary: #623718;
+      --on-primary: #ffffff;
+      --primary-container: #7d4e2d;
+      --secondary-container: #ffd87c;
+      --on-secondary-container: #795d08;
+      --surface: #fff8f5;
+      --on-surface: #1e1b18;
+      --on-surface-variant: #51443c;
+      --outline: #84746b;
+      --outline-variant: #d6c3b8;
+      --ink: #1e1b18;
+      --muted: #51443c;
+      --brown: #623718;
+      --paper: #fff8f5;
+      --line: #d6c3b8;
+      --radius-btn: 0.5rem;
+      --shadow-soft: 0 4px 14px rgba(125, 78, 45, 0.1);
+      --shadow-medium: 0 8px 22px rgba(125, 78, 45, 0.16);
+      font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif;
     }
     * { box-sizing: border-box; }
     body {
@@ -20,7 +35,15 @@
       color: var(--ink);
       background: linear-gradient(135deg, #fff9ef 0%, #f4eee6 45%, #eef3ee 100%);
     }
-    button { font: inherit; cursor: pointer; }
+    button {
+      font: inherit;
+      cursor: pointer;
+      transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .15s ease;
+    }
+    button:focus-visible {
+      outline: 2px solid var(--secondary-container);
+      outline-offset: 2px;
+    }
     .page { width: min(1440px, 100%); margin: 0 auto; padding: 24px; }
     .shell {
       border: 1px solid rgba(65, 47, 38, .13);
@@ -85,8 +108,8 @@
       right: 22px;
       bottom: 22px;
       display: grid;
-      grid-template-columns: 72px 1fr auto;
-      gap: 14px;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
       align-items: center;
       padding: 14px;
       border-radius: 10px;
@@ -94,12 +117,7 @@
       box-shadow: 0 20px 40px rgba(31, 23, 18, .22);
       backdrop-filter: blur(14px);
     }
-    .floating-card img {
-      width: 72px;
-      height: 72px;
-      border-radius: 8px;
-      object-fit: cover;
-    }
+    .floating-card-copy { min-width: 0; }
     .floating-card strong, .cart-line strong, .product strong {
       display: block;
       font-size: 15px;
@@ -108,22 +126,60 @@
       color: var(--muted);
       font-size: 13px;
     }
-    .secondary-btn, .primary-btn {
-      height: 44px;
-      border-radius: 8px;
-      border: 1px solid var(--line);
+    .primary-btn,
+    .secondary-btn,
+    .ghost-btn,
+    .mini-add {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 0 16px;
-      font-weight: 700;
+      border-radius: var(--radius-btn);
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      line-height: 20px;
     }
-    .secondary-btn { background: #fff; color: var(--ink); }
     .primary-btn {
-      background: var(--brown);
-      color: #fff;
-      border-color: transparent;
-      box-shadow: 0 12px 24px rgba(104, 79, 64, .18);
+      height: 44px;
+      padding: 0 24px;
+      border: none;
+      background: var(--primary);
+      color: var(--on-primary);
+      box-shadow: var(--shadow-soft);
+    }
+    .primary-btn:hover {
+      background: var(--primary-container);
+      box-shadow: var(--shadow-medium);
+    }
+    .primary-btn:active { transform: scale(0.98); }
+    .secondary-btn,
+    .mini-add {
+      border: none;
+      background: var(--secondary-container);
+      color: var(--on-secondary-container);
+    }
+    .secondary-btn {
+      height: 44px;
+      padding: 0 20px;
+    }
+    .secondary-btn:hover,
+    .mini-add:hover {
+      filter: brightness(0.97);
+      box-shadow: var(--shadow-soft);
+    }
+    .ghost-btn,
+    .mini-add--ghost {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    .ghost-btn {
+      height: 44px;
+      padding: 0 20px;
+    }
+    .ghost-btn:hover,
+    .mini-add--ghost:hover {
+      background: rgba(98, 55, 24, 0.06);
     }
     .content-band {
       padding: 4px 38px 38px;
@@ -169,15 +225,13 @@
     .product .meta { padding: 12px; display: grid; gap: 8px; flex: 1; }
     .price { color: var(--ink); font-weight: 850; font-size: 17px; }
     .mini-add {
-      align-self: end;
-      height: 34px;
-      border-radius: 7px;
-      border: 0;
-      background: var(--ink);
-      color: #fff;
-      padding: 0 12px;
-      font-weight: 800;
+      align-self: stretch;
+      width: 100%;
+      height: 36px;
+      padding: 0 14px;
+      font-size: 13px;
     }
+    .mini-add:active { transform: scale(0.98); }
     .cart {
       border: 1px solid var(--line);
       border-radius: 10px;
@@ -205,16 +259,6 @@
       font-weight: 900;
     }
     .full { width: 100%; }
-    .placeholder-note {
-      margin: 0 38px 32px;
-      padding: 16px 18px;
-      border-radius: 10px;
-      background: rgba(255,255,255,.7);
-      border: 1px dashed var(--line);
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-    }
     @media (max-width: 1100px) {
       .patisserie-feature, .content-band { grid-template-columns: 1fr; }
       .products { grid-template-columns: 1fr; }
@@ -223,7 +267,50 @@
     @media (max-width: 760px) {
       .page { padding: 10px; }
       .patisserie-feature, .content-band { margin-left: 16px; margin-right: 16px; padding-left: 0; padding-right: 0; }
-      .placeholder-note { margin: 0 16px 22px; }
+    }
+    .mobile-bottom-nav { display: none; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    @media (max-width: 899px) {
+      body { padding-bottom: 88px; }
+      .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 390px;
+        z-index: 50;
+        background: var(--surface);
+        border-top: 1px solid var(--outline-variant);
+        box-shadow: 0 -4px 20px rgba(30, 27, 24, .08);
+        justify-content: space-around;
+        align-items: center;
+        padding: 12px 16px;
+      }
+      .mobile-bottom-nav a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        color: var(--on-surface-variant);
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 16px;
+        padding: 4px 20px;
+        border-radius: 9999px;
+      }
+      .mobile-bottom-nav a.is-active {
+        background: var(--secondary-container);
+        color: var(--on-secondary-container);
+      }
+      .mobile-bottom-nav .material-symbols-outlined { font-size: 24px; }
+      .mobile-bottom-nav a.is-active .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
     }
   </style>
 </head>
@@ -244,9 +331,8 @@
         <div class="media-stage">
           <img src="assets/cake-cutout.png" alt="Málnás túrótorta">
           <div class="floating-card">
-            <img src="assets/cafe.jpg" alt="Kávézó belső">
-            <div><strong>Málnás túrótorta</strong><span>Könnyed, ünnepi, látványos szeleteléshez.</span></div>
-            <button class="secondary-btn" type="button">Részletek</button>
+            <div class="floating-card-copy"><strong>Málnás túrótorta</strong><span>Könnyed, ünnepi, látványos szeleteléshez.</span></div>
+            <button class="ghost-btn" type="button">Részletek</button>
           </div>
         </div>
       </section>
@@ -259,7 +345,7 @@
           </div>
           <div class="products">
             <div class="product">
-              <div class="photo"><img src="assets/cake-cutout.png" alt="Málnás túrótorta"></div>
+              <div class="photo"><img src="assets/malnas-turotorta.jpg" alt="Málnás túrótorta"></div>
               <div class="meta">
                 <strong>Málnás túrótorta</strong>
                 <span>Friss, gyümölcsös választás</span>
@@ -268,7 +354,7 @@
               </div>
             </div>
             <div class="product">
-              <div class="photo"><img src="assets/pastry.jpg" alt="Macaron"></div>
+              <div class="photo"><img src="assets/macaron.jpg" alt="Macaron"></div>
               <div class="meta">
                 <strong>Macaron box</strong>
                 <span>5 db-os ajándékdoboz</span>
@@ -282,7 +368,7 @@
                 <strong>Kávé mellé</strong>
                 <span>Szelet sütik és pultos ajánlatok</span>
                 <div class="price">1 190 Ft-tól</div>
-                <button class="mini-add" type="button">Nézem</button>
+                <button class="mini-add mini-add--ghost" type="button">Nézem</button>
               </div>
             </div>
           </div>
@@ -294,7 +380,7 @@
             <div><strong>Málnás túrótorta</strong><span>10 szelet · „Boldog szülinapot”</span></div>
           </div>
           <div class="cart-line">
-            <img src="assets/pastry.jpg" alt="">
+            <img src="assets/macaron.jpg" alt="">
             <div><strong>Macaron box</strong><span>Ajándék kiegészítő</span></div>
           </div>
           <div class="total"><span>Várható ár</span><span>17 190 Ft</span></div>
@@ -302,8 +388,12 @@
         </aside>
       </div>
 
-      <p class="placeholder-note">Ez az oldal ideiglenes helyőrző a régi <code>index.html</code> cukrász részeiből. A végleges tartalmat a hivatalos cukrász műhely oldaláról töltjük fel.</p>
     </section>
   </main>
+  <nav class="mobile-bottom-nav" aria-label="Fő navigáció">
+    <a href="index.html#terkep"><span class="material-symbols-outlined">local_shipping</span><span>Térkép</span></a>
+    <a href="index.html#keszlet"><span class="material-symbols-outlined">inventory_2</span><span>Készlet</span></a>
+    <a href="elorendeles.html" class="is-active" aria-current="page"><span class="material-symbols-outlined">cake</span><span>Előrendelés</span></a>
+  </nav>
 </body>
 </html>
