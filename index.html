@@ -169,36 +169,70 @@
             background: rgba(255, 250, 246, .9);
             border-radius: 6px 0 0 0;
         }
-        .town-select-wrap {
+        .town-autocomplete {
             position: relative;
-            display: inline-flex;
-            align-items: center;
+            width: 100%;
             max-width: 100%;
-            vertical-align: middle;
+            overflow: visible;
         }
-        #town-select,
-        #town-select-mobile {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: none;
-            width: auto;
-            max-width: 100%;
-            padding-right: 1.625rem;
+        #tracker-map > .absolute.bottom-6,
+        #terkep > .absolute.bottom-6 {
+            overflow: visible;
         }
-        #town-select::-ms-expand,
-        #town-select-mobile::-ms-expand { display: none; }
-        .town-select-chevron {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 22px;
-            line-height: 1;
+        .town-search-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 0;
+            font-family: "Libre Caslon Text", serif;
+            font-size: 24px;
+            line-height: 32px;
+            font-weight: 600;
             color: #623718;
-            pointer-events: none;
-            font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
         }
+        .town-search-input::placeholder { color: #84746b; opacity: .85; }
+        #town-search-mobile.town-search-input {
+            font-size: inherit;
+            line-height: inherit;
+            color: #1e1b18;
+            max-width: 10rem;
+        }
+        .town-suggestions {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(100% + 6px);
+            bottom: auto;
+            z-index: 40;
+            margin: 0;
+            padding: 6px 0;
+            list-style: none;
+            max-height: 320px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            background: rgba(255, 248, 245, .98);
+            border: 1px solid #d6c3b8;
+            border-radius: 12px;
+            box-shadow: 0 16px 36px rgba(30, 27, 24, .14);
+        }
+        .town-suggestions.is-above {
+            top: auto;
+            bottom: calc(100% + 6px);
+        }
+        .town-suggestions.hidden { display: none; }
+        .town-suggestions li {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #1e1b18;
+        }
+        .town-suggestions li:hover,
+        .town-suggestions li.is-active { background: #f5ece7; color: #623718; }
+        #arrival-estimate { max-width: 220px; line-height: 1.35; word-break: break-word; }
+        .mobile-tracker-panel { flex-direction: column; align-items: stretch !important; gap: 8px !important; }
+        .mobile-tracker-panel .mobile-tracker-row { display: flex; align-items: center; gap: 8px; width: 100%; }
+        #arrival-estimate-mobile { display: block; width: 100%; line-height: 1.35; word-break: break-word; }
     </style>
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen">
@@ -227,7 +261,7 @@
 <img alt="Babusgatós furgon" class="w-20 h-auto relative z-10 drop-shadow-xl transform -rotate-12" src="assets/van.png">
 </div>
 </div>
-<p id="map-pick-hint" class="absolute top-4 left-4 right-4 glass-effect rounded-xl px-4 py-3 text-center text-body-md text-on-surface-variant">Válaszd ki a települést — utána mutatjuk az élő térképet.</p>
+<p id="map-pick-hint" class="absolute top-4 left-4 right-4 glass-effect rounded-xl px-4 py-3 text-center text-body-md text-on-surface-variant">Keress települést — menetrend és térkép betöltése.</p>
 </div>
 <div id="van-map" class="absolute inset-0 hidden" role="application" aria-label="Élő furgon térkép"></div>
 <div class="absolute bottom-6 left-6 right-6 z-20">
@@ -237,19 +271,11 @@
 </div>
 <div class="min-w-0 flex-1">
 <p class="font-label-lg text-label-lg text-on-surface">Településem</p>
-<div class="town-select-wrap mt-1">
-    <select id="town-select" data-town-sync class="appearance-none bg-transparent border-none p-0 font-headline-md text-headline-md text-primary focus:ring-0 cursor-pointer outline-none">
-        <option value="">Válassz települést…</option>
-        <option value="Nagycenk">Nagycenk</option>
-        <option value="Sopronkövesd">Sopronkövesd</option>
-        <option value="Lövő">Lövő</option>
-        <option value="Csepreg">Csepreg</option>
-        <option value="Bük">Bük</option>
-        <option value="Szombathely">Szombathely</option>
-    </select>
-    <span class="material-symbols-outlined town-select-chevron" aria-hidden="true">expand_more</span>
+<div class="town-autocomplete mt-1">
+    <input type="text" id="town-search" data-town-sync class="town-search-input" placeholder="Keresés településre…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="town-suggestions-desktop" aria-autocomplete="list">
+    <ul id="town-suggestions-desktop" class="town-suggestions hidden" role="listbox"></ul>
 </div>
-<p id="tracker-status" class="text-label-sm text-on-surface-variant mt-1">Válassz települést az élő követéshez</p>
+<p id="tracker-status" class="text-label-sm text-on-surface-variant mt-1">Írj be településnevet a menetrendhez</p>
 </div>
 <div class="ml-auto text-right shrink-0">
 <p class="font-label-sm text-label-sm text-on-surface-variant">Várható érkezés</p>
@@ -348,27 +374,19 @@
 <div class="mt-2 px-3 py-1 bg-primary text-on-primary text-label-lg font-label-lg rounded-full shadow-lg">Úton hozzád!</div>
 </div>
 </div>
-<p id="map-pick-hint-mobile" class="absolute top-3 left-3 right-3 glass-effect rounded-xl px-3 py-2 text-center text-label-sm text-on-surface-variant">Válaszd ki a települést — utána élő térkép.</p>
+<p id="map-pick-hint-mobile" class="absolute top-3 left-3 right-3 glass-effect rounded-xl px-3 py-2 text-center text-label-sm text-on-surface-variant">Keress települést — menetrend és térkép.</p>
 </div>
 <div id="van-map-mobile" class="absolute inset-0 hidden" role="application" aria-label="Élő furgon térkép"></div>
-<div class="absolute bottom-6 left-4 right-4 z-20 glass-effect px-4 py-2 rounded-full shadow-lg flex items-center gap-2 bg-surface/60 backdrop-blur-md border border-outline-variant/30">
+<div class="absolute bottom-6 left-4 right-4 z-20 glass-effect px-4 py-3 rounded-2xl shadow-lg mobile-tracker-panel flex bg-surface/60 backdrop-blur-md border border-outline-variant/30">
+<div class="mobile-tracker-row">
 <span class="material-symbols-outlined text-primary shrink-0" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
-<p class="text-body-md font-bold text-primary min-w-0 flex-1">
-<span class="whitespace-nowrap">Élő követés:</span>
-<span class="town-select-wrap mx-1">
-<select id="town-select-mobile" data-town-sync class="bg-transparent border-none p-0 font-headline-md text-on-surface focus:ring-0 cursor-pointer appearance-none max-w-[10rem] outline-none" style="font-family: 'Libre Caslon Text', serif; font-size: inherit;">
-<option value="">Válassz…</option>
-<option value="Nagycenk">Nagycenk</option>
-<option value="Sopronkövesd">Sopronkövesd</option>
-<option value="Lövő">Lövő</option>
-<option value="Csepreg">Csepreg</option>
-<option value="Bük">Bük</option>
-<option value="Szombathely">Szombathely</option>
-</select>
-<span class="material-symbols-outlined town-select-chevron" aria-hidden="true">expand_more</span>
-</span>
-<span id="arrival-estimate-mobile" class="text-outline font-normal text-label-sm">—</span>
-</p>
+<span class="whitespace-nowrap text-body-md font-bold text-primary">Település:</span>
+<div class="town-autocomplete min-w-0 flex-1">
+<input type="text" id="town-search-mobile" data-town-sync class="town-search-input" placeholder="Keresés…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="town-suggestions-mobile" aria-autocomplete="list">
+<ul id="town-suggestions-mobile" class="town-suggestions hidden" role="listbox"></ul>
+</div>
+</div>
+<span id="arrival-estimate-mobile" class="text-label-sm text-on-surface-variant">—</span>
 </div>
 </section>
 <section id="keszlet" class="mt-12 px-4">
@@ -669,27 +687,122 @@
       }
     }
 
-    const TOWNS = {
-      Nagycenk: { lat: 47.6071, lng: 16.6913, label: "Nagycenk" },
-      Sopronkövesd: { lat: 47.5519, lng: 16.6518, label: "Sopronkövesd" },
-      Lövő: { lat: 47.4081, lng: 16.7017, label: "Lövő" },
-      Csepreg: { lat: 47.4006, lng: 16.7086, label: "Csepreg" },
-      Bük: { lat: 47.3842, lng: 16.7504, label: "Bük" },
-      Szombathely: { lat: 47.2307, lng: 16.6218, label: "Szombathely" },
-    };
+    const LIVE_GPS_TOWN = "Nagycenk";
     const TOWN_STORAGE_KEY = "babusgatos:selected-town";
     const LOCATION_API = "/api/location";
+    const SCHEDULE_API = "/api/schedule";
+    const SCHEDULE_CSV_URL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTeqEHVMttUohvursUP7zHn36ppGGIVLPn-KcyK0ADf71ZIXFamqdIkhUhklutdBEQNr9l9sm4xHtK4/pub?output=csv";
+    const GEOCODE_API = "/api/geocode";
     const TRACKER_POLL_MS = 10000;
+    const TOWN_COORDS_SEED = {
+      Nagycenk: { lat: 47.6071, lng: 16.6913 },
+      Sopronkövesd: { lat: 47.5519, lng: 16.6518 },
+      Lövő: { lat: 47.4081, lng: 16.7017 },
+      Csepreg: { lat: 47.4006, lng: 16.7086 },
+      Bük: { lat: 47.3842, lng: 16.7504 },
+      Szombathely: { lat: 47.2307, lng: 16.6218 },
+      Acsád: { lat: 47.4132, lng: 16.3856 },
+    };
 
+    let townSchedule = {};
+    let townNames = [];
+    const townCoordsCache = { ...TOWN_COORDS_SEED };
     const trackers = {};
     let sharedPollTimer = null;
 
+    function isKnownTown(town) {
+      return Boolean(town && Object.prototype.hasOwnProperty.call(townSchedule, town));
+    }
+
+    function isLiveGpsTown(town) {
+      return town === LIVE_GPS_TOWN;
+    }
+
+    function formatArrival(town) {
+      const slot = townSchedule[town];
+      if (!slot || !slot.trim() || slot.trim().toLowerCase() === "nem") {
+        return "Időpont egyenlőre nem elérhető";
+      }
+      return slot;
+    }
+
+    function rowsToSchedule(rows) {
+      const schedule = {};
+      rows.forEach((row) => {
+        const town = row["Település"] || row["Telepules"] || "";
+        if (!town) return;
+        schedule[town] = row["Nap & Időpont"] || row["Nap & Idopont"] || "";
+      });
+      return schedule;
+    }
+
+    async function loadTownSchedule() {
+      try {
+        const res = await fetch(SCHEDULE_API, { cache: "no-store" });
+        if (!res.ok) throw new Error("schedule");
+        townSchedule = await res.json();
+      } catch {
+        try {
+          const csvRes = await fetch(SCHEDULE_CSV_URL, { cache: "no-store" });
+          if (!csvRes.ok) throw new Error("schedule_csv");
+          townSchedule = rowsToSchedule(parseCsv(await csvRes.text()));
+        } catch {
+          townSchedule = {};
+        }
+      }
+      townNames = Object.keys(townSchedule).sort((a, b) => a.localeCompare(b, "hu"));
+    }
+
+    function resolveTownFromQuery(query) {
+      const q = query.trim();
+      if (!q || !townNames.length) return null;
+      const exact = townNames.find((name) => name.toLowerCase() === q.toLowerCase());
+      if (exact) return exact;
+      const matches = filterTownNames(q);
+      return matches.length === 1 ? matches[0] : null;
+    }
+
+    async function resolveTownCoords(town) {
+      if (townCoordsCache[town]) return townCoordsCache[town];
+      try {
+        const res = await fetch(`${GEOCODE_API}?name=${encodeURIComponent(town)}`, { cache: "no-store" });
+        if (!res.ok) throw new Error("coords");
+        const data = await res.json();
+        const coords = { lat: Number(data.lat), lng: Number(data.lng) };
+        if (!Number.isFinite(coords.lat) || !Number.isFinite(coords.lng)) throw new Error("coords");
+        townCoordsCache[town] = coords;
+        return coords;
+      } catch {
+        if (TOWN_COORDS_SEED[town]) {
+          townCoordsCache[town] = TOWN_COORDS_SEED[town];
+          return townCoordsCache[town];
+        }
+        throw new Error("coords");
+      }
+    }
+
     function fitTrackerView(tracker) {
-      if (!tracker?.map || !tracker.townKey) return;
-      const town = TOWNS[tracker.townKey];
-      const bounds = L.latLngBounds([[town.lat, town.lng]]);
-      if (tracker.lastLive) bounds.extend([tracker.lastLive.lat, tracker.lastLive.lon]);
-      tracker.map.fitBounds(bounds.pad(0.35), { maxZoom: 14, animate: true });
+      if (!tracker?.map || !tracker.townKey || !tracker.townCoords) return;
+      const { lat, lng } = tracker.townCoords;
+      if (tracker.vanMarker && tracker.lastLive) {
+        const bounds = L.latLngBounds([[lat, lng], [tracker.lastLive.lat, tracker.lastLive.lon]]);
+        tracker.map.fitBounds(bounds.pad(0.35), { maxZoom: 14, animate: true });
+      } else {
+        tracker.map.setView([lat, lng], 13, { animate: true });
+      }
+    }
+
+    function createVanMarker(map, townLabel) {
+      return L.marker([0, 0], {
+        icon: L.divIcon({
+          className: "van-map-pin-wrap",
+          html: '<div class="van-map-pin"><img src="assets/van.png" alt=""></div>',
+          iconSize: [64, 48],
+          iconAnchor: [32, 39],
+        }),
+        zIndexOffset: 1000,
+      }).addTo(map).bindPopup(`<strong>Babusgatós furgon</strong><br>Úton ${townLabel} felé`);
     }
 
     function startSharedLocationPoll() {
@@ -703,11 +816,11 @@
           const lon = Number(data.lon);
           if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
           Object.values(trackers).forEach((tracker) => {
-            if (!tracker.map || !tracker.vanMarker) return;
+            if (!tracker.map || !tracker.vanMarker || !isLiveGpsTown(tracker.townKey)) return;
             tracker.lastLive = { lat, lon };
             tracker.vanMarker.setLatLng([lat, lon]);
             tracker.vanMarker.setPopupContent(
-              `<strong>Babusgatós furgon</strong><br>Úton ${TOWNS[tracker.townKey]?.label || ""} felé`
+              `<strong>Babusgatós furgon</strong><br>Úton ${tracker.townKey} felé`
             );
             if (!tracker.userMovedMap) fitTrackerView(tracker);
           });
@@ -719,20 +832,146 @@
       sharedPollTimer = window.setInterval(pollAllTrackers, TRACKER_POLL_MS);
     }
 
-    function syncTownSelects(value) {
+    function syncTownInputs(value) {
       document.querySelectorAll("[data-town-sync]").forEach((el) => {
         el.value = value || "";
       });
     }
 
+    function filterTownNames(query) {
+      const q = query.trim().toLowerCase();
+      if (!q) return [];
+      return townNames.filter((name) => name.toLowerCase().startsWith(q));
+    }
+
+    const SUGGESTION_VISIBLE_ITEMS = 8;
+    const SUGGESTION_MAX_HEIGHT = SUGGESTION_VISIBLE_ITEMS * 38 + 12;
+    const SUGGESTION_GAP = 6;
+    const SUGGESTION_EDGE_PAD = 10;
+
+    function positionTownSuggestions(input, listbox) {
+      const mapPanel = input.closest("#tracker-map, #terkep");
+      if (!mapPanel) {
+        listbox.classList.add("is-above");
+        listbox.classList.remove("is-below");
+        listbox.style.maxHeight = `${SUGGESTION_MAX_HEIGHT}px`;
+        return;
+      }
+
+      const panelRect = mapPanel.getBoundingClientRect();
+      const inputRect = input.getBoundingClientRect();
+      const spaceAbove = Math.max(0, inputRect.top - panelRect.top - SUGGESTION_EDGE_PAD);
+      const spaceBelow = Math.max(0, panelRect.bottom - inputRect.bottom - SUGGESTION_EDGE_PAD);
+      const openAbove = spaceBelow < 96 || spaceAbove >= spaceBelow;
+      const available = (openAbove ? spaceAbove : spaceBelow) - SUGGESTION_GAP;
+      const maxHeight = Math.min(SUGGESTION_MAX_HEIGHT, Math.max(72, available));
+
+      listbox.classList.toggle("is-above", openAbove);
+      listbox.classList.toggle("is-below", !openAbove);
+      listbox.style.maxHeight = `${maxHeight}px`;
+    }
+
+    function initTownAutocomplete(input, listbox, onPick) {
+      let activeIndex = -1;
+
+      function closeList() {
+        listbox.classList.add("hidden");
+        input.setAttribute("aria-expanded", "false");
+        activeIndex = -1;
+        listbox.classList.remove("is-above", "is-below");
+        listbox.style.maxHeight = "";
+      }
+
+      function renderList(matches) {
+        listbox.replaceChildren();
+        if (!matches.length) {
+          closeList();
+          return;
+        }
+        matches.forEach((name, idx) => {
+          const li = document.createElement("li");
+          li.textContent = name;
+          li.setAttribute("role", "option");
+          li.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            onPick(name);
+            closeList();
+          });
+          listbox.appendChild(li);
+        });
+        listbox.classList.remove("hidden");
+        input.setAttribute("aria-expanded", "true");
+        activeIndex = 0;
+        listbox.querySelectorAll("li").forEach((li, idx) => {
+          li.classList.toggle("is-active", idx === activeIndex);
+        });
+        positionTownSuggestions(input, listbox);
+      }
+
+      input.addEventListener("input", () => {
+        renderList(filterTownNames(input.value));
+      });
+
+      input.addEventListener("focus", () => {
+        if (input.value.trim()) renderList(filterTownNames(input.value));
+      });
+
+      input.addEventListener("blur", () => {
+        window.setTimeout(() => {
+          const resolved = resolveTownFromQuery(input.value);
+          if (resolved) onPick(resolved);
+          closeList();
+        }, 120);
+      });
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const resolved = resolveTownFromQuery(input.value);
+          const items = [...listbox.querySelectorAll("li")];
+          const picked = resolved || (activeIndex >= 0 && items[activeIndex]?.textContent);
+          if (picked) {
+            e.preventDefault();
+            onPick(picked);
+            closeList();
+          }
+          return;
+        }
+
+        const items = [...listbox.querySelectorAll("li")];
+        if (!items.length) return;
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          activeIndex = Math.min(activeIndex + 1, items.length - 1);
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          activeIndex = Math.max(activeIndex - 1, 0);
+        } else if (e.key === "Escape") {
+          closeList();
+          return;
+        } else {
+          return;
+        }
+        items.forEach((li, idx) => li.classList.toggle("is-active", idx === activeIndex));
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!input.contains(e.target) && !listbox.contains(e.target)) closeList();
+      });
+
+      window.addEventListener("resize", () => {
+        if (!listbox.classList.contains("hidden")) positionTownSuggestions(input, listbox);
+      });
+    }
+
     function initTownTracker(opts) {
-      const select = document.getElementById(opts.selectId);
+      const input = document.getElementById(opts.inputId);
+      const listbox = document.getElementById(opts.listboxId);
       const mapStatic = document.getElementById(opts.mapStaticId);
       const mapEl = document.getElementById(opts.mapId);
       const statusEl = opts.statusId ? document.getElementById(opts.statusId) : null;
       const arrivalEl = document.getElementById(opts.arrivalId);
       const routeTownEl = opts.routeTownId ? document.getElementById(opts.routeTownId) : null;
-      if (!select || !mapStatic || !mapEl || typeof L === "undefined") return;
+      if (!input || !listbox || !mapStatic || !mapEl || typeof L === "undefined") return null;
 
       let tracker = trackers[opts.id] || null;
 
@@ -740,62 +979,75 @@
         mapStatic.classList.remove("is-hidden");
         mapEl.classList.add("hidden");
         mapEl.classList.remove("is-live");
-        if (statusEl) statusEl.textContent = "Válassz települést az élő követéshez";
+        if (statusEl) statusEl.textContent = "Írj be településnevet a menetrendhez";
         if (arrivalEl) arrivalEl.textContent = "—";
         if (routeTownEl) routeTownEl.textContent = "—";
       }
 
-      function setTown(townKey) {
+      function updateArrivalUi(townKey) {
+        if (arrivalEl) arrivalEl.textContent = formatArrival(townKey);
+      }
+
+      function setVanMarkerEnabled(enabled, townKey, coords) {
+        if (!tracker?.map) return;
+        if (enabled) {
+          if (!tracker.vanMarker) {
+            tracker.vanMarker = createVanMarker(tracker.map, townKey);
+            if (tracker.lastLive) tracker.vanMarker.setLatLng([tracker.lastLive.lat, tracker.lastLive.lon]);
+            else tracker.vanMarker.setLatLng([coords.lat, coords.lng]);
+          }
+          startSharedLocationPoll();
+        } else if (tracker.vanMarker) {
+          tracker.map.removeLayer(tracker.vanMarker);
+          tracker.vanMarker = null;
+        }
+      }
+
+      function setTown(townKey, coords) {
         if (!tracker?.map) return;
         tracker.townKey = townKey;
-        const town = TOWNS[townKey];
-        tracker.townMarker.setLatLng([town.lat, town.lng]);
-        tracker.townMarker.setTooltipContent(town.label);
-        if (routeTownEl) routeTownEl.textContent = town.label;
-        if (statusEl) statusEl.textContent = `Élő követés: ${town.label}`;
-        if (arrivalEl) arrivalEl.textContent = opts.compactArrival ? "10 perc" : "Hamarosan";
+        tracker.townCoords = coords;
+        tracker.townMarker.setLatLng([coords.lat, coords.lng]);
+        tracker.townMarker.setTooltipContent(townKey);
+        if (routeTownEl) routeTownEl.textContent = townKey;
+        if (statusEl) {
+          statusEl.textContent = isLiveGpsTown(townKey)
+            ? `Élő követés: ${townKey}`
+            : `Menetrend: ${townKey}`;
+        }
+        updateArrivalUi(townKey);
+        setVanMarkerEnabled(isLiveGpsTown(townKey), townKey, coords);
         fitTrackerView(tracker);
       }
 
-      function ensureMap(townKey) {
+      function ensureMap(townKey, coords) {
         if (tracker?.map) {
-          setTown(townKey);
+          setTown(townKey, coords);
           requestAnimationFrame(() => tracker.map.invalidateSize({ animate: false }));
-          startSharedLocationPoll();
           return;
         }
 
-        const town = TOWNS[townKey];
         const map = L.map(mapEl, { scrollWheelZoom: true, attributionControl: true });
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         }).addTo(map);
 
-        const townMarker = L.marker([town.lat, town.lng], {
+        const townMarker = L.marker([coords.lat, coords.lng], {
           icon: L.divIcon({
             className: "town-map-pin-wrap",
             html: '<div class="town-map-pin"></div>',
             iconSize: [14, 14],
             iconAnchor: [7, 7],
           }),
-        }).addTo(map).bindTooltip(town.label, { direction: "top", offset: [0, -8] });
-
-        const vanMarker = L.marker([town.lat, town.lng], {
-          icon: L.divIcon({
-            className: "van-map-pin-wrap",
-            html: '<div class="van-map-pin"><img src="assets/van.png" alt=""></div>',
-            iconSize: [64, 48],
-            iconAnchor: [32, 39],
-          }),
-          zIndexOffset: 1000,
-        }).addTo(map).bindPopup(`<strong>Babusgatós furgon</strong><br>Úton ${town.label} felé`);
+        }).addTo(map).bindTooltip(townKey, { direction: "top", offset: [0, -8] });
 
         tracker = {
           map,
           townKey,
+          townCoords: coords,
           townMarker,
-          vanMarker,
+          vanMarker: null,
           lastLive: null,
           userMovedMap: false,
           setTown,
@@ -806,25 +1058,36 @@
           tracker.userMovedMap = true;
         });
 
-        setTown(townKey);
-        startSharedLocationPoll();
+        setTown(townKey, coords);
         mapEl.dataset.mapReady = "1";
       }
 
-      function showLiveMap(townKey) {
-        mapStatic.classList.add("is-hidden");
-        mapEl.classList.remove("hidden");
-        ensureMap(townKey);
-        requestAnimationFrame(() => {
-          mapEl.classList.add("is-live");
-          tracker?.map.invalidateSize({ animate: false });
-          fitMapView();
-        });
+      async function showLiveMap(townKey) {
+        try {
+          const coords = await resolveTownCoords(townKey);
+          mapStatic.classList.add("is-hidden");
+          mapEl.classList.remove("hidden");
+          ensureMap(townKey, coords);
+          requestAnimationFrame(() => {
+            mapEl.classList.add("is-live");
+            tracker?.map.invalidateSize({ animate: false });
+            fitTrackerView(tracker);
+          });
+          return coords;
+        } catch {
+          mapStatic.classList.remove("is-hidden");
+          mapEl.classList.add("hidden");
+          mapEl.classList.remove("is-live");
+          if (statusEl) statusEl.textContent = "A térkép ehhez a településhez nem tölthető be";
+          updateArrivalUi(townKey);
+          return null;
+        }
       }
 
-      function applyTown(town) {
-        syncTownSelects(town || "");
-        if (!town || !TOWNS[town]) {
+      async function applyTown(town) {
+        const normalized = (town || "").trim();
+        syncTownInputs(normalized);
+        if (!normalized || !isKnownTown(normalized)) {
           localStorage.removeItem(TOWN_STORAGE_KEY);
           showStatic();
           const otherStaticId = opts.id === "desktop" ? "map-static-mobile" : "map-static";
@@ -834,30 +1097,33 @@
           document.getElementById(otherMapId)?.classList.remove("is-live");
           return;
         }
-        localStorage.setItem(TOWN_STORAGE_KEY, town);
-        showLiveMap(town);
+        localStorage.setItem(TOWN_STORAGE_KEY, normalized);
+        const coords = await showLiveMap(normalized);
         const otherId = opts.id === "desktop" ? "mobile" : "desktop";
-        if (trackers[otherId]?.map) trackers[otherId].setTown(town);
+        if (coords && trackers[otherId]?.map) {
+          trackers[otherId].setTown(normalized, coords);
+        }
       }
 
-      select.addEventListener("change", () => applyTown(select.value));
+      initTownAutocomplete(input, listbox, (town) => applyTown(town));
 
-      let pendingTown = null;
       const saved = localStorage.getItem(TOWN_STORAGE_KEY);
-      if (saved && TOWNS[saved]) {
-        select.value = saved;
-        if (opts.deferLive) pendingTown = saved;
-        else showLiveMap(saved);
+      if (saved && isKnownTown(saved)) {
+        input.value = saved;
+        if (opts.deferLive) {
+          /* activatePending */
+        } else {
+          showLiveMap(saved);
+        }
       } else {
         showStatic();
       }
 
       return {
         activatePending() {
-          const town = select.value;
-          if (town && TOWNS[town]) {
+          const town = input.value.trim();
+          if (town && isKnownTown(town)) {
             showLiveMap(town);
-            pendingTown = null;
           } else if (tracker?.map) {
             tracker.map.invalidateSize({ animate: false });
             if (tracker.townKey) fitTrackerView(tracker);
@@ -876,25 +1142,31 @@
         }, 50);
       }
 
-      desktopTracker = initTownTracker({
-        id: "desktop",
-        selectId: "town-select",
-        mapStaticId: "map-static",
-        mapId: "van-map",
-        statusId: "tracker-status",
-        arrivalId: "arrival-estimate",
-        routeTownId: "route-current-town",
-        deferLive: true,
-      });
+      applySiteLayout();
+      loadTownSchedule().then(() => {
+        desktopTracker = initTownTracker({
+          id: "desktop",
+          inputId: "town-search",
+          listboxId: "town-suggestions-desktop",
+          mapStaticId: "map-static",
+          mapId: "van-map",
+          statusId: "tracker-status",
+          arrivalId: "arrival-estimate",
+          routeTownId: "route-current-town",
+          deferLive: true,
+        });
 
-      mobileTracker = initTownTracker({
-        id: "mobile",
-        selectId: "town-select-mobile",
-        mapStaticId: "map-static-mobile",
-        mapId: "van-map-mobile",
-        arrivalId: "arrival-estimate-mobile",
-        compactArrival: true,
-        deferLive: true,
+        mobileTracker = initTownTracker({
+          id: "mobile",
+          inputId: "town-search-mobile",
+          listboxId: "town-suggestions-mobile",
+          mapStaticId: "map-static-mobile",
+          mapId: "van-map-mobile",
+          arrivalId: "arrival-estimate-mobile",
+          deferLive: true,
+        });
+
+        applySiteLayout();
       });
 
       const vanMobile = document.querySelector("#map-static-van-mobile .animate-bounce");
@@ -947,7 +1219,6 @@
         });
       });
 
-      applySiteLayout();
       LAYOUT_BREAKPOINT.addEventListener("change", applySiteLayout);
       loadVanStock();
       window.setInterval(loadVanStock, STOCK_REFRESH_MS);
