@@ -354,7 +354,7 @@
 <div class="p-6 bg-surface-container-low rounded-xl border border-outline-variant flex flex-col gap-2">
 <div class="flex items-center gap-2 text-primary mb-2">
 <span class="material-symbols-outlined">event_repeat</span>
-<h3 class="font-label-lg text-label-lg">Mai Útvonal</h3>
+<h3 class="font-label-lg text-label-lg">Mai útvonal</h3>
 </div>
 <div class="space-y-3">
 <div class="flex justify-between items-center border-b border-outline-variant pb-2">
@@ -382,8 +382,8 @@
 <section class="md:col-span-5 bg-surface-container-low p-margin-mobile md:p-gutter flex flex-col gap-gutter border-l border-outline-variant relative overflow-y-auto max-h-screen">
 <div class="flex flex-col items-center text-center gap-2 mb-4">
 <img alt="Babusgatós logó" class="h-20 w-auto" src="assets/logo-black.png">
-<h2 class="font-headline-lg text-headline-lg text-primary">Napi Készlet</h2>
-<p class="font-body-md text-on-surface-variant max-w-xs">Tekintse meg mozgó pékségünk aktuális választékát.</p>
+<h2 class="font-headline-lg text-headline-lg text-primary">Napi készlet</h2>
+<p class="font-body-md text-on-surface-variant max-w-xs">Tekintsd meg mozgó pékségünk aktuális választékát.</p>
 </div>
 <div class="space-y-8"><div class="flex gap-2 p-1 bg-surface-container rounded-full mb-6" role="tablist" aria-label="Készlet kategóriák">
     <button type="button" class="stock-tab-btn flex-1 py-2 px-4 rounded-full font-label-lg transition-all bg-secondary-container text-on-secondary-container active" data-stock="bread" role="tab" aria-selected="true">Kenyerek</button>
@@ -394,8 +394,8 @@
 <div class="bg-primary-container rounded-2xl p-8 text-on-primary-container relative overflow-hidden group shadow-lg mt-8">
 <img alt="Torta" class="absolute -right-12 -top-12 w-48 h-48 opacity-40 group-hover:scale-110 transition-transform duration-700 pointer-events-none" src="assets/cake-cutout.png">
 <div class="relative z-10 space-y-4">
-<span class="bg-on-primary-container text-primary-container px-3 py-1 rounded-full text-label-sm font-bold uppercase tracking-widest">Előrendelés</span>
-<h3 class="font-headline-lg text-headline-lg leading-tight">Ünnepi Torták &amp; Desszertek</h3>
+<span class="bg-on-primary-container text-primary-container px-3 py-1 rounded-full text-label-sm font-bold">Előrendelés</span>
+<h3 class="font-headline-lg text-headline-lg leading-tight">Ünnepi torták és desszertek</h3>
 <p class="text-body-md opacity-90 max-w-[70%]">Kézműves süteményeinket és tortáinkat már előre is lefoglalhatja különleges alkalmakra.</p>
 <a href="elorendeles.html" class="bg-on-primary-container text-primary-container px-6 py-3 rounded-lg font-label-lg hover:bg-on-primary-container/90 transition-colors inline-flex items-center gap-2 no-underline">
                             Megnézem a kínálatot
@@ -405,8 +405,8 @@
 </div>
 </div>
 <footer class="mt-auto pt-8 text-center text-label-sm text-on-surface-variant border-t border-outline-variant">
-<p class="">© 2024 Babusgatós Kézműves Pékség</p>
-<p class="">Csepregi Pékség - Minden falat szeretet.</p>
+<p class="">© 2024 Babusgatós kézműves pékség</p>
+<p class="">Csepregi pékség – minden falat szeretet.</p>
 </footer>
 </section>
 </main>
@@ -467,7 +467,7 @@
 <section id="keszlet" class="mt-12 px-4">
 <div class="flex flex-col gap-4 mb-8">
 <div>
-<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Aktuális Készlet</h2>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Aktuális készlet</h2>
 <p class="text-on-surface-variant mt-1">Frissen sült kínálatunk közvetlenül a kemencéből.</p>
 </div>
 <div class="flex bg-surface-container-low p-1 rounded-full border border-outline-variant" role="tablist">
@@ -586,20 +586,38 @@
       return `${Number.parseInt(num, 10).toLocaleString("hu-HU")} Ft`;
     }
 
-    function desktopStockHtml(item) {
+    function formatProductName(name) {
+      const trimmed = String(name || "").trim();
+      if (!trimmed) return trimmed;
+      const words = trimmed.split(/\s+/);
+      return words
+        .map((word, index) => {
+          const lower = word.toLocaleLowerCase("hu-HU");
+          if (index === 0) {
+            return lower.charAt(0).toLocaleUpperCase("hu-HU") + lower.slice(1);
+          }
+          return lower;
+        })
+        .join(" ");
+    }
+
+    function desktopStockHtml(item, showQuantities = true) {
       if (!item.available) {
         return `<p class="font-headline-md text-headline-md text-primary opacity-60 whitespace-nowrap"><span class="text-label-sm font-medium opacity-60">készleten:</span> —</p><p class="text-label-sm text-on-surface-variant font-medium whitespace-nowrap">nem elérhető</p>`;
+      }
+      if (!showQuantities) {
+        return `<p class="text-label-sm text-on-surface-variant font-medium whitespace-nowrap">${formatPrice(item.price)}</p>`;
       }
       return `<p class="font-headline-md text-headline-md text-primary whitespace-nowrap"><span class="text-label-sm font-medium opacity-60">készleten:</span> ${item.stock}db</p><p class="text-label-sm text-on-surface-variant font-medium whitespace-nowrap">${formatPrice(item.price)}</p>`;
     }
 
-    function fillMobileStockCard(card, item, { showWeight = false } = {}) {
+    function fillMobileStockCard(card, item, { showWeight = false, showQuantities = true } = {}) {
       const body = document.createElement("div");
       body.className = "p-4";
       body.innerHTML = `
         <h3 class="font-headline-md text-headline-md text-primary leading-tight"></h3>
         <div class="flex items-center justify-between gap-2 mt-2 flex-wrap mobile-stock-meta"></div>`;
-      body.querySelector("h3").textContent = item.name;
+      body.querySelector("h3").textContent = formatProductName(item.name);
       const metaEl = body.querySelector(".mobile-stock-meta");
       if (item.available) {
         if (showWeight && item.weight) {
@@ -612,10 +630,12 @@
         price.className = "text-label-sm text-on-surface-variant shrink-0";
         price.textContent = formatPrice(item.price);
         metaEl.appendChild(price);
-        const qty = document.createElement("span");
-        qty.className = "mobile-stock-qty text-headline-md text-primary font-bold shrink-0 ml-auto";
-        qty.innerHTML = `<span class="font-bold">${item.stock}db</span> <span class="text-label-sm font-normal">készleten</span>`;
-        metaEl.appendChild(qty);
+        if (showQuantities) {
+          const qty = document.createElement("span");
+          qty.className = "mobile-stock-qty text-headline-md text-primary font-bold shrink-0 ml-auto";
+          qty.innerHTML = `<span class="font-bold">${item.stock}db</span> <span class="text-label-sm font-normal">készleten</span>`;
+          metaEl.appendChild(qty);
+        }
       } else {
         const qty = document.createElement("span");
         qty.className = "text-label-sm text-on-surface-variant ml-auto";
@@ -625,7 +645,7 @@
       card.appendChild(body);
     }
 
-    function renderBreadList(listEl, items, emptyLabel) {
+    function renderBreadList(listEl, items, emptyLabel, showQuantities = true) {
       listEl.replaceChildren();
       if (!items.length) {
         const empty = document.createElement("p");
@@ -646,15 +666,15 @@
             <p class="text-on-surface-variant font-label-sm"></p>
           </div>
           <div class="text-right shrink-0"></div>`;
-        row.querySelector("h4").textContent = item.name;
+        row.querySelector("h4").textContent = formatProductName(item.name);
         row.querySelector("p.font-label-sm").textContent = item.weight || "—";
-        row.querySelector(".text-right").innerHTML = desktopStockHtml(item);
+        row.querySelector(".text-right").innerHTML = desktopStockHtml(item, showQuantities);
         grid.appendChild(row);
       });
       listEl.appendChild(grid);
     }
 
-    function renderPastryList(listEl, items, emptyLabel) {
+    function renderPastryList(listEl, items, emptyLabel, showQuantities = true) {
       listEl.replaceChildren();
       if (!items.length) {
         const empty = document.createElement("p");
@@ -675,15 +695,15 @@
             <p class="text-on-surface-variant font-label-sm"></p>
           </div>
           <div class="text-right shrink-0"></div>`;
-        row.querySelector("h4").textContent = item.name;
+        row.querySelector("h4").textContent = formatProductName(item.name);
         row.querySelector("p.font-label-sm").textContent = item.weight || "—";
-        row.querySelector(".text-right").innerHTML = desktopStockHtml(item);
+        row.querySelector(".text-right").innerHTML = desktopStockHtml(item, showQuantities);
         grid.appendChild(row);
       });
       listEl.appendChild(grid);
     }
 
-    function renderMobileBreadList(listEl, items, emptyLabel) {
+    function renderMobileBreadList(listEl, items, emptyLabel, showQuantities = true) {
       listEl.replaceChildren();
       if (!items.length) {
         const empty = document.createElement("p");
@@ -704,12 +724,12 @@
         } else {
           card.className = "border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow bg-surface-container-low";
         }
-        fillMobileStockCard(card, item, { showWeight: true });
+        fillMobileStockCard(card, item, { showWeight: true, showQuantities });
         listEl.appendChild(card);
       });
     }
 
-    function renderMobilePastryList(listEl, items, emptyLabel) {
+    function renderMobilePastryList(listEl, items, emptyLabel, showQuantities = true) {
       listEl.replaceChildren();
       if (!items.length) {
         const empty = document.createElement("p");
@@ -722,24 +742,33 @@
         const card = document.createElement("div");
         card.className = "border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow bg-surface-container-low";
         if (!item.available) card.classList.add("stock-row", "unavailable");
-        fillMobileStockCard(card, item);
+        fillMobileStockCard(card, item, { showQuantities });
         listEl.appendChild(card);
       });
     }
 
+    const cachedStock = { bread: [], pastry: [], breadOk: false, pastryOk: false };
+
     function renderStockLists(kind, items, emptyLabel, loadError, ok) {
+      const showQuantities = shouldShowStockQuantities();
       document.querySelectorAll(`[data-stock-list="${kind}"]`).forEach((listEl) => {
         const data = ok ? items : [];
         const label = ok ? emptyLabel : loadError;
         if (listEl.dataset.stockLayout === "mobile") {
-          if (kind === "bread") renderMobileBreadList(listEl, data, label);
-          else renderMobilePastryList(listEl, data, label);
+          if (kind === "bread") renderMobileBreadList(listEl, data, label, showQuantities);
+          else renderMobilePastryList(listEl, data, label, showQuantities);
         } else if (kind === "bread") {
-          renderBreadList(listEl, data, label);
+          renderBreadList(listEl, data, label, showQuantities);
         } else {
-          renderPastryList(listEl, data, label);
+          renderPastryList(listEl, data, label, showQuantities);
         }
       });
+    }
+
+    function refreshStockDisplay() {
+      const loadError = "A készletlista nem tölthető be.";
+      renderStockLists("bread", cachedStock.bread, "Jelenleg nincs kenyér a furgon készletén.", loadError, cachedStock.breadOk);
+      renderStockLists("pastry", cachedStock.pastry, "Jelenleg nincs süti a furgon készletén.", loadError, cachedStock.pastryOk);
     }
 
     async function loadVanStock() {
@@ -748,19 +777,21 @@
         fetchStockItems(STOCK_CSV_BREAD_URL),
         fetchStockItems(STOCK_CSV_PASTRY_URL),
       ]);
-      let total = 0;
       if (breadResult.status === "fulfilled") {
-        renderStockLists("bread", breadResult.value, "Jelenleg nincs kenyér a furgon készletén.", loadError, true);
-        total += breadResult.value.length;
+        cachedStock.bread = breadResult.value;
+        cachedStock.breadOk = true;
       } else {
-        renderStockLists("bread", [], loadError, loadError, false);
+        cachedStock.bread = [];
+        cachedStock.breadOk = false;
       }
       if (pastryResult.status === "fulfilled") {
-        renderStockLists("pastry", pastryResult.value, "Jelenleg nincs süti a furgon készletén.", loadError, true);
-        total += pastryResult.value.length;
+        cachedStock.pastry = pastryResult.value;
+        cachedStock.pastryOk = true;
       } else {
-        renderStockLists("pastry", [], loadError, loadError, false);
+        cachedStock.pastry = [];
+        cachedStock.pastryOk = false;
       }
+      refreshStockDisplay();
     }
 
     const LIVE_GPS_TOWN = "Nagycenk";
@@ -849,6 +880,18 @@
 
     function isVisitingToday(town) {
       return hasScheduleSlot(town) && isVisitingTodaySchedule(getScheduleSlot(town));
+    }
+
+    function getSelectedTown() {
+      const desktop = document.getElementById("town-search");
+      const mobile = document.getElementById("town-search-mobile");
+      return (desktop?.value || mobile?.value || localStorage.getItem(TOWN_STORAGE_KEY) || "").trim();
+    }
+
+    function shouldShowStockQuantities() {
+      const town = getSelectedTown();
+      if (!town || !isKnownTown(town)) return false;
+      return isLiveGpsTown(town) || isVisitingToday(town);
     }
 
     function formatArrival(town) {
@@ -1249,6 +1292,7 @@
         updateArrivalUi(null);
         updateStatusUi(null);
         updateMapBtnState(null);
+        refreshStockDisplay();
       }
 
       function showStaticForTown(townKey) {
@@ -1410,6 +1454,7 @@
             statusEl.textContent = "A térkép ehhez a településhez nem tölthető be";
           }
         }
+        refreshStockDisplay();
       }
 
       async function openMapView() {
@@ -1438,7 +1483,7 @@
           updateArrivalUi(saved);
           updateStatusUi(saved);
           updateStaticPresentationFor(surface, saved);
-          void updateAllMapButtons(saved);
+          void updateAllMapButtons(saved).then(() => refreshStockDisplay());
         }
       } else {
         resetToDefault();
