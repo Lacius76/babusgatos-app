@@ -292,6 +292,29 @@
         .mobile-tracker-panel { flex-direction: column; align-items: stretch !important; gap: 8px !important; }
         .mobile-tracker-panel .mobile-tracker-row { display: flex; align-items: center; gap: 8px; width: 100%; }
         .gps-status-stale { color: #b45309 !important; font-weight: 600; }
+        .lang-switcher {
+            display: inline-flex;
+            gap: 2px;
+            padding: 2px;
+            border-radius: 9999px;
+            background: rgba(255, 248, 245, .92);
+            border: 1px solid #d6c3b8;
+        }
+        .lang-btn {
+            min-width: 2rem;
+            padding: 4px 8px;
+            border: none;
+            border-radius: 9999px;
+            background: transparent;
+            color: #51443c;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            line-height: 1.2;
+        }
+        .lang-btn--active { background: #ffd87c; color: #795d08; }
+        .lang-btn:hover:not(.lang-btn--active) { background: rgba(98, 55, 24, .06); }
+        .lang-switcher--mobile { box-shadow: 0 4px 14px rgba(30, 27, 24, .12); }
         #arrival-estimate-mobile { display: block; width: 100%; line-height: 1.35; word-break: break-word; }
     </style>
 </head>
@@ -302,10 +325,10 @@
 <div class="flex items-center justify-between px-margin-mobile h-16 w-full max-w-container-max mx-auto">
 <div class="flex items-center gap-2">
 
-<span class="font-headline-lg text-headline-lg text-primary tracking-tight">Merre jár a Babusgatós furgon?</span>
+<span class="font-headline-lg text-headline-lg text-primary tracking-tight" data-i18n="header.tagline">Merre jár a Babusgatós furgon?</span>
 </div>
 
-<div class="flex items-center gap-4"><div class="hidden md:flex gap-8 mr-4"><a class="font-label-lg text-label-lg text-primary border-b-2 border-primary py-1" href="#">Térkép</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="#">Készlet</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="elorendeles.html">Előrendelés</a></div>
+<div class="flex items-center gap-4"><div class="lang-switcher mr-2" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv"><button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button><button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div><div class="hidden md:flex gap-8 mr-4"><a class="font-label-lg text-label-lg text-primary border-b-2 border-primary py-1" href="#" data-i18n="nav.map">Térkép</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="#" data-i18n="nav.stock">Készlet</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="elorendeles.html" data-i18n="nav.order">Előrendelés</a></div>
 <button class="material-symbols-outlined text-primary p-2 hover:bg-surface-variant rounded-full transition-colors">shopping_basket</button>
 </div>
 </div>
@@ -321,31 +344,31 @@
 <img alt="Babusgatós furgon" class="w-20 h-auto relative z-10 drop-shadow-xl transform -rotate-12" src="assets/van.png">
 </div>
 </div>
-<p id="map-pick-hint" class="absolute top-4 left-4 right-4 glass-effect rounded-xl px-4 py-3 text-center text-body-md text-on-surface-variant">Keress települést — menetrend és térkép betöltése.</p>
+<p id="map-pick-hint" class="absolute top-4 left-4 right-4 glass-effect rounded-xl px-4 py-3 text-center text-body-md text-on-surface-variant" data-i18n="map.hint">Keress települést — menetrend és térkép betöltése.</p>
 <div id="map-static-not-today" class="map-static-not-today hidden" aria-live="polite">
 <div class="map-static-not-today-card glass-effect rounded-xl px-4 py-4">
-<p class="text-body-md text-on-surface-variant">Ezen a napon nem látogatunk el hozzátok, de az alábbi időpontban megtalálsz minket a településeden:</p>
+<p class="text-body-md text-on-surface-variant" data-i18n="map.notToday">Ezen a napon nem látogatunk el hozzátok, de az alábbi időpontban megtalálsz minket a településeden:</p>
 <p id="map-static-not-today-slot" class="map-static-not-today-slot text-body-md"></p>
 </div>
 </div>
 </div>
-<div id="van-map" class="absolute inset-0 hidden" role="application" aria-label="Élő furgon térkép"></div>
+<div id="van-map" class="absolute inset-0 hidden" role="application" data-i18n-aria-label="map.vanLiveAria" aria-label="Élő furgon térkép"></div>
 <div class="absolute bottom-6 left-6 right-6 z-20">
 <div class="glass-effect p-4 rounded-xl flex items-center gap-4">
-<button type="button" id="town-map-btn" class="town-map-btn" aria-label="Térkép megnyitása" title="Térkép megnyitása" disabled>
+<button type="button" id="town-map-btn" class="town-map-btn" data-i18n-aria-label="map.openMap" data-i18n-title="map.openMap" aria-label="Térkép megnyitása" title="Térkép megnyitása" disabled>
 <span class="material-symbols-outlined town-map-btn-icon town-map-btn-icon--map">map</span>
 <span class="material-symbols-outlined town-map-btn-icon town-map-btn-icon--van hidden" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
 </button>
 <div class="min-w-0 flex-1">
-<p class="font-label-lg text-label-lg text-on-surface">Településem</p>
+<p class="font-label-lg text-label-lg text-on-surface" data-i18n="tracker.myTown">Településem</p>
 <div class="town-autocomplete mt-1">
-    <input type="text" id="town-search" data-town-sync class="town-search-input" placeholder="Keresés településre…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="town-suggestions-desktop" aria-autocomplete="list">
+    <input type="text" id="town-search" data-town-sync class="town-search-input" data-i18n-placeholder="tracker.searchPlaceholder" placeholder="Keresés településre…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="town-suggestions-desktop" aria-autocomplete="list">
     <ul id="town-suggestions-desktop" class="town-suggestions hidden" role="listbox"></ul>
 </div>
-<p id="tracker-status" class="text-label-sm text-on-surface-variant mt-1">Írj be településnevet a menetrendhez</p>
+<p id="tracker-status" class="text-label-sm text-on-surface-variant mt-1" data-i18n="tracker.statusEmpty">Írj be településnevet a menetrendhez</p>
 </div>
 <div class="ml-auto text-right shrink-0">
-<p class="font-label-sm text-label-sm text-on-surface-variant">Várható érkezés</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant" data-i18n="tracker.arrivalLabel">Várható érkezés</p>
 <p id="arrival-estimate" class="font-body-md text-body-md font-semibold text-secondary">—</p>
 </div>
 </div>
@@ -355,12 +378,12 @@
 <div class="p-6 bg-surface-container-low rounded-xl border border-outline-variant flex flex-col gap-2">
 <div class="flex items-center gap-2 text-primary mb-2">
 <span class="material-symbols-outlined">event_repeat</span>
-<h3 class="font-label-lg text-label-lg">Mai útvonal</h3>
+<h3 class="font-label-lg text-label-lg" data-i18n="route.today">Mai útvonal</h3>
 </div>
 <div class="space-y-3">
 <div class="flex justify-between items-center border-b border-outline-variant pb-2">
 <span class="text-on-surface" id="route-current-town">—</span>
-<span class="text-on-surface-variant text-label-sm">Aktuális</span>
+<span class="text-on-surface-variant text-label-sm" data-i18n="route.current">Aktuális</span>
 </div>
 <div class="flex justify-between items-center border-b border-outline-variant pb-2 opacity-60">
 <span class="text-on-surface">Tömörd, Kultúrház</span>
@@ -375,7 +398,7 @@
 <div class="relative rounded-xl overflow-hidden shadow-sm h-full min-h-[160px]">
 <img class="absolute inset-0 w-full h-full object-cover" alt="Kovászos kenyér" src="assets/bread-hero.jpg">
 <div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent flex items-end p-6">
-<p class="text-on-primary font-headline-md text-headline-md">Frissességre tervezve.</p>
+<p class="text-on-primary font-headline-md text-headline-md" data-i18n="freshness.tagline">Frissességre tervezve.</p>
 </div>
 </div>
 </div>
@@ -383,82 +406,83 @@
 <section class="md:col-span-5 bg-surface-container-low p-margin-mobile md:p-gutter flex flex-col gap-gutter border-l border-outline-variant relative overflow-y-auto max-h-screen">
 <div class="flex flex-col items-center text-center gap-2 mb-4">
 <img alt="Babusgatós logó" class="h-20 w-auto" src="assets/logo-black.png">
-<h2 class="font-headline-lg text-headline-lg text-primary">Napi készlet</h2>
-<p class="font-body-md text-on-surface-variant max-w-xs">Tekintsd meg mozgó pékségünk aktuális választékát.</p>
+<h2 class="font-headline-lg text-headline-lg text-primary" data-i18n="stock.dailyTitle">Napi készlet</h2>
+<p class="font-body-md text-on-surface-variant max-w-xs" data-i18n="stock.dailySubtitle">Tekintsd meg mozgó pékségünk aktuális választékát.</p>
 </div>
-<div class="space-y-8"><div class="flex gap-2 p-1 bg-surface-container rounded-full mb-6" role="tablist" aria-label="Készlet kategóriák">
-    <button type="button" class="stock-tab-btn flex-1 py-2 px-4 rounded-full font-label-lg transition-all bg-secondary-container text-on-secondary-container active" data-stock="bread" role="tab" aria-selected="true">Kenyerek</button>
-    <button type="button" class="stock-tab-btn flex-1 py-2 px-4 rounded-full text-on-surface-variant hover:text-primary font-label-lg transition-all" data-stock="pastry" role="tab" aria-selected="false">Sütemények</button>
+<div class="space-y-8"><div class="flex gap-2 p-1 bg-surface-container rounded-full mb-6" role="tablist" data-i18n-aria-label="stock.categoriesAria" aria-label="Készlet kategóriák">
+    <button type="button" class="stock-tab-btn flex-1 py-2 px-4 rounded-full font-label-lg transition-all bg-secondary-container text-on-secondary-container active" data-stock="bread" role="tab" aria-selected="true" data-i18n="stock.bread">Kenyerek</button>
+    <button type="button" class="stock-tab-btn flex-1 py-2 px-4 rounded-full text-on-surface-variant hover:text-primary font-label-lg transition-all" data-stock="pastry" role="tab" aria-selected="false" data-i18n="stock.pastry">Sütemények</button>
 </div>
 <div id="tab-kenyerek" class="block" data-stock-list="bread" aria-live="polite"></div>
 <div id="tab-sutemenyek" class="hidden" data-stock-list="pastry" aria-live="polite"></div>
 <div class="bg-primary-container rounded-2xl p-8 text-on-primary-container relative overflow-hidden group shadow-lg mt-8">
 <img alt="Torta" class="absolute -right-12 -top-12 w-48 h-48 opacity-40 group-hover:scale-110 transition-transform duration-700 pointer-events-none" src="assets/cake-cutout.png">
 <div class="relative z-10 space-y-4">
-<span class="bg-on-primary-container text-primary-container px-3 py-1 rounded-full text-label-sm font-bold">Előrendelés</span>
-<h3 class="font-headline-lg text-headline-lg leading-tight">Ünnepi torták és desszertek</h3>
-<p class="text-body-md opacity-90 max-w-[70%]">Kézműves süteményeinket és tortáinkat már előre is lefoglalhatja különleges alkalmakra.</p>
+<span class="bg-on-primary-container text-primary-container px-3 py-1 rounded-full text-label-sm font-bold" data-i18n="stock.preorderBadge">Előrendelés</span>
+<h3 class="font-headline-lg text-headline-lg leading-tight" data-i18n="stock.preorderTitle">Ünnepi torták és desszertek</h3>
+<p class="text-body-md opacity-90 max-w-[70%]" data-i18n="stock.preorderText">Kézműves süteményeinket és tortáinkat már előre is lefoglalhatja különleges alkalmakra.</p>
 <a href="elorendeles.html" class="bg-on-primary-container text-primary-container px-6 py-3 rounded-lg font-label-lg hover:bg-on-primary-container/90 transition-colors inline-flex items-center gap-2 no-underline">
-                            Megnézem a kínálatot
+                            <span data-i18n="stock.preorderCta">Megnézem a kínálatot</span>
                             <span class="material-symbols-outlined text-sm">arrow_forward</span>
 </a>
 </div>
 </div>
 </div>
 <footer class="mt-auto pt-8 text-center text-label-sm text-on-surface-variant border-t border-outline-variant">
-<p class="">© 2024 Babusgatós kézműves pékség</p>
-<p class="">Csepregi pékség – minden falat szeretet.</p>
+<p class="" data-i18n="footer.copyright">© 2024 Babusgatós kézműves pékség</p>
+<p class="" data-i18n="footer.tagline">Csepregi pékség – minden falat szeretet.</p>
 </footer>
 </section>
 </main>
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface border-t border-outline-variant shadow-lg md:hidden">
 <button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-5 py-1">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
-<span class="font-label-sm text-label-sm">Térkép</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav.map">Térkép</span>
 </button>
 <button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all">
 <span class="material-symbols-outlined">inventory_2</span>
-<span class="font-label-sm text-label-sm">Készlet</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav.stock">Készlet</span>
 </button>
 <a href="elorendeles.html" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all no-underline">
 <span class="material-symbols-outlined">cake</span>
-<span class="font-label-sm text-label-sm">Előrendelés</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav.order">Előrendelés</span>
 </a>
 <button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all">
 <span class="material-symbols-outlined">person</span>
-<span class="font-label-sm text-label-sm">Profile</span>
+<span class="font-label-sm text-label-sm" data-i18n="nav.profile">Profil</span>
 </button>
 </nav>
 </div>
 <div id="layout-mobile">
 <main class="pb-24 max-w-container-max mx-auto">
 <section id="terkep" class="relative overflow-hidden shadow-sm border border-outline-variant" style="height: 520px;">
+<div class="lang-switcher lang-switcher--mobile absolute top-3 right-3 z-30" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv"><button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button><button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div>
 <div id="map-static-mobile" class="absolute inset-0 overflow-hidden">
 <img alt="Falu térképes illusztráció" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA94P3KrYZkGtJYuwsNoYK6kfD0a5A4wE8XM80imkb0bJE_2N69mvOqcS5L6M2c1K9oTfWfNAmUQNh9DwEsY-ElfVyCAxRdqjX_6bTVZqbyNqg0tV6jojEmVZmJCqQNe-bOMVqGPyD1nIEcqcTvqgLlDhIhxfterS41oBDdLS60Bdb7fwWB_aqWcN2rTNoiPtV605Ez_nj7KvSSzVtY0Sl15Wgxc_Mg1Qk_lnarSgHOAtk4JNZ8ZO9x0X2pyttrJqSG9EFoqubbmhE">
 <div id="map-static-van-mobile" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center pointer-events-none">
 <div class="relative flex flex-col items-center animate-bounce">
 <img alt="Babusgatós furgon" class="w-24 h-auto drop-shadow-xl" src="assets/van.png">
-<div class="mt-2 px-3 py-1 bg-primary text-on-primary text-label-lg font-label-lg rounded-full shadow-lg">Úton hozzád!</div>
+<div class="mt-2 px-3 py-1 bg-primary text-on-primary text-label-lg font-label-lg rounded-full shadow-lg" data-i18n="mobile.onTheWay">Úton hozzád!</div>
 </div>
 </div>
-<p id="map-pick-hint-mobile" class="absolute top-3 left-3 right-3 glass-effect rounded-xl px-3 py-2 text-center text-label-sm text-on-surface-variant">Keress települést — menetrend és térkép.</p>
+<p id="map-pick-hint-mobile" class="absolute top-3 left-3 right-3 right-24 glass-effect rounded-xl px-3 py-2 text-center text-label-sm text-on-surface-variant" data-i18n="map.hint">Keress települést — menetrend és térkép.</p>
 <div id="map-static-not-today-mobile" class="map-static-not-today hidden" aria-live="polite">
 <div class="map-static-not-today-card glass-effect rounded-xl px-3 py-3">
-<p class="text-label-sm text-on-surface-variant">Ezen a napon nem látogatunk el hozzátok, de az alábbi időpontban megtalálsz minket a településeden:</p>
+<p class="text-label-sm text-on-surface-variant" data-i18n="map.notToday">Ezen a napon nem látogatunk el hozzátok, de az alábbi időpontban megtalálsz minket a településeden:</p>
 <p id="map-static-not-today-slot-mobile" class="map-static-not-today-slot text-label-sm"></p>
 </div>
 </div>
 </div>
-<div id="van-map-mobile" class="absolute inset-0 hidden" role="application" aria-label="Élő furgon térkép"></div>
+<div id="van-map-mobile" class="absolute inset-0 hidden" role="application" data-i18n-aria-label="map.vanLiveAria" aria-label="Élő furgon térkép"></div>
 <div class="absolute bottom-6 left-4 right-4 z-20 glass-effect px-4 py-3 rounded-2xl shadow-lg mobile-tracker-panel flex bg-surface/60 backdrop-blur-md border border-outline-variant/30">
 <div class="mobile-tracker-row">
-<button type="button" id="town-map-btn-mobile" class="town-map-btn" aria-label="Térkép megnyitása" title="Térkép megnyitása" disabled>
+<button type="button" id="town-map-btn-mobile" class="town-map-btn" data-i18n-aria-label="map.openMap" data-i18n-title="map.openMap" aria-label="Térkép megnyitása" title="Térkép megnyitása" disabled>
 <span class="material-symbols-outlined town-map-btn-icon town-map-btn-icon--map">map</span>
 <span class="material-symbols-outlined town-map-btn-icon town-map-btn-icon--van hidden" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
 </button>
-<span class="whitespace-nowrap text-body-md font-bold text-primary">Település:</span>
+<span class="whitespace-nowrap text-body-md font-bold text-primary" data-i18n="tracker.townLabel">Település:</span>
 <div class="town-autocomplete min-w-0 flex-1">
-<input type="text" id="town-search-mobile" data-town-sync class="town-search-input" placeholder="Keresés…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="town-suggestions-mobile" aria-autocomplete="list">
+<input type="text" id="town-search-mobile" data-town-sync class="town-search-input" data-i18n-placeholder="tracker.searchShort" placeholder="Keresés…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="town-suggestions-mobile" aria-autocomplete="list">
 <ul id="town-suggestions-mobile" class="town-suggestions hidden" role="listbox"></ul>
 </div>
 </div>
@@ -469,12 +493,12 @@
 <section id="keszlet" class="mt-12 px-4">
 <div class="flex flex-col gap-4 mb-8">
 <div>
-<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Aktuális készlet</h2>
-<p class="text-on-surface-variant mt-1">Frissen sült kínálatunk közvetlenül a kemencéből.</p>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight" data-i18n="stock.currentTitle">Aktuális készlet</h2>
+<p class="text-on-surface-variant mt-1" data-i18n="stock.currentSubtitle">Frissen sült kínálatunk közvetlenül a kemencéből.</p>
 </div>
 <div class="flex bg-surface-container-low p-1 rounded-full border border-outline-variant" role="tablist">
-<button type="button" class="mobile-stock-tab flex-1 px-4 py-2 rounded-full font-label-lg text-label-lg transition-all bg-secondary-container text-on-secondary-container shadow-sm active" data-stock="bread" role="tab" aria-selected="true">Kenyerek</button>
-<button type="button" class="mobile-stock-tab flex-1 px-4 py-2 rounded-full font-label-lg text-label-lg transition-all text-on-surface-variant" data-stock="pastry" role="tab" aria-selected="false">Sütemények</button>
+<button type="button" class="mobile-stock-tab flex-1 px-4 py-2 rounded-full font-label-lg text-label-lg transition-all bg-secondary-container text-on-secondary-container shadow-sm active" data-stock="bread" role="tab" aria-selected="true" data-i18n="stock.bread">Kenyerek</button>
+<button type="button" class="mobile-stock-tab flex-1 px-4 py-2 rounded-full font-label-lg text-label-lg transition-all text-on-surface-variant" data-stock="pastry" role="tab" aria-selected="false" data-i18n="stock.pastry">Sütemények</button>
 </div>
 </div>
 <div class="grid grid-cols-1 gap-4" data-stock-list="bread" data-stock-layout="mobile" aria-live="polite"></div>
@@ -483,23 +507,28 @@
 <section class="mt-16 mx-4 bg-surface-container-high rounded-3xl overflow-hidden shadow-lg border border-outline-variant">
 <div class="h-56"><img alt="Ünnepi torta" class="w-full h-full object-cover" src="assets/cake-cutout.png"></div>
 <div class="p-6">
-<div class="inline-block bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-label-sm font-label-sm mb-3">Prémium ajánlat</div>
-<h2 class="font-headline-lg text-headline-lg text-primary leading-tight mb-3">Torta és desszert rendelés</h2>
-<p class="text-body-md text-on-surface-variant mb-4">Kézműves tortáinkat és desszertjeinket előre is lefoglalhatod.</p>
-<a href="elorendeles.html" class="bg-primary text-on-primary px-6 py-3 rounded-xl font-label-lg text-label-lg inline-flex items-center gap-2 no-underline">Rendelés <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
+<div class="inline-block bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-label-sm font-label-sm mb-3" data-i18n="stock.premiumBadge">Prémium ajánlat</div>
+<h2 class="font-headline-lg text-headline-lg text-primary leading-tight mb-3" data-i18n="stock.orderTitle">Torta és desszert rendelés</h2>
+<p class="text-body-md text-on-surface-variant mb-4" data-i18n="stock.orderText">Kézműves tortáinkat és desszertjeinket előre is lefoglalhatod.</p>
+<a href="elorendeles.html" class="bg-primary text-on-primary px-6 py-3 rounded-xl font-label-lg text-label-lg inline-flex items-center gap-2 no-underline"><span data-i18n="stock.orderCta">Rendelés</span> <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
 </div>
 </section>
 </main>
 <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50 bg-surface border-t border-outline-variant shadow-lg flex justify-around items-center px-4 py-3">
-<a href="index.html#terkep" class="flex flex-col items-center bg-secondary-container text-on-secondary-container rounded-full px-5 py-1 no-underline"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_shipping</span><span class="font-label-sm text-label-sm">Térkép</span></a>
-<a href="index.html#keszlet" class="flex flex-col items-center text-on-surface-variant no-underline"><span class="material-symbols-outlined">inventory_2</span><span class="font-label-sm text-label-sm">Készlet</span></a>
-<a href="elorendeles.html" class="flex flex-col items-center text-on-surface-variant no-underline"><span class="material-symbols-outlined">cake</span><span class="font-label-sm text-label-sm">Előrendelés</span></a>
+<a href="index.html#terkep" class="flex flex-col items-center bg-secondary-container text-on-secondary-container rounded-full px-5 py-1 no-underline"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_shipping</span><span class="font-label-sm text-label-sm" data-i18n="nav.map">Térkép</span></a>
+<a href="index.html#keszlet" class="flex flex-col items-center text-on-surface-variant no-underline"><span class="material-symbols-outlined">inventory_2</span><span class="font-label-sm text-label-sm" data-i18n="nav.stock">Készlet</span></a>
+<a href="elorendeles.html" class="flex flex-col items-center text-on-surface-variant no-underline"><span class="material-symbols-outlined">cake</span><span class="font-label-sm text-label-sm" data-i18n="nav.order">Előrendelés</span></a>
 </nav>
 </div>
+<script src="data/i18n.js"></script>
 <script src="data/town-coords.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
     window.BabusgatosFleet = { enabled: false };
+
+    const I18N = window.BabusgatosI18n;
+    const t = (key, vars) => I18N.t(key, vars);
+    const localizeScheduleSlot = (slot) => I18N.localizeScheduleSlot(slot);
 
     const LAYOUT_BREAKPOINT = window.matchMedia("(min-width: 900px)");
 
@@ -605,12 +634,12 @@
 
     function desktopStockHtml(item, showQuantities = true) {
       if (!item.available) {
-        return `<p class="font-headline-md text-headline-md text-primary opacity-60 whitespace-nowrap"><span class="text-label-sm font-medium opacity-60">készleten:</span> —</p><p class="text-label-sm text-on-surface-variant font-medium whitespace-nowrap">nem elérhető</p>`;
+        return `<p class="font-headline-md text-headline-md text-primary opacity-60 whitespace-nowrap"><span class="text-label-sm font-medium opacity-60">${t("stock.inStock")}</span> —</p><p class="text-label-sm text-on-surface-variant font-medium whitespace-nowrap">${t("stock.unavailable")}</p>`;
       }
       if (!showQuantities) {
         return `<p class="text-label-sm text-on-surface-variant font-medium whitespace-nowrap">${formatPrice(item.price)}</p>`;
       }
-      return `<p class="font-headline-md text-headline-md text-primary whitespace-nowrap"><span class="text-label-sm font-medium opacity-60">készleten:</span> ${item.stock}db</p><p class="text-label-sm text-on-surface-variant font-medium whitespace-nowrap">${formatPrice(item.price)}</p>`;
+      return `<p class="font-headline-md text-headline-md text-primary whitespace-nowrap"><span class="text-label-sm font-medium opacity-60">${t("stock.inStock")}</span> ${item.stock}${t("stock.unit")}</p><p class="text-label-sm text-on-surface-variant font-medium whitespace-nowrap">${formatPrice(item.price)}</p>`;
     }
 
     function fillMobileStockCard(card, item, { showWeight = false, showQuantities = true } = {}) {
@@ -635,13 +664,13 @@
         if (showQuantities) {
           const qty = document.createElement("span");
           qty.className = "mobile-stock-qty text-headline-md text-primary font-bold shrink-0 ml-auto";
-          qty.innerHTML = `<span class="font-bold">${item.stock}db</span> <span class="text-label-sm font-normal">készleten</span>`;
+          qty.innerHTML = `<span class="font-bold">${item.stock}${t("stock.unit")}</span> <span class="text-label-sm font-normal">${t("stock.inStockShort")}</span>`;
           metaEl.appendChild(qty);
         }
       } else {
         const qty = document.createElement("span");
         qty.className = "text-label-sm text-on-surface-variant ml-auto";
-        qty.textContent = "nem elérhető";
+        qty.textContent = t("stock.unavailable");
         metaEl.appendChild(qty);
       }
       card.appendChild(body);
@@ -768,13 +797,13 @@
     }
 
     function refreshStockDisplay() {
-      const loadError = "A készletlista nem tölthető be.";
-      renderStockLists("bread", cachedStock.bread, "Jelenleg nincs kenyér a furgon készletén.", loadError, cachedStock.breadOk);
-      renderStockLists("pastry", cachedStock.pastry, "Jelenleg nincs süti a furgon készletén.", loadError, cachedStock.pastryOk);
+      const loadError = t("stock.loadError");
+      renderStockLists("bread", cachedStock.bread, t("stock.emptyBread"), loadError, cachedStock.breadOk);
+      renderStockLists("pastry", cachedStock.pastry, t("stock.emptyPastry"), loadError, cachedStock.pastryOk);
     }
 
     async function loadVanStock() {
-      const loadError = "A készletlista nem tölthető be.";
+      const loadError = t("stock.loadError");
       const [breadResult, pastryResult] = await Promise.allSettled([
         fetchStockItems(STOCK_CSV_BREAD_URL),
         fetchStockItems(STOCK_CSV_PASTRY_URL),
@@ -854,29 +883,29 @@
 
     function describeGpsFreshness(record) {
       const ts = getGpsTimestampMs(record);
-      if (!ts) return { label: "még nincs jel", stale: true };
+      if (!ts) return { label: t("tracker.noGpsYet"), stale: true };
       const ageMs = Math.max(0, Date.now() - ts);
       const stale = ageMs > GPS_STALE_MS;
-      const time = new Date(ts).toLocaleTimeString("hu-HU", { hour: "2-digit", minute: "2-digit" });
-      if (ageMs < 90_000) return { label: `most frissült (${time})`, stale: false };
+      const time = new Date(ts).toLocaleTimeString(I18N.getLocale(), { hour: "2-digit", minute: "2-digit" });
+      if (ageMs < 90_000) return { label: t("tracker.gpsJustNow", { time }), stale: false };
       if (ageMs < 3_600_000) {
         const mins = Math.max(1, Math.round(ageMs / 60_000));
-        return { label: `${mins} perce (${time})`, stale };
+        return { label: t("tracker.gpsMinutesAgo", { mins, time }), stale };
       }
       const hours = Math.round(ageMs / 3_600_000);
-      return { label: `${hours} órája (${time})`, stale: true };
+      return { label: t("tracker.gpsHoursAgo", { hours, time }), stale: true };
     }
 
     function getTrackerStatusText(townKey) {
-      if (!townKey) return "Írj be településnevet a menetrendhez";
+      if (!townKey) return t("tracker.statusEmpty");
       if (isLiveGpsTown(townKey)) {
         const freshness = describeGpsFreshness(lastGpsPayload);
         if (freshness.stale) {
-          return `Élő követés: ${townKey} · Utolsó jel: ${freshness.label} — ellenőrizd az OwnTracks-et`;
+          return t("tracker.liveTrackingStale", { town: townKey, freshness: freshness.label });
         }
-        return `Élő követés: ${townKey} · GPS: ${freshness.label}`;
+        return t("tracker.liveTracking", { town: townKey, freshness: freshness.label });
       }
-      return `Menetrend: ${townKey}`;
+      return t("tracker.schedule", { town: townKey });
     }
 
     function refreshLiveGpsStatusLabels() {
@@ -894,8 +923,8 @@
       if (mobileGps) {
         if (liveTown) {
           mobileGps.textContent = freshness.stale
-            ? `Utolsó GPS: ${freshness.label} — régi adat`
-            : `GPS: ${freshness.label}`;
+            ? t("tracker.gpsStaleMobile", { freshness: freshness.label })
+            : t("tracker.gpsFreshMobile", { freshness: freshness.label });
           mobileGps.classList.remove("hidden");
           mobileGps.classList.toggle("gps-status-stale", freshness.stale);
         } else {
@@ -966,9 +995,9 @@
     function formatArrival(town) {
       const slot = getScheduleSlot(town);
       if (!slot || !slot.trim() || stripDiacritics(slot.trim()) === "nem") {
-        return "Időpont egyenlőre nem elérhető";
+        return t("tracker.arrivalUnavailable");
       }
-      return slot;
+      return localizeScheduleSlot(slot);
     }
 
     function rowsToSchedule(rows) {
@@ -1056,7 +1085,7 @@
         if (!btn) return;
         btn.querySelector(".town-map-btn-icon--map")?.classList.toggle("hidden", live);
         btn.querySelector(".town-map-btn-icon--van")?.classList.toggle("hidden", !live);
-        const label = live ? "Élő furgon térkép" : "Térkép megnyitása";
+        const label = live ? t("map.liveVanMap") : t("map.openMap");
         btn.setAttribute("aria-label", label);
         btn.title = label;
       });
@@ -1099,7 +1128,11 @@
           iconAnchor: [32, 39],
         }),
         zIndexOffset: 1000,
-      }).addTo(map).bindPopup(`<strong>Babusgatós furgon</strong><br>Úton ${townLabel} felé`);
+      }).addTo(map).bindPopup(`<strong>${t("van.popupTitle")}</strong><br>${t("van.popupEnRoute", { town: townLabel })}`);
+    }
+
+    function vanPopupHtml(townLabel) {
+      return `<strong>${t("van.popupTitle")}</strong><br>${t("van.popupEnRoute", { town: townLabel })}`;
     }
 
     function startSharedLocationPoll() {
@@ -1118,9 +1151,7 @@
             if (!tracker.map || !tracker.vanMarker || !isLiveGpsTown(tracker.townKey)) return;
             tracker.lastLive = { lat, lon };
             tracker.vanMarker.setLatLng([lat, lon]);
-            tracker.vanMarker.setPopupContent(
-              `<strong>Babusgatós furgon</strong><br>Úton ${tracker.townKey} felé`
-            );
+            tracker.vanMarker.setPopupContent(vanPopupHtml(tracker.townKey));
             if (!tracker.userMovedMap) fitTrackerView(tracker);
           });
         } catch {
@@ -1305,7 +1336,42 @@
       hintEl?.classList.add("hidden");
       vanEl?.classList.toggle("is-hidden", notToday);
       notTodayEl?.classList.toggle("hidden", !notToday);
-      if (notToday && notTodaySlotEl) notTodaySlotEl.textContent = slot;
+      if (notToday && notTodaySlotEl) notTodaySlotEl.textContent = localizeScheduleSlot(slot);
+    }
+
+    function refreshTrackerTexts() {
+      const town = getSelectedTown();
+      const knownTown = town && isKnownTown(town) ? town : null;
+      const arrivalDesktop = document.getElementById("arrival-estimate");
+      const arrivalMobile = document.getElementById("arrival-estimate-mobile");
+      if (arrivalDesktop) arrivalDesktop.textContent = knownTown ? formatArrival(knownTown) : "—";
+      if (arrivalMobile) arrivalMobile.textContent = knownTown ? formatArrival(knownTown) : "—";
+      const statusEl = document.getElementById("tracker-status");
+      if (statusEl) {
+        statusEl.textContent = getTrackerStatusText(knownTown);
+        const freshness = describeGpsFreshness(lastGpsPayload);
+        statusEl.classList.toggle("gps-status-stale", Boolean(knownTown && isLiveGpsTown(knownTown) && freshness.stale));
+      }
+      refreshLiveGpsStatusLabels();
+      updateStaticPresentationFor({
+        vanStaticId: "map-static-van",
+        hintId: "map-pick-hint",
+        notTodayId: "map-static-not-today",
+        notTodaySlotId: "map-static-not-today-slot",
+      }, knownTown);
+      updateStaticPresentationFor({
+        vanStaticId: "map-static-van-mobile",
+        hintId: "map-pick-hint-mobile",
+        notTodayId: "map-static-not-today-mobile",
+        notTodaySlotId: "map-static-not-today-slot-mobile",
+      }, knownTown);
+      Object.values(trackers).forEach((tracker) => {
+        if (tracker?.vanMarker && tracker.townKey) {
+          tracker.vanMarker.setPopupContent(vanPopupHtml(tracker.townKey));
+        }
+      });
+      updateAllMapButtons(knownTown);
+      refreshStockDisplay();
     }
 
     function hideStaticPresentationFor(surface) {
@@ -1525,7 +1591,7 @@
           showStaticForTown(normalized);
           syncOtherStaticForTown(normalized);
           if (!coords && statusEl) {
-            statusEl.textContent = "A térkép ehhez a településhez nem tölthető be";
+            statusEl.textContent = t("tracker.mapLoadError");
           }
         }
         refreshStockDisplay();
@@ -1538,7 +1604,7 @@
         const coords = townCoordsCache[town] || (await fetchTownCoordsFromApi(town));
         if (!coords) {
           preferLiveMapView = false;
-          if (statusEl) statusEl.textContent = "A térkép ehhez a településhez nem tölthető be";
+          if (statusEl) statusEl.textContent = t("tracker.mapLoadError");
           return;
         }
         showLiveMap(town, coords);
@@ -1579,6 +1645,9 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+      I18N.init();
+      document.addEventListener("babusgatos:langchange", refreshTrackerTexts);
+
       const van = document.querySelector("#map-static-van .animate-bounce");
       if (van) {
         let deg = 0;

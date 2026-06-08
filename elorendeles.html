@@ -272,6 +272,28 @@
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
+    .lang-switcher {
+      display: inline-flex;
+      gap: 2px;
+      padding: 2px;
+      border-radius: 9999px;
+      background: rgba(255, 248, 245, .92);
+      border: 1px solid var(--outline-variant);
+    }
+    .lang-btn {
+      min-width: 2rem;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 9999px;
+      background: transparent;
+      color: var(--on-surface-variant);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      line-height: 1.2;
+    }
+    .lang-btn--active { background: var(--secondary-container); color: var(--on-secondary-container); }
+    .lang-btn:hover:not(.lang-btn--active) { background: rgba(98, 55, 24, .06); }
     @media (max-width: 899px) {
       body { padding-bottom: 88px; }
       .top-bar { display: none; }
@@ -315,25 +337,25 @@
     }
   </style>
 </head>
-<body>
+<body data-page="order">
   <main class="page">
     <section class="shell">
       <header class="top-bar">
-        <a href="index.html">← Vissza a furgonhoz</a>
-        <strong>Torta és desszert előrendelés</strong>
-        <span></span>
+        <a href="index.html" data-i18n="order.back">← Vissza a furgonhoz</a>
+        <strong data-i18n="order.header">Torta és desszert előrendelés</strong>
+        <div class="lang-switcher" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv"><button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button><button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div>
       </header>
 
       <section class="patisserie-feature" aria-label="Kiemelt cukrász termék">
         <div class="feature-copy">
-          <h2>Torta és desszert rendelés</h2>
-          <p>A furgon követése után jöhetnek az előrendelhető torták és cukrász kedvencek: méret, íz, felirat és átvétel egy folyamatban.</p>
+          <h2 data-i18n="order.heroTitle">Torta és desszert rendelés</h2>
+          <p data-i18n="order.heroText">A furgon követése után jöhetnek az előrendelhető torták és cukrász kedvencek: méret, íz, felirat és átvétel egy folyamatban.</p>
         </div>
         <div class="media-stage">
           <img src="assets/cake-cutout.png" alt="Málnás túrótorta">
           <div class="floating-card">
             <div class="floating-card-copy"><strong>Málnás túrótorta</strong><span>Könnyed, ünnepi, látványos szeleteléshez.</span></div>
-            <button class="ghost-btn" type="button">Részletek</button>
+            <button class="ghost-btn" type="button" data-i18n="order.details">Részletek</button>
           </div>
         </div>
       </section>
@@ -341,8 +363,8 @@
       <div class="content-band">
         <section>
           <div class="section-title">
-            <h2>Cukrász kedvencek</h2>
-            <a href="#">Tortaválasztó</a>
+            <h2 data-i18n="order.favorites">Cukrász kedvencek</h2>
+            <a href="#" data-i18n="order.cakePicker">Tortaválasztó</a>
           </div>
           <div class="products">
             <div class="product">
@@ -351,7 +373,7 @@
                 <strong>Málnás túrótorta</strong>
                 <span>Friss, gyümölcsös választás</span>
                 <div class="price">14 690 Ft-tól</div>
-                <button class="mini-add" type="button">Testreszabom</button>
+                <button class="mini-add" type="button" data-i18n="order.customize">Testreszabom</button>
               </div>
             </div>
             <div class="product">
@@ -360,7 +382,7 @@
                 <strong>Macaron box</strong>
                 <span>5 db-os ajándékdoboz</span>
                 <div class="price">2 500 Ft</div>
-                <button class="mini-add" type="button">Kosárba</button>
+                <button class="mini-add" type="button" data-i18n="order.addToCart">Kosárba</button>
               </div>
             </div>
             <div class="product">
@@ -369,13 +391,13 @@
                 <strong>Kávé mellé</strong>
                 <span>Szelet sütik és pultos ajánlatok</span>
                 <div class="price">1 190 Ft-tól</div>
-                <button class="mini-add mini-add--ghost" type="button">Nézem</button>
+                <button class="mini-add mini-add--ghost" type="button" data-i18n="order.browse">Nézem</button>
               </div>
             </div>
           </div>
         </section>
         <aside class="cart">
-          <h3>Torta összeállítás</h3>
+          <h3 data-i18n="order.cartTitle">Torta összeállítás</h3>
           <div class="cart-line">
             <img src="assets/cake-cutout.png" alt="">
             <div><strong>Málnás túrótorta</strong><span>10 szelet · „Boldog szülinapot”</span></div>
@@ -384,17 +406,19 @@
             <img src="assets/macaron.jpg" alt="">
             <div><strong>Macaron box</strong><span>Ajándék kiegészítő</span></div>
           </div>
-          <div class="total"><span>Várható ár</span><span>17 190 Ft</span></div>
-          <button class="primary-btn full" type="button">Rendelés véglegesítése</button>
+          <div class="total"><span data-i18n="order.expectedPrice">Várható ár</span><span>17 190 Ft</span></div>
+          <button class="primary-btn full" type="button" data-i18n="order.checkout">Rendelés véglegesítése</button>
         </aside>
       </div>
 
     </section>
   </main>
-  <nav class="mobile-bottom-nav" aria-label="Fő navigáció">
-    <a href="index.html#terkep"><span class="material-symbols-outlined">local_shipping</span><span>Térkép</span></a>
-    <a href="index.html#keszlet"><span class="material-symbols-outlined">inventory_2</span><span>Készlet</span></a>
-    <a href="elorendeles.html" class="is-active" aria-current="page"><span class="material-symbols-outlined">cake</span><span>Előrendelés</span></a>
+  <nav class="mobile-bottom-nav" data-i18n-aria-label="order.navAria" aria-label="Fő navigáció">
+    <a href="index.html#terkep"><span class="material-symbols-outlined">local_shipping</span><span data-i18n="nav.map">Térkép</span></a>
+    <a href="index.html#keszlet"><span class="material-symbols-outlined">inventory_2</span><span data-i18n="nav.stock">Készlet</span></a>
+    <a href="elorendeles.html" class="is-active" aria-current="page"><span class="material-symbols-outlined">cake</span><span data-i18n="nav.order">Előrendelés</span></a>
   </nav>
+  <script src="data/i18n.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", () => window.BabusgatosI18n.init());</script>
 </body>
 </html>
