@@ -291,6 +291,7 @@
         #arrival-estimate { max-width: 220px; line-height: 1.35; word-break: break-word; }
         .mobile-tracker-panel { flex-direction: column; align-items: stretch !important; gap: 8px !important; }
         .mobile-tracker-panel .mobile-tracker-row { display: flex; align-items: center; gap: 8px; width: 100%; }
+        .gps-status-stale { color: #b45309 !important; font-weight: 600; }
         #arrival-estimate-mobile { display: block; width: 100%; line-height: 1.35; word-break: break-word; }
     </style>
 </head>
@@ -462,6 +463,7 @@
 </div>
 </div>
 <span id="arrival-estimate-mobile" class="text-label-sm text-on-surface-variant">—</span>
+<span id="gps-freshness-mobile" class="text-label-sm text-on-surface-variant hidden" aria-live="polite"></span>
 </div>
 </section>
 <section id="keszlet" class="mt-12 px-4">
@@ -802,6 +804,7 @@
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vTeqEHVMttUohvursUP7zHn36ppGGIVLPn-KcyK0ADf71ZIXFamqdIkhUhklutdBEQNr9l9sm4xHtK4/pub?output=csv";
     const GEOCODE_API = "/api/geocode";
     const TRACKER_POLL_MS = 10000;
+    const GPS_STALE_MS = 20 * 60 * 1000;
     const TOWN_COORDS_SEED = {
       Nagycenk: { lat: 47.6071, lng: 16.6913 },
       Sopronkövesd: { lat: 47.5519, lng: 16.6518 },
@@ -828,6 +831,7 @@
     const trackers = {};
     let sharedPollTimer = null;
     let preferLiveMapView = false;
+    let lastGpsPayload = null;
 
     function isKnownTown(town) {
       return Boolean(town && Object.prototype.hasOwnProperty.call(townSchedule, town));
@@ -835,6 +839,71 @@
 
     function isLiveGpsTown(town) {
       return town === LIVE_GPS_TOWN;
+    }
+
+    function getGpsTimestampMs(record) {
+      if (!record) return null;
+      if (record.updatedAt) {
+        const parsed = Date.parse(record.updatedAt);
+        if (Number.isFinite(parsed)) return parsed;
+      }
+      const tst = Number(record.tst);
+      if (Number.isFinite(tst) && tst > 0) return tst * 1000;
+      return null;
+    }
+
+    function describeGpsFreshness(record) {
+      const ts = getGpsTimestampMs(record);
+      if (!ts) return { label: "még nincs jel", stale: true };
+      const ageMs = Math.max(0, Date.now() - ts);
+      const stale = ageMs > GPS_STALE_MS;
+      const time = new Date(ts).toLocaleTimeString("hu-HU", { hour: "2-digit", minute: "2-digit" });
+      if (ageMs < 90_000) return { label: `most frissült (${time})`, stale: false };
+      if (ageMs < 3_600_000) {
+        const mins = Math.max(1, Math.round(ageMs / 60_000));
+        return { label: `${mins} perce (${time})`, stale };
+      }
+      const hours = Math.round(ageMs / 3_600_000);
+      return { label: `${hours} órája (${time})`, stale: true };
+    }
+
+    function getTrackerStatusText(townKey) {
+      if (!townKey) return "Írj be településnevet a menetrendhez";
+      if (isLiveGpsTown(townKey)) {
+        const freshness = describeGpsFreshness(lastGpsPayload);
+        if (freshness.stale) {
+          return `Élő követés: ${townKey} · Utolsó jel: ${freshness.label} — ellenőrizd az OwnTracks-et`;
+        }
+        return `Élő követés: ${townKey} · GPS: ${freshness.label}`;
+      }
+      return `Menetrend: ${townKey}`;
+    }
+
+    function refreshLiveGpsStatusLabels() {
+      const town = getSelectedTown();
+      const liveTown = town && isLiveGpsTown(town);
+      const freshness = describeGpsFreshness(lastGpsPayload);
+
+      const desktop = document.getElementById("tracker-status");
+      if (desktop) {
+        desktop.textContent = getTrackerStatusText(town || null);
+        desktop.classList.toggle("gps-status-stale", Boolean(liveTown && freshness.stale));
+      }
+
+      const mobileGps = document.getElementById("gps-freshness-mobile");
+      if (mobileGps) {
+        if (liveTown) {
+          mobileGps.textContent = freshness.stale
+            ? `Utolsó GPS: ${freshness.label} — régi adat`
+            : `GPS: ${freshness.label}`;
+          mobileGps.classList.remove("hidden");
+          mobileGps.classList.toggle("gps-status-stale", freshness.stale);
+        } else {
+          mobileGps.textContent = "";
+          mobileGps.classList.add("hidden");
+          mobileGps.classList.remove("gps-status-stale");
+        }
+      }
     }
 
     function stripDiacritics(value) {
@@ -1043,6 +1112,8 @@
           const lat = Number(data.lat);
           const lon = Number(data.lon);
           if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+          lastGpsPayload = data;
+          refreshLiveGpsStatusLabels();
           Object.values(trackers).forEach((tracker) => {
             if (!tracker.map || !tracker.vanMarker || !isLiveGpsTown(tracker.townKey)) return;
             tracker.lastLive = { lat, lon };
@@ -1273,11 +1344,14 @@
 
       function updateStatusUi(townKey) {
         if (statusEl) {
-          statusEl.textContent = townKey
-            ? (isLiveGpsTown(townKey) ? `Élő követés: ${townKey}` : `Menetrend: ${townKey}`)
-            : "Írj be településnevet a menetrendhez";
+          statusEl.textContent = getTrackerStatusText(townKey || null);
+          if (statusEl.id === "tracker-status") {
+            const freshness = describeGpsFreshness(lastGpsPayload);
+            statusEl.classList.toggle("gps-status-stale", Boolean(townKey && isLiveGpsTown(townKey) && freshness.stale));
+          }
         }
         if (routeTownEl) routeTownEl.textContent = townKey || "—";
+        refreshLiveGpsStatusLabels();
       }
 
       async function updateMapBtnState(townKey) {

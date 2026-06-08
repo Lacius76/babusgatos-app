@@ -51,11 +51,29 @@ function parseBody(req) {
   return null;
 }
 
+function normalizeOwnTracksPayload(body) {
+  if (!body) return null;
+  if (Array.isArray(body)) {
+    for (let i = body.length - 1; i >= 0; i -= 1) {
+      const item = body[i];
+      if (item && typeof item === "object") return item;
+    }
+    return null;
+  }
+  if (Array.isArray(body.locations)) {
+    for (let i = body.locations.length - 1; i >= 0; i -= 1) {
+      const item = body.locations[i];
+      if (item && typeof item === "object") return item;
+    }
+  }
+  return body;
+}
+
 function parseCoordinates(payload) {
   if (!payload || typeof payload !== "object") return null;
 
-  const lat = Number(payload.lat);
-  const lon = Number(payload.lon);
+  const lat = Number(payload.lat ?? payload.latitude);
+  const lon = Number(payload.lon ?? payload.longitude ?? payload.lng);
 
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
   if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
@@ -101,11 +119,13 @@ module.exports = async function handler(req, res) {
       return res.status(401).json({ error: "unauthorized" });
     }
 
-    const payload = parseBody(req);
+    const payload = normalizeOwnTracksPayload(parseBody(req));
     const coords = parseCoordinates(payload);
 
+    // OwnTracks küld status, lwt, üres stb. üzeneteket is — ezeket 200-zal el kell fogadni,
+    // különben az app újraküldi őket és elakad a sor (HTTP 400 a logban).
     if (!coords) {
-      return res.status(400).json({ error: "lat_and_lon_required" });
+      return res.status(200).json([]);
     }
 
     const record = {
