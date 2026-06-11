@@ -521,6 +521,7 @@
 </nav>
 </div>
 <script src="data/i18n.js"></script>
+<script src="data/stock-sheets.js"></script>
 <script src="data/town-coords.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
@@ -547,11 +548,35 @@
     }
 
 
-    const STOCK_CSV_BREAD_URL =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTRnimU6TVZDlbAO1F8ESK6lLAn2As8R1AJYuFaE97aamFCNuCGbVpLV2jVdxuLaPwU8HhlH4XcObRo/pub?output=csv";
-    const STOCK_CSV_PASTRY_URL =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTRnimU6TVZDlbAO1F8ESK6lLAn2As8R1AJYuFaE97aamFCNuCGbVpLV2jVdxuLaPwU8HhlH4XcObRo/pub?gid=1011203089&single=true&output=csv";
     const STOCK_REFRESH_MS = 5 * 60 * 1000;
+    const STOCK_FIELD_ALIASES = {
+      name: ["Termék", "Termek", "Product", "Produkt"],
+      weight: ["Súly", "Suly", "Weight", "Gewicht"],
+      stock: ["Készlet", "Keszlet", "Stock", "Bestand"],
+      price: ["Ár", "Ar", "Price", "Preis"],
+      available: ["Elérhető", "Elerheto", "Available", "Verfügbar", "Verfugbar"],
+    };
+
+    function pickRowField(row, aliases) {
+      for (const key of aliases) {
+        const value = row[key];
+        if (value != null && String(value).trim()) return String(value).trim();
+      }
+      return "";
+    }
+
+    function buildStockCsvUrl(gid) {
+      const base = window.BabusgatosStockSheets?.publishBase;
+      if (!base) return null;
+      if (gid) return `${base}?gid=${gid}&single=true&output=csv`;
+      return `${base}?output=csv`;
+    }
+
+    function getStockTabGid(lang, kind) {
+      const tabs = window.BabusgatosStockSheets?.tabs?.[lang];
+      if (!tabs) return null;
+      return tabs[kind] ?? null;
+    }
 
     function parseCsvLine(line) {
       const cells = [];
@@ -585,29 +610,68 @@
 
     function isProductAvailable(flag) {
       const v = (flag || "").trim().toLowerCase();
-      return !v || v === "igen" || v === "yes" || v === "true" || v === "1";
+      return !v || v === "igen" || v === "yes" || v === "ja" || v === "true" || v === "1";
     }
 
-    function rowsToStockItems(rows) {
+    function rowsToStockItems(rows, { namesOnly = false } = {}) {
       const items = [];
       rows.forEach((row) => {
-        const name = row["Termék"] || row["Termek"] || "";
+        const name = pickRowField(row, STOCK_FIELD_ALIASES.name);
         if (!name) return;
+        if (namesOnly) {
+          items.push({ name });
+          return;
+        }
         items.push({
           name,
-          weight: row["Súly"] || row["Suly"] || "",
-          stock: Number.parseInt(String(row["Készlet"] || row["Keszlet"] || "0").replace(/\s/g, ""), 10) || 0,
-          price: row["Ár"] || row["Ar"] || "",
-          available: isProductAvailable(row["Elérhető"] || row["Elerheto"]),
+          weight: pickRowField(row, STOCK_FIELD_ALIASES.weight),
+          stock: Number.parseInt(String(pickRowField(row, STOCK_FIELD_ALIASES.stock) || "0").replace(/\s/g, ""), 10) || 0,
+          price: pickRowField(row, STOCK_FIELD_ALIASES.price),
+          available: isProductAvailable(pickRowField(row, STOCK_FIELD_ALIASES.available)),
         });
       });
       return items;
     }
 
-    async function fetchStockItems(url) {
+    function mergeStockNames(masterItems, translatedNames) {
+      if (!translatedNames.length) return masterItems;
+      return masterItems.map((item, index) => ({
+        ...item,
+        name: translatedNames[index]?.name || item.name,
+      }));
+    }
+
+    async function fetchStockCsvRows(url) {
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return rowsToStockItems(parseCsv(await res.text()));
+      const text = await res.text();
+      if (text.trimStart().startsWith("<!DOCTYPE") || text.trimStart().startsWith("<html")) {
+        throw new Error("not_published");
+      }
+      return parseCsv(text);
+    }
+
+    async function fetchStockCategory(kind) {
+      const lang = I18N.getLang();
+      const masterUrl = buildStockCsvUrl(getStockTabGid("hu", kind));
+      if (!masterUrl) throw new Error("missing_master_url");
+      const masterRows = await fetchStockCsvRows(masterUrl);
+      const masterItems = rowsToStockItems(masterRows);
+      if (lang === "hu") return masterItems;
+
+      const langGid = getStockTabGid(lang, kind);
+      if (langGid == null) return masterItems;
+
+      const langUrl = buildStockCsvUrl(langGid);
+      if (!langUrl || langUrl === masterUrl) return masterItems;
+
+      try {
+        const langRows = await fetchStockCsvRows(langUrl);
+        const translatedNames = rowsToStockItems(langRows, { namesOnly: true });
+        return mergeStockNames(masterItems, translatedNames);
+      } catch {
+        return masterItems;
+      }
     }
 
     function formatPrice(price) {
@@ -620,6 +684,7 @@
     function formatProductName(name) {
       const trimmed = String(name || "").trim();
       if (!trimmed) return trimmed;
+      if (I18N.getLang() !== "hu") return trimmed;
       const words = trimmed.split(/\s+/);
       return words
         .map((word, index) => {
@@ -803,10 +868,9 @@
     }
 
     async function loadVanStock() {
-      const loadError = t("stock.loadError");
       const [breadResult, pastryResult] = await Promise.allSettled([
-        fetchStockItems(STOCK_CSV_BREAD_URL),
-        fetchStockItems(STOCK_CSV_PASTRY_URL),
+        fetchStockCategory("bread"),
+        fetchStockCategory("pastry"),
       ]);
       if (breadResult.status === "fulfilled") {
         cachedStock.bread = breadResult.value;
@@ -1371,7 +1435,7 @@
         }
       });
       updateAllMapButtons(knownTown);
-      refreshStockDisplay();
+      void loadVanStock();
     }
 
     function hideStaticPresentationFor(surface) {
