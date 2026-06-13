@@ -315,6 +315,55 @@
         .lang-btn--active { background: #ffd87c; color: #795d08; }
         .lang-btn:hover:not(.lang-btn--active) { background: rgba(98, 55, 24, .06); }
         .lang-switcher--mobile { box-shadow: 0 4px 14px rgba(30, 27, 24, .12); }
+        .push-town-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            background: #ffd87c;
+            color: #795d08;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .push-town-chip button {
+            border: none;
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            font-size: 14px;
+        }
+        .push-enable-btn {
+            border: none;
+            border-radius: 9999px;
+            padding: 10px 18px;
+            background: #623718;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .push-enable-btn:disabled { opacity: .55; cursor: not-allowed; }
+        .push-enabled-btn {
+            border: none;
+            border-radius: 9999px;
+            padding: 10px 18px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .push-disable-link {
+            border: none;
+            background: transparent;
+            color: #84746b;
+            font-size: 13px;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+        }
         #arrival-estimate-mobile { display: block; width: 100%; line-height: 1.35; word-break: break-word; }
     </style>
 </head>
@@ -375,25 +424,26 @@
 </div>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div class="p-6 bg-surface-container-low rounded-xl border border-outline-variant flex flex-col gap-2">
-<div class="flex items-center gap-2 text-primary mb-2">
-<span class="material-symbols-outlined">event_repeat</span>
-<h3 class="font-label-lg text-label-lg" data-i18n="route.today">Mai útvonal</h3>
+<div id="push-notify-panel" class="p-6 bg-surface-container-low rounded-xl border border-outline-variant flex flex-col gap-3">
+<div class="flex items-center gap-2 text-primary">
+<span class="text-xl" aria-hidden="true">🔔</span>
+<h3 class="font-label-lg text-label-lg" data-i18n="push.title">Értesítést kérek</h3>
 </div>
-<div class="space-y-3">
-<div class="flex justify-between items-center border-b border-outline-variant pb-2">
-<span class="text-on-surface" id="route-current-town">—</span>
-<span class="text-on-surface-variant text-label-sm" data-i18n="route.current">Aktuális</span>
-</div>
-<div class="flex justify-between items-center border-b border-outline-variant pb-2 opacity-60">
-<span class="text-on-surface">Tömörd, Kultúrház</span>
-<span class="text-on-surface-variant text-label-sm">11:00</span>
-</div>
-<div class="flex justify-between items-center opacity-60">
-<span class="text-on-surface">Kőszeg, Piac</span>
-<span class="text-on-surface-variant text-label-sm">13:30</span>
+<p class="text-body-md text-on-surface-variant leading-snug" data-i18n="push.description">Ha a furgon a te településedre ér, azonnal szólunk a telefonodon. Csak az érkezésről értesítünk – semmi személyes adatot nem tárolunk.</p>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2" data-i18n="push.townsLabel">Települések</p>
+<div id="push-town-chips" class="flex flex-wrap gap-2 min-h-[28px]"></div>
+<div class="town-autocomplete mt-2">
+<input type="text" id="push-town-input" class="town-search-input" data-i18n-placeholder="push.addTownPlaceholder" placeholder="Település hozzáadása…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="push-town-suggestions" aria-autocomplete="list">
+<ul id="push-town-suggestions" class="town-suggestions hidden" role="listbox"></ul>
 </div>
 </div>
+<div class="flex items-center gap-3 flex-wrap mt-1">
+<button type="button" id="push-enable-btn" class="push-enable-btn" data-i18n="push.enable">🔔 Bekapcsolom</button>
+<button type="button" id="push-enabled-btn" class="push-enabled-btn hidden" disabled data-i18n="push.enabled">✓ Bekapcsolva</button>
+<button type="button" id="push-disable-btn" class="push-disable-link hidden" data-i18n="push.disable">Kikapcsolom</button>
+</div>
+<p id="push-status-msg" class="text-label-sm text-on-surface-variant hidden" role="status"></p>
 </div>
 <div class="relative rounded-xl overflow-hidden shadow-sm h-full min-h-[160px]">
 <img class="absolute inset-0 w-full h-full object-cover" alt="Kovászos kenyér" src="assets/bread-hero.jpg">
@@ -891,6 +941,7 @@
 
     const LIVE_GPS_TOWN = "Nagycenk";
     const TOWN_STORAGE_KEY = "babusgatos:selected-town";
+    const PUSH_TOWNS_STORAGE_KEY = "babusgatos:push-towns";
     const LOCATION_API = "/api/location";
     const SCHEDULE_API = "/api/schedule";
     const SCHEDULE_CSV_URL =
@@ -1438,6 +1489,262 @@
       void loadVanStock();
     }
 
+    let pushSelectedTowns = new Set();
+    let pushSwRegistration = null;
+    let pushVapidPublicKey = null;
+    let pushSubscribed = false;
+
+    function loadPushTownsFromStorage() {
+      try {
+        const raw = localStorage.getItem(PUSH_TOWNS_STORAGE_KEY);
+        if (!raw) return;
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) {
+          pushSelectedTowns = new Set(arr.filter((name) => isKnownTown(name)));
+        }
+      } catch {
+        /* ignore corrupt storage */
+      }
+    }
+
+    function savePushTownsToStorage() {
+      localStorage.setItem(PUSH_TOWNS_STORAGE_KEY, JSON.stringify([...pushSelectedTowns]));
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+      const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+      const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+      const raw = atob(base64);
+      const output = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; i++) output[i] = raw.charCodeAt(i);
+      return output;
+    }
+
+    function showPushStatus(message, visible = true) {
+      const el = document.getElementById("push-status-msg");
+      if (!el) return;
+      el.textContent = message || "";
+      el.classList.toggle("hidden", !visible || !message);
+    }
+
+    function renderPushTownChips() {
+      const container = document.getElementById("push-town-chips");
+      if (!container) return;
+      container.replaceChildren();
+      [...pushSelectedTowns]
+        .sort((a, b) => a.localeCompare(b, "hu"))
+        .forEach((town) => {
+          const chip = document.createElement("span");
+          chip.className = "push-town-chip";
+          const label = document.createElement("span");
+          label.textContent = town;
+          const removeBtn = document.createElement("button");
+          removeBtn.type = "button";
+          removeBtn.setAttribute("aria-label", `Eltávolítás: ${town}`);
+          removeBtn.textContent = "×";
+          removeBtn.addEventListener("click", () => {
+            pushSelectedTowns.delete(town);
+            savePushTownsToStorage();
+            renderPushTownChips();
+            if (pushSubscribed) void resyncPushSubscription();
+          });
+          chip.append(label, removeBtn);
+          container.appendChild(chip);
+        });
+    }
+
+    function addPushTown(town) {
+      const normalized = (town || "").trim();
+      if (!normalized || !isKnownTown(normalized) || pushSelectedTowns.has(normalized)) return false;
+      pushSelectedTowns.add(normalized);
+      savePushTownsToStorage();
+      renderPushTownChips();
+      return true;
+    }
+
+    function syncPushTownsFromSearch(town) {
+      const normalized = (town || "").trim();
+      if (!normalized || !isKnownTown(normalized)) return;
+      if (pushSelectedTowns.size === 0) {
+        pushSelectedTowns.add(normalized);
+        savePushTownsToStorage();
+        renderPushTownChips();
+        return;
+      }
+      if (!pushSelectedTowns.has(normalized)) {
+        pushSelectedTowns.add(normalized);
+        savePushTownsToStorage();
+        renderPushTownChips();
+        if (pushSubscribed) void resyncPushSubscription();
+      }
+    }
+
+    function setPushEnabledUi(enabled) {
+      pushSubscribed = enabled;
+      document.getElementById("push-enable-btn")?.classList.toggle("hidden", enabled);
+      document.getElementById("push-enabled-btn")?.classList.toggle("hidden", !enabled);
+      document.getElementById("push-disable-btn")?.classList.toggle("hidden", !enabled);
+    }
+
+    async function fetchPushVapidKey() {
+      if (pushVapidPublicKey) return pushVapidPublicKey;
+      try {
+        const res = await fetch("/api/push-vapid");
+        if (!res.ok) return null;
+        const data = await res.json();
+        pushVapidPublicKey = data.publicKey || null;
+        return pushVapidPublicKey;
+      } catch {
+        return null;
+      }
+    }
+
+    function isPushSupported() {
+      return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+    }
+
+    async function ensurePushServiceWorker() {
+      if (pushSwRegistration) return pushSwRegistration;
+      if (!("serviceWorker" in navigator)) return null;
+      pushSwRegistration = await navigator.serviceWorker.register("/sw.js");
+      await navigator.serviceWorker.ready;
+      return pushSwRegistration;
+    }
+
+    async function getPushSubscription() {
+      const reg = await ensurePushServiceWorker();
+      if (!reg) return null;
+      return reg.pushManager.getSubscription();
+    }
+
+    async function resyncPushSubscription() {
+      const sub = await getPushSubscription();
+      if (!sub || !pushSelectedTowns.size) return;
+      try {
+        await fetch("/api/push-subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subscription: sub.toJSON(), towns: [...pushSelectedTowns] }),
+        });
+      } catch {
+        /* offline */
+      }
+    }
+
+    async function enablePushNotifications() {
+      showPushStatus("");
+      if (!isPushSupported()) {
+        showPushStatus(t("push.notSupported"));
+        return;
+      }
+      if (!pushSelectedTowns.size) {
+        showPushStatus(t("push.needTown"));
+        return;
+      }
+
+      const vapidKey = await fetchPushVapidKey();
+      if (!vapidKey) {
+        showPushStatus(t("push.unavailable"));
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        showPushStatus(t("push.permissionDenied"));
+        return;
+      }
+
+      const reg = await ensurePushServiceWorker();
+      if (!reg) {
+        showPushStatus(t("push.notSupported"));
+        return;
+      }
+
+      const enableBtn = document.getElementById("push-enable-btn");
+      enableBtn?.setAttribute("disabled", "disabled");
+
+      try {
+        let sub = await reg.pushManager.getSubscription();
+        if (!sub) {
+          sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidKey),
+          });
+        }
+
+        const res = await fetch("/api/push-subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subscription: sub.toJSON(), towns: [...pushSelectedTowns] }),
+        });
+        if (!res.ok) throw new Error("subscribe_failed");
+
+        setPushEnabledUi(true);
+        showPushStatus("");
+      } catch {
+        showPushStatus(t("push.error"));
+        setPushEnabledUi(false);
+      } finally {
+        enableBtn?.removeAttribute("disabled");
+      }
+    }
+
+    async function disablePushNotifications() {
+      showPushStatus("");
+      try {
+        const sub = await getPushSubscription();
+        if (sub) {
+          await fetch("/api/push-unsubscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ endpoint: sub.endpoint }),
+          });
+          await sub.unsubscribe();
+        }
+      } catch {
+        /* best effort */
+      }
+      setPushEnabledUi(false);
+    }
+
+    async function initPushNotifications() {
+      const panel = document.getElementById("push-notify-panel");
+      if (!panel) return;
+
+      loadPushTownsFromStorage();
+      renderPushTownChips();
+
+      const searchTown = getSelectedTown();
+      if (searchTown && isKnownTown(searchTown)) syncPushTownsFromSearch(searchTown);
+
+      const pushInput = document.getElementById("push-town-input");
+      const pushListbox = document.getElementById("push-town-suggestions");
+      if (pushInput && pushListbox) {
+        initTownAutocomplete(pushInput, pushListbox, (town) => {
+          if (addPushTown(town)) {
+            pushInput.value = "";
+            if (pushSubscribed) void resyncPushSubscription();
+          }
+        });
+      }
+
+      document.getElementById("push-enable-btn")?.addEventListener("click", () => void enablePushNotifications());
+      document.getElementById("push-disable-btn")?.addEventListener("click", () => void disablePushNotifications());
+
+      if (!isPushSupported()) {
+        document.getElementById("push-enable-btn")?.setAttribute("disabled", "disabled");
+        return;
+      }
+
+      const sub = await getPushSubscription();
+      if (sub && Notification.permission === "granted") {
+        setPushEnabledUi(true);
+        void resyncPushSubscription();
+      } else {
+        setPushEnabledUi(false);
+      }
+    }
+
     function hideStaticPresentationFor(surface) {
       document.getElementById(surface.vanStaticId)?.classList.add("is-hidden");
       document.getElementById(surface.hintId)?.classList.add("hidden");
@@ -1451,7 +1758,6 @@
       const mapEl = document.getElementById(opts.mapId);
       const statusEl = opts.statusId ? document.getElementById(opts.statusId) : null;
       const arrivalEl = document.getElementById(opts.arrivalId);
-      const routeTownEl = opts.routeTownId ? document.getElementById(opts.routeTownId) : null;
       const mapBtn = opts.mapBtnId ? document.getElementById(opts.mapBtnId) : null;
       const surface = {
         vanStaticId: opts.vanStaticId,
@@ -1480,7 +1786,6 @@
             statusEl.classList.toggle("gps-status-stale", Boolean(townKey && isLiveGpsTown(townKey) && freshness.stale));
           }
         }
-        if (routeTownEl) routeTownEl.textContent = townKey || "—";
         refreshLiveGpsStatusLabels();
       }
 
@@ -1643,6 +1948,7 @@
         if (!options.fromLayoutSwitch && !options.fromBlur) preferLiveMapView = false;
 
         localStorage.setItem(TOWN_STORAGE_KEY, normalized);
+        syncPushTownsFromSearch(normalized);
         const coords = await updateAllMapButtons(normalized);
         const shouldShowLive = Boolean(
           coords && isLayoutActive() && (isLiveGpsTown(normalized) || preferLiveMapView)
@@ -1732,7 +2038,6 @@
           mapId: "van-map",
           statusId: "tracker-status",
           arrivalId: "arrival-estimate",
-          routeTownId: "route-current-town",
           vanStaticId: "map-static-van",
           hintId: "map-pick-hint",
           notTodayId: "map-static-not-today",
@@ -1756,6 +2061,7 @@
           deferLive: true,
         });
 
+        void initPushNotifications();
         applySiteLayout();
       });
 

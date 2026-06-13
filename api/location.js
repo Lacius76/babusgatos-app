@@ -1,23 +1,12 @@
 const STORE_KEY = "babusgatos:van-location";
+const { getRedis } = require("../lib/kv");
+const { maybeNotifyNagycenkArrival } = require("../lib/push");
 
 function memoryStore() {
   if (!globalThis.__babusgatosVanLocation) {
     globalThis.__babusgatosVanLocation = null;
   }
   return globalThis.__babusgatosVanLocation;
-}
-
-let redisClient = null;
-
-async function getRedis() {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-    return null;
-  }
-  if (!redisClient) {
-    const { Redis } = await import("@upstash/redis");
-    redisClient = Redis.fromEnv();
-  }
-  return redisClient;
 }
 
 async function loadLocation() {
@@ -138,6 +127,12 @@ module.exports = async function handler(req, res) {
     };
 
     await saveLocation(record);
+
+    try {
+      await maybeNotifyNagycenkArrival(coords.lat, coords.lon);
+    } catch {
+      /* push failure must not block OwnTracks */
+    }
 
     // OwnTracks HTTP mód üres tömböt vár válaszként
     return res.status(200).json([]);
