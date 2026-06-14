@@ -1,6 +1,6 @@
 const STORE_KEY = "babusgatos:van-location";
 const { getRedis } = require("../lib/kv");
-const { maybeNotifyNagycenkArrival } = require("../lib/push");
+const { maybeNotifyNagycenkArrival, isWithinNagycenk } = require("../lib/push");
 
 function memoryStore() {
   if (!globalThis.__babusgatosVanLocation) {
@@ -27,9 +27,11 @@ async function saveLocation(record) {
 }
 
 function parseBody(req) {
-  const body = req.body;
+  let body = req.body;
   if (body == null || body === "") return null;
-  if (typeof body === "object") return body;
+  if (Buffer.isBuffer(body)) {
+    body = body.toString("utf8");
+  }
   if (typeof body === "string") {
     try {
       return JSON.parse(body);
@@ -37,6 +39,7 @@ function parseBody(req) {
       return null;
     }
   }
+  if (typeof body === "object") return body;
   return null;
 }
 
@@ -61,8 +64,8 @@ function normalizeOwnTracksPayload(body) {
 function parseCoordinates(payload) {
   if (!payload || typeof payload !== "object") return null;
 
-  const lat = Number(payload.lat ?? payload.latitude);
-  const lon = Number(payload.lon ?? payload.longitude ?? payload.lng);
+  const lat = Number(payload.lat ?? payload.latitude ?? payload._lat);
+  const lon = Number(payload.lon ?? payload.longitude ?? payload.lng ?? payload._lon);
 
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
   if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
@@ -104,16 +107,21 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method === "POST") {
+    const body = parseBody(req);
+    console.log("OwnTracks POST érkezett:", body);
+
     if (!isAuthorized(req)) {
+      console.log("OwnTracks POST elutasítva: unauthorized");
       return res.status(401).json({ error: "unauthorized" });
     }
 
-    const payload = normalizeOwnTracksPayload(parseBody(req));
+    const payload = normalizeOwnTracksPayload(body);
     const coords = parseCoordinates(payload);
 
     // OwnTracks küld status, lwt, üres stb. üzeneteket is — ezeket 200-zal el kell fogadni,
     // különben az app újraküldi őket és elakad a sor (HTTP 400 a logban).
     if (!coords) {
+      console.log("OwnTracks POST koordináta nélkül:", payload?._type ?? "unknown");
       return res.status(200).json([]);
     }
 
@@ -127,11 +135,15 @@ module.exports = async function handler(req, res) {
     };
 
     await saveLocation(record);
+    console.log("OwnTracks GPS mentve:", record);
 
     try {
-      await maybeNotifyNagycenkArrival(coords.lat, coords.lon);
-    } catch {
-      /* push failure must not block OwnTracks */
+      const isInRange = isWithinNagycenk(coords.lat, coords.lon);
+      console.log("Nagycenken belül:", isInRange, { lat: coords.lat, lon: coords.lon });
+      const result = await maybeNotifyNagycenkArrival(coords.lat, coords.lon);
+      console.log("Push küldés eredménye:", result);
+    } catch (err) {
+      console.log("Push küldés hiba:", err?.message || err);
     }
 
     // OwnTracks HTTP mód üres tömböt vár válaszként
