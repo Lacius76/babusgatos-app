@@ -38,6 +38,7 @@ module.exports = async function handler(req, res) {
     const result = await saveSubscription(payload.subscription, payload.towns);
     return res.status(200).json({ ok: true, ...result });
   } catch (err) {
+    console.log("push-subscribe hiba:", err?.message || err);
     const code = err.message;
     if (code === "kv_unavailable") {
       return res.status(503).json({
@@ -47,6 +48,6 @@ module.exports = async function handler(req, res) {
       });
     }
     if (code === "invalid_subscription") return res.status(400).json({ error: code });
-    return res.status(500).json({ error: "subscribe_failed" });
+    return res.status(500).json({ error: "subscribe_failed", detail: err.message });
   }
 };
