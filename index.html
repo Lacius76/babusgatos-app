@@ -540,6 +540,29 @@
 <span id="gps-freshness-mobile" class="text-label-sm text-on-surface-variant hidden" aria-live="polite"></span>
 </div>
 </section>
+<section id="push-mobile" class="mt-6 px-4">
+<div id="push-notify-panel-mobile" class="p-6 bg-surface-container-low rounded-xl border border-outline-variant flex flex-col gap-3">
+<div class="flex items-center gap-2 text-primary">
+<span class="text-xl" aria-hidden="true">🔔</span>
+<h3 class="font-label-lg text-label-lg" data-i18n="push.title">Értesítést kérek</h3>
+</div>
+<p class="text-body-md text-on-surface-variant leading-snug" data-i18n="push.description">Ha a furgon a te településedre ér, azonnal szólunk a telefonodon. Csak az érkezésről értesítünk – semmi személyes adatot nem tárolunk.</p>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2" data-i18n="push.townsLabel">Települések</p>
+<div id="push-town-chips-mobile" class="flex flex-wrap gap-2 min-h-[28px]"></div>
+<div class="town-autocomplete mt-2">
+<input type="text" id="push-town-input-mobile" class="town-search-input" data-i18n-placeholder="push.addTownPlaceholder" placeholder="Település hozzáadása…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="push-town-suggestions-mobile" aria-autocomplete="list">
+<ul id="push-town-suggestions-mobile" class="town-suggestions hidden" role="listbox"></ul>
+</div>
+</div>
+<div class="flex items-center gap-3 flex-wrap mt-1">
+<button type="button" id="push-enable-btn-mobile" class="push-enable-btn" data-i18n="push.enable">🔔 Bekapcsolom</button>
+<button type="button" id="push-enabled-btn-mobile" class="push-enabled-btn hidden" disabled data-i18n="push.enabled">✓ Bekapcsolva</button>
+<button type="button" id="push-disable-btn-mobile" class="push-disable-link hidden" data-i18n="push.disable">Kikapcsolom</button>
+</div>
+<p id="push-status-msg-mobile" class="text-label-sm text-on-surface-variant hidden" role="status"></p>
+</div>
+</section>
 <section id="keszlet" class="mt-12 px-4">
 <div class="flex flex-col gap-4 mb-8">
 <div>
@@ -1521,36 +1544,37 @@
     }
 
     function showPushStatus(message, visible = true) {
-      const el = document.getElementById("push-status-msg");
-      if (!el) return;
-      el.textContent = message || "";
-      el.classList.toggle("hidden", !visible || !message);
+      document.querySelectorAll("#push-status-msg, #push-status-msg-mobile").forEach((el) => {
+        el.textContent = message || "";
+        el.classList.toggle("hidden", !visible || !message);
+      });
+    }
+
+    function buildPushTownChip(town) {
+      const chip = document.createElement("span");
+      chip.className = "push-town-chip";
+      const label = document.createElement("span");
+      label.textContent = town;
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.setAttribute("aria-label", `Eltávolítás: ${town}`);
+      removeBtn.textContent = "×";
+      removeBtn.addEventListener("click", () => {
+        pushSelectedTowns.delete(town);
+        savePushTownsToStorage();
+        renderPushTownChips();
+        if (pushSubscribed) void resyncPushSubscription();
+      });
+      chip.append(label, removeBtn);
+      return chip;
     }
 
     function renderPushTownChips() {
-      const container = document.getElementById("push-town-chips");
-      if (!container) return;
-      container.replaceChildren();
-      [...pushSelectedTowns]
-        .sort((a, b) => a.localeCompare(b, "hu"))
-        .forEach((town) => {
-          const chip = document.createElement("span");
-          chip.className = "push-town-chip";
-          const label = document.createElement("span");
-          label.textContent = town;
-          const removeBtn = document.createElement("button");
-          removeBtn.type = "button";
-          removeBtn.setAttribute("aria-label", `Eltávolítás: ${town}`);
-          removeBtn.textContent = "×";
-          removeBtn.addEventListener("click", () => {
-            pushSelectedTowns.delete(town);
-            savePushTownsToStorage();
-            renderPushTownChips();
-            if (pushSubscribed) void resyncPushSubscription();
-          });
-          chip.append(label, removeBtn);
-          container.appendChild(chip);
-        });
+      const towns = [...pushSelectedTowns].sort((a, b) => a.localeCompare(b, "hu"));
+      document.querySelectorAll("#push-town-chips, #push-town-chips-mobile").forEach((container) => {
+        container.replaceChildren();
+        towns.forEach((town) => container.appendChild(buildPushTownChip(town)));
+      });
     }
 
     function addPushTown(town) {
@@ -1581,9 +1605,15 @@
 
     function setPushEnabledUi(enabled) {
       pushSubscribed = enabled;
-      document.getElementById("push-enable-btn")?.classList.toggle("hidden", enabled);
-      document.getElementById("push-enabled-btn")?.classList.toggle("hidden", !enabled);
-      document.getElementById("push-disable-btn")?.classList.toggle("hidden", !enabled);
+      document.querySelectorAll("#push-enable-btn, #push-enable-btn-mobile").forEach((el) => {
+        el.classList.toggle("hidden", enabled);
+      });
+      document.querySelectorAll("#push-enabled-btn, #push-enabled-btn-mobile").forEach((el) => {
+        el.classList.toggle("hidden", !enabled);
+      });
+      document.querySelectorAll("#push-disable-btn, #push-disable-btn-mobile").forEach((el) => {
+        el.classList.toggle("hidden", !enabled);
+      });
     }
 
     async function fetchPushVapidKey() {
@@ -1660,8 +1690,9 @@
         return;
       }
 
-      const enableBtn = document.getElementById("push-enable-btn");
-      enableBtn?.setAttribute("disabled", "disabled");
+      document.querySelectorAll("#push-enable-btn, #push-enable-btn-mobile").forEach((el) => {
+        el.setAttribute("disabled", "disabled");
+      });
 
       try {
         let sub = await reg.pushManager.getSubscription();
@@ -1685,7 +1716,9 @@
         showPushStatus(t("push.error"));
         setPushEnabledUi(false);
       } finally {
-        enableBtn?.removeAttribute("disabled");
+        document.querySelectorAll("#push-enable-btn, #push-enable-btn-mobile").forEach((el) => {
+          el.removeAttribute("disabled");
+        });
       }
     }
 
@@ -1708,8 +1741,8 @@
     }
 
     async function initPushNotifications() {
-      const panel = document.getElementById("push-notify-panel");
-      if (!panel) return;
+      const hasPanel = document.querySelector("#push-notify-panel, #push-notify-panel-mobile");
+      if (!hasPanel) return;
 
       loadPushTownsFromStorage();
       renderPushTownChips();
@@ -1717,22 +1750,32 @@
       const searchTown = getSelectedTown();
       if (searchTown && isKnownTown(searchTown)) syncPushTownsFromSearch(searchTown);
 
-      const pushInput = document.getElementById("push-town-input");
-      const pushListbox = document.getElementById("push-town-suggestions");
-      if (pushInput && pushListbox) {
+      [
+        ["push-town-input", "push-town-suggestions"],
+        ["push-town-input-mobile", "push-town-suggestions-mobile"],
+      ].forEach(([inputId, listboxId]) => {
+        const pushInput = document.getElementById(inputId);
+        const pushListbox = document.getElementById(listboxId);
+        if (!pushInput || !pushListbox) return;
         initTownAutocomplete(pushInput, pushListbox, (town) => {
           if (addPushTown(town)) {
             pushInput.value = "";
             if (pushSubscribed) void resyncPushSubscription();
           }
         });
-      }
+      });
 
-      document.getElementById("push-enable-btn")?.addEventListener("click", () => void enablePushNotifications());
-      document.getElementById("push-disable-btn")?.addEventListener("click", () => void disablePushNotifications());
+      document.querySelectorAll("#push-enable-btn, #push-enable-btn-mobile").forEach((el) => {
+        el.addEventListener("click", () => void enablePushNotifications());
+      });
+      document.querySelectorAll("#push-disable-btn, #push-disable-btn-mobile").forEach((el) => {
+        el.addEventListener("click", () => void disablePushNotifications());
+      });
 
       if (!isPushSupported()) {
-        document.getElementById("push-enable-btn")?.setAttribute("disabled", "disabled");
+        document.querySelectorAll("#push-enable-btn, #push-enable-btn-mobile").forEach((el) => {
+          el.setAttribute("disabled", "disabled");
+        });
         return;
       }
 
