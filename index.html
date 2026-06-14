@@ -1680,7 +1680,7 @@
 
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
-        showPushStatus(t("push.permissionDenied"));
+        showPushStatus(t(permission === "denied" ? "push.permissionBlocked" : "push.permissionDenied"));
         return;
       }
 
@@ -1785,6 +1785,9 @@
         void resyncPushSubscription();
       } else {
         setPushEnabledUi(false);
+        if (Notification.permission === "denied") {
+          showPushStatus(t("push.permissionBlocked"));
+        }
       }
     }
 
