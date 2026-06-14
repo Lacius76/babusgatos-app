@@ -1,4 +1,5 @@
 const { removeSubscription } = require("../lib/push");
+const { getStorageStatus } = require("../lib/store");
 
 function parseBody(req) {
   const body = req.body;
@@ -38,7 +39,13 @@ module.exports = async function handler(req, res) {
     await removeSubscription(endpoint);
     return res.status(200).json({ ok: true });
   } catch (err) {
-    if (err.message === "kv_unavailable") return res.status(503).json({ error: err.message });
+    if (err.message === "kv_unavailable") {
+      return res.status(503).json({
+        error: err.message,
+        hint: "Állíts be Vercel KV-t vagy Blob-ot a Vercel Environment Variables-ben.",
+        storage: getStorageStatus(),
+      });
+    }
     return res.status(500).json({ error: "unsubscribe_failed" });
   }
 };

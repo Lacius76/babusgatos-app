@@ -1,4 +1,5 @@
 const { saveSubscription } = require("../lib/push");
+const { getStorageStatus } = require("../lib/store");
 
 function parseBody(req) {
   const body = req.body;
@@ -38,7 +39,13 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true, ...result });
   } catch (err) {
     const code = err.message;
-    if (code === "kv_unavailable") return res.status(503).json({ error: code });
+    if (code === "kv_unavailable") {
+      return res.status(503).json({
+        error: code,
+        hint: "Állíts be Vercel KV-t (KV_REST_API_URL + KV_REST_API_TOKEN) vagy Blob-ot (BLOB_READ_WRITE_TOKEN) a Vercel Environment Variables-ben.",
+        storage: getStorageStatus(),
+      });
+    }
     if (code === "invalid_subscription") return res.status(400).json({ error: code });
     return res.status(500).json({ error: "subscribe_failed" });
   }

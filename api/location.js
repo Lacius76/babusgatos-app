@@ -1,5 +1,5 @@
 const STORE_KEY = "babusgatos:van-location";
-const { getRedis } = require("../lib/kv");
+const { getStore } = require("../lib/store");
 const { maybeNotifyNagycenkArrival, isWithinNagycenk } = require("../lib/push");
 
 function memoryStore() {
@@ -10,20 +10,22 @@ function memoryStore() {
 }
 
 async function loadLocation() {
-  const redis = await getRedis();
-  if (redis) {
-    return redis.get(STORE_KEY);
+  const store = await getStore();
+  if (store) {
+    return store.get(STORE_KEY);
   }
   return memoryStore();
 }
 
 async function saveLocation(record) {
-  const redis = await getRedis();
-  if (redis) {
-    await redis.set(STORE_KEY, record);
+  const store = await getStore();
+  if (store) {
+    await store.set(STORE_KEY, record);
+    console.log("GPS mentve:", { backend: store.backend });
     return;
   }
   globalThis.__babusgatosVanLocation = record;
+  console.log("GPS mentve: memory (nincs KV/Blob env)");
 }
 
 function parseBody(req) {
