@@ -441,6 +441,7 @@
 <div class="flex items-center gap-3 flex-wrap mt-1">
 <button type="button" id="push-enable-btn" class="push-enable-btn" data-i18n="push.enable">🔔 Bekapcsolom</button>
 <button type="button" id="push-enabled-btn" class="push-enabled-btn hidden" disabled data-i18n="push.enabled">✓ Bekapcsolva</button>
+<button type="button" id="push-test-btn" class="push-disable-link hidden" data-i18n="push.test">Teszt értesítés</button>
 <button type="button" id="push-disable-btn" class="push-disable-link hidden" data-i18n="push.disable">Kikapcsolom</button>
 </div>
 <p id="push-status-msg" class="text-label-sm text-on-surface-variant hidden" role="status"></p>
@@ -558,6 +559,7 @@
 <div class="flex items-center gap-3 flex-wrap mt-1">
 <button type="button" id="push-enable-btn-mobile" class="push-enable-btn" data-i18n="push.enable">🔔 Bekapcsolom</button>
 <button type="button" id="push-enabled-btn-mobile" class="push-enabled-btn hidden" disabled data-i18n="push.enabled">✓ Bekapcsolva</button>
+<button type="button" id="push-test-btn-mobile" class="push-disable-link hidden" data-i18n="push.test">Teszt értesítés</button>
 <button type="button" id="push-disable-btn-mobile" class="push-disable-link hidden" data-i18n="push.disable">Kikapcsolom</button>
 </div>
 <p id="push-status-msg-mobile" class="text-label-sm text-on-surface-variant hidden" role="status"></p>
@@ -1611,6 +1613,9 @@
       document.querySelectorAll("#push-enabled-btn, #push-enabled-btn-mobile").forEach((el) => {
         el.classList.toggle("hidden", !enabled);
       });
+      document.querySelectorAll("#push-test-btn, #push-test-btn-mobile").forEach((el) => {
+        el.classList.toggle("hidden", !enabled);
+      });
       document.querySelectorAll("#push-disable-btn, #push-disable-btn-mobile").forEach((el) => {
         el.classList.toggle("hidden", !enabled);
       });
@@ -1740,6 +1745,26 @@
       setPushEnabledUi(false);
     }
 
+    async function sendTestPushNotification() {
+      showPushStatus("");
+      const sub = await getPushSubscription();
+      if (!sub) {
+        showPushStatus(t("push.testFailed"));
+        return;
+      }
+      try {
+        const res = await fetch("/api/push-test", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ endpoint: sub.endpoint }),
+        });
+        if (!res.ok) throw new Error("test_failed");
+        showPushStatus(t("push.testSent"));
+      } catch {
+        showPushStatus(t("push.testFailed"));
+      }
+    }
+
     async function initPushNotifications() {
       const hasPanel = document.querySelector("#push-notify-panel, #push-notify-panel-mobile");
       if (!hasPanel) return;
@@ -1770,6 +1795,9 @@
       });
       document.querySelectorAll("#push-disable-btn, #push-disable-btn-mobile").forEach((el) => {
         el.addEventListener("click", () => void disablePushNotifications());
+      });
+      document.querySelectorAll("#push-test-btn, #push-test-btn-mobile").forEach((el) => {
+        el.addEventListener("click", () => void sendTestPushNotification());
       });
 
       if (!isPushSupported()) {
