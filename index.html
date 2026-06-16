@@ -1652,6 +1652,14 @@
       return reg.pushManager.getSubscription();
     }
 
+    function pushSubscribePayload(sub) {
+      return {
+        subscription: sub.toJSON(),
+        towns: [...pushSelectedTowns],
+        lang: I18N.getLang(),
+      };
+    }
+
     async function resyncPushSubscription() {
       const sub = await getPushSubscription();
       if (!sub || !pushSelectedTowns.size) return;
@@ -1659,7 +1667,7 @@
         await fetch("/api/push-subscribe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ subscription: sub.toJSON(), towns: [...pushSelectedTowns] }),
+          body: JSON.stringify(pushSubscribePayload(sub)),
         });
       } catch {
         /* offline */
@@ -1711,7 +1719,7 @@
         const res = await fetch("/api/push-subscribe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ subscription: sub.toJSON(), towns: [...pushSelectedTowns] }),
+          body: JSON.stringify(pushSubscribePayload(sub)),
         });
         if (!res.ok) throw new Error("subscribe_failed");
 
@@ -1760,6 +1768,7 @@
             endpoint: sub.endpoint,
             subscription: sub.toJSON(),
             towns: [...pushSelectedTowns],
+            lang: I18N.getLang(),
             body: t("push.testBody"),
           }),
         });
@@ -2095,7 +2104,10 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       I18N.init();
-      document.addEventListener("babusgatos:langchange", refreshTrackerTexts);
+      document.addEventListener("babusgatos:langchange", () => {
+        refreshTrackerTexts();
+        if (pushSubscribed) void resyncPushSubscription();
+      });
 
       const van = document.querySelector("#map-static-van .animate-bounce");
       if (van) {

@@ -35,7 +35,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const result = await saveSubscription(payload.subscription, payload.towns);
+    const result = await saveSubscription(payload.subscription, payload.towns, payload.lang);
     return res.status(200).json({ ok: true, ...result });
   } catch (err) {
     console.log("push-subscribe hiba:", err?.message || err);
