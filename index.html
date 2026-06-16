@@ -1756,7 +1756,11 @@
         const res = await fetch("/api/push-test", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ endpoint: sub.endpoint }),
+          body: JSON.stringify({
+            endpoint: sub.endpoint,
+            subscription: sub.toJSON(),
+            towns: [...pushSelectedTowns],
+          }),
         });
         if (!res.ok) throw new Error("test_failed");
         showPushStatus(t("push.testSent"));

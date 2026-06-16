@@ -29,13 +29,13 @@ module.exports = async function handler(req, res) {
   }
 
   const payload = parseBody(req);
-  const endpoint = payload?.endpoint;
+  const endpoint = payload?.endpoint || payload?.subscription?.endpoint;
   if (!endpoint) {
     return res.status(400).json({ error: "endpoint_required" });
   }
 
   try {
-    await sendTestPush(endpoint);
+    await sendTestPush(endpoint, payload.subscription, payload.towns);
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.log("push-test hiba:", err?.message || err);
