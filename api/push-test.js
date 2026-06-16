@@ -35,7 +35,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    await sendTestPush(endpoint, payload.subscription, payload.towns);
+    await sendTestPush(endpoint, payload.subscription, payload.towns, payload.body);
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.log("push-test hiba:", err?.message || err);
