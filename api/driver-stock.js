@@ -1,6 +1,6 @@
 const { verifyDriverPin, readPinFromRequest } = require("../lib/driver-auth");
 const { fetchDriverStockCategory } = require("../lib/stock-core");
-const { adjustStockInSheet, isSheetsWriteConfigured } = require("../lib/google-sheets");
+const { isStockWriteConfigured, adjustStock } = require("../lib/stock-write");
 
 function setCors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -43,7 +43,7 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({
         category,
         items,
-        writable: isSheetsWriteConfigured(),
+        writable: isStockWriteConfigured(),
       });
     } catch (err) {
       const code = err?.message === "invalid_category" ? 400 : 502;
@@ -52,7 +52,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    if (!isSheetsWriteConfigured()) {
+    if (!isStockWriteConfigured()) {
       return res.status(503).json({ error: "sheets_not_configured" });
     }
 
@@ -60,6 +60,7 @@ module.exports = async function handler(req, res) {
     const category = parseCategory(body.category);
     const product = String(body.product || "").trim();
     const delta = Number.parseInt(String(body.delta ?? ""), 10);
+    const pin = readPinFromRequest(req);
 
     if (!category) {
       return res.status(400).json({ error: "invalid_category" });
@@ -72,7 +73,7 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-      const result = await adjustStockInSheet(category, product, delta);
+      const result = await adjustStock(category, product, delta, pin);
       return res.status(200).json({ ok: true, ...result });
     } catch (err) {
       const message = err?.message || "update_failed";
