@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Babusgatós — Sofőr készlet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&family=Work+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #623718;
+      --on-primary: #ffffff;
+      --primary-container: #7d4e2d;
+      --secondary-container: #ffd87c;
+      --on-secondary-container: #795d08;
+      --surface: #fff8f5;
+      --on-surface: #1e1b18;
+      --on-surface-variant: #51443c;
+      --outline-variant: #d6c3b8;
+      --error: #ba1a1a;
+      --paper: #fff8f5;
+      --line: #d6c3b8;
+      font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--on-surface);
+      background: linear-gradient(135deg, #fff9ef 0%, #f4eee6 45%, #eef3ee 100%);
+      -webkit-tap-highlight-color: transparent;
+    }
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      touch-action: manipulation;
+    }
+    .page {
+      width: min(720px, 100%);
+      margin: 0 auto;
+      padding: 16px;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+    .shell {
+      border: 1px solid rgba(65, 47, 38, .13);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: 0 20px 50px rgba(54, 38, 28, .14);
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.9);
+    }
+    .top-bar strong {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 18px;
+      color: var(--primary);
+    }
+    .top-bar button {
+      color: var(--on-surface-variant);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .panel { padding: 20px 18px 24px; }
+    .pin-title {
+      margin: 0 0 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      color: var(--primary);
+      text-align: center;
+    }
+    .pin-sub {
+      margin: 0 0 20px;
+      text-align: center;
+      color: var(--on-surface-variant);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+    .pin-dots {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .pin-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      background: transparent;
+      transition: background .15s ease;
+    }
+    .pin-dot.filled { background: var(--primary); }
+    .pin-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    .pin-key {
+      min-height: 72px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      box-shadow: 0 2px 8px rgba(98, 55, 24, .08);
+    }
+    .pin-key:active { transform: scale(.97); background: var(--secondary-container); }
+    .pin-key--action { font-size: 14px; font-weight: 600; }
+    .pin-error {
+      min-height: 22px;
+      margin-top: 14px;
+      text-align: center;
+      color: var(--error);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 6px;
+      margin-bottom: 18px;
+      background: #f3ebe4;
+      border-radius: 999px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--on-surface-variant);
+      transition: background .2s, color .2s, box-shadow .2s;
+    }
+    .tab-btn.active {
+      background: var(--secondary-container);
+      color: var(--on-secondary-container);
+      box-shadow: 0 2px 8px rgba(121, 93, 8, .15);
+    }
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      color: var(--on-surface-variant);
+    }
+    .status-bar .warn {
+      color: #9a6700;
+      font-weight: 600;
+    }
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .product-row {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 16px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .product-row.unavailable { opacity: .55; }
+    .product-name {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--on-surface);
+      word-break: break-word;
+    }
+    .product-weight {
+      font-size: 13px;
+      color: var(--on-surface-variant);
+      margin-top: 4px;
+    }
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+    }
+    .qty-btn {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+      background: var(--primary-container);
+      color: var(--on-primary);
+      box-shadow: 0 4px 12px rgba(98, 55, 24, .22);
+    }
+    .qty-btn:disabled {
+      opacity: .45;
+      box-shadow: none;
+    }
+    .qty-btn:active:not(:disabled) { transform: scale(.96); }
+    .qty-value {
+      min-width: 56px;
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+    }
+    .empty, .loading, .error-msg {
+      text-align: center;
+      padding: 32px 12px;
+      color: var(--on-surface-variant);
+    }
+    .error-msg { color: var(--error); font-weight: 600; }
+    .hidden { display: none !important; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(20px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: var(--on-primary);
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+      z-index: 50;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="shell">
+      <div class="top-bar">
+        <strong>Babusgatós · Sofőr</strong>
+        <button type="button" id="logout-btn" class="hidden">Kilépés</button>
+      </div>
+
+      <section id="pin-screen" class="panel">
+        <h1 class="pin-title">Belépés</h1>
+        <p class="pin-sub">Add meg a 4 jegyű kódot a készlet kezeléséhez.</p>
+        <div class="pin-dots" aria-hidden="true">
+          <span class="pin-dot" data-pin-dot></span>
+          <span class="pin-dot" data-pin-dot></span>
+          <span class="pin-dot" data-pin-dot></span>
+          <span class="pin-dot" data-pin-dot></span>
+        </div>
+        <div class="pin-pad">
+          <button type="button" class="pin-key" data-pin="1">1</button>
+          <button type="button" class="pin-key" data-pin="2">2</button>
+          <button type="button" class="pin-key" data-pin="3">3</button>
+          <button type="button" class="pin-key" data-pin="4">4</button>
+          <button type="button" class="pin-key" data-pin="5">5</button>
+          <button type="button" class="pin-key" data-pin="6">6</button>
+          <button type="button" class="pin-key" data-pin="7">7</button>
+          <button type="button" class="pin-key" data-pin="8">8</button>
+          <button type="button" class="pin-key" data-pin="9">9</button>
+          <button type="button" class="pin-key pin-key--action" data-pin-action="clear">Törlés</button>
+          <button type="button" class="pin-key" data-pin="0">0</button>
+          <button type="button" class="pin-key pin-key--action" data-pin-action="back">⌫</button>
+        </div>
+        <p class="pin-error" id="pin-error" aria-live="polite"></p>
+      </section>
+
+      <section id="stock-screen" class="panel hidden">
+        <div class="tabs" role="tablist" aria-label="Készlet kategóriák">
+          <button type="button" class="tab-btn active" data-category="bread" role="tab" aria-selected="true">Kenyerek</button>
+          <button type="button" class="tab-btn" data-category="pastry" role="tab" aria-selected="false">Sütemények</button>
+        </div>
+        <div class="status-bar">
+          <span id="sync-status">Betöltés…</span>
+          <button type="button" id="refresh-btn" style="font-size:13px;font-weight:600;color:var(--primary);padding:6px 10px;">Frissítés</button>
+        </div>
+        <div id="product-list" class="product-list" aria-live="polite"></div>
+      </section>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const PIN_KEY = "babusgatos_driver_pin";
+    const API = "/api/driver-stock";
+
+    let pin = sessionStorage.getItem(PIN_KEY) || "";
+    let category = "bread";
+    let items = [];
+    let writable = true;
+    let pinBuffer = "";
+    let busy = false;
+
+    const pinScreen = document.getElementById("pin-screen");
+    const stockScreen = document.getElementById("stock-screen");
+    const pinError = document.getElementById("pin-error");
+    const productList = document.getElementById("product-list");
+    const syncStatus = document.getElementById("sync-status");
+    const logoutBtn = document.getElementById("logout-btn");
+    const toastEl = document.getElementById("toast");
+
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toastEl.classList.remove("show"), 2200);
+    }
+
+    function updatePinDots() {
+      document.querySelectorAll("[data-pin-dot]").forEach((dot, i) => {
+        dot.classList.toggle("filled", i < pinBuffer.length);
+      });
+    }
+
+    function showPinScreen() {
+      pinScreen.classList.remove("hidden");
+      stockScreen.classList.add("hidden");
+      logoutBtn.classList.add("hidden");
+      pinBuffer = "";
+      pinError.textContent = "";
+      updatePinDots();
+    }
+
+    function showStockScreen() {
+      pinScreen.classList.add("hidden");
+      stockScreen.classList.remove("hidden");
+      logoutBtn.classList.remove("hidden");
+    }
+
+    async function apiFetch(url, options = {}) {
+      const headers = {
+        "X-Driver-Pin": pin,
+        ...(options.headers || {}),
+      };
+      let res;
+      try {
+        res = await fetch(url, { ...options, headers });
+      } catch {
+        throw new Error("network_error");
+      }
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        sessionStorage.removeItem(PIN_KEY);
+        pin = "";
+        showPinScreen();
+        pinError.textContent = "Hibás kód.";
+        throw new Error("invalid_pin");
+      }
+      if (res.status === 404) throw new Error("api_not_found");
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      return data;
+    }
+
+    function formatName(name) {
+      const words = String(name || "").trim().split(/\s+/);
+      return words
+        .map((word, i) => {
+          const lower = word.toLocaleLowerCase("hu-HU");
+          if (i === 0) return lower.charAt(0).toLocaleUpperCase("hu-HU") + lower.slice(1);
+          return lower;
+        })
+        .join(" ");
+    }
+
+    function renderProducts() {
+      if (!items.length) {
+        productList.innerHTML = '<p class="empty">Nincs termék ebben a kategóriában.</p>';
+        return;
+      }
+
+      productList.innerHTML = items
+        .map((item, index) => {
+          const disabledMinus = !writable || item.stock <= 0;
+          const disabledPlus = !writable;
+          const rowClass = item.available ? "" : " unavailable";
+          return `
+            <article class="product-row${rowClass}" data-index="${index}">
+              <div>
+                <div class="product-name">${formatName(item.name)}</div>
+                ${item.weight ? `<div class="product-weight">${item.weight}</div>` : ""}
+              </div>
+              <div class="qty-controls">
+                <button type="button" class="qty-btn" data-action="minus" data-index="${index}" ${disabledMinus ? "disabled" : ""} aria-label="Kevesebb: ${item.name}">−</button>
+                <div class="qty-value" data-qty="${index}">${item.stock}</div>
+                <button type="button" class="qty-btn" data-action="plus" data-index="${index}" ${disabledPlus ? "disabled" : ""} aria-label="Több: ${item.name}">+</button>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+
+      productList.querySelectorAll(".qty-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const idx = Number(btn.dataset.index);
+          const delta = btn.dataset.action === "plus" ? 1 : -1;
+          adjustStock(idx, delta);
+        });
+      });
+    }
+
+    async function loadStock() {
+      syncStatus.textContent = "Betöltés…";
+      productList.innerHTML = '<p class="loading">Betöltés…</p>';
+      try {
+        const data = await apiFetch(`${API}?category=${category}`);
+        items = data.items || [];
+        writable = data.writable !== false;
+        syncStatus.innerHTML = writable
+          ? "Készlet szinkronban"
+          : '<span class="warn">Csak olvasható — Sheets API nincs beállítva</span>';
+        renderProducts();
+      } catch (err) {
+        if (err.message === "invalid_pin") return;
+        productList.innerHTML = '<p class="error-msg">Nem sikerült betölteni a készletet.</p>';
+        syncStatus.textContent = "Hiba";
+      }
+    }
+
+    async function adjustStock(index, delta) {
+      if (busy || !writable) return;
+      const item = items[index];
+      if (!item) return;
+      if (delta < 0 && item.stock <= 0) return;
+
+      busy = true;
+      const prev = item.stock;
+      item.stock = Math.max(0, prev + delta);
+      const qtyEl = productList.querySelector(`[data-qty="${index}"]`);
+      if (qtyEl) qtyEl.textContent = String(item.stock);
+
+      try {
+        const data = await apiFetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ category, product: item.name, delta }),
+        });
+        item.stock = data.stock;
+        if (qtyEl) qtyEl.textContent = String(item.stock);
+        renderProducts();
+      } catch (err) {
+        item.stock = prev;
+        if (qtyEl) qtyEl.textContent = String(prev);
+        if (err.message === "invalid_pin") return;
+        showToast(err.message === "sheets_not_configured" ? "Nincs Sheets írás beállítva" : "Mentés sikertelen");
+      } finally {
+        busy = false;
+      }
+    }
+
+    async function tryPin(entered) {
+      pin = entered;
+      pinError.textContent = "";
+      try {
+        await apiFetch(`${API}?category=bread`);
+        sessionStorage.setItem(PIN_KEY, pin);
+        showStockScreen();
+        await loadStock();
+      } catch (err) {
+        pin = "";
+        pinBuffer = "";
+        updatePinDots();
+        if (err.message === "invalid_pin") return;
+        if (err.message === "api_not_found" || err.message === "network_error") {
+          pinError.textContent = "A szerver még nincs frissítve, vagy nincs internet. Deploy után próbáld újra.";
+          return;
+        }
+        pinError.textContent = "Nem sikerült belépni. Próbáld újra.";
+      }
+    }
+
+    document.querySelectorAll("[data-pin]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (pinBuffer.length >= 4) return;
+        pinBuffer += btn.dataset.pin;
+        updatePinDots();
+        if (pinBuffer.length === 4) tryPin(pinBuffer);
+      });
+    });
+
+    document.querySelector('[data-pin-action="back"]').addEventListener("click", () => {
+      pinBuffer = pinBuffer.slice(0, -1);
+      pinError.textContent = "";
+      updatePinDots();
+    });
+
+    document.querySelector('[data-pin-action="clear"]').addEventListener("click", () => {
+      pinBuffer = "";
+      pinError.textContent = "";
+      updatePinDots();
+    });
+
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        category = btn.dataset.category;
+        document.querySelectorAll(".tab-btn").forEach((b) => {
+          const active = b === btn;
+          b.classList.toggle("active", active);
+          b.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        loadStock();
+      });
+    });
+
+    document.getElementById("refresh-btn").addEventListener("click", () => loadStock());
+
+    logoutBtn.addEventListener("click", () => {
+      sessionStorage.removeItem(PIN_KEY);
+      pin = "";
+      showPinScreen();
+    });
+
+    if (pin) {
+      showStockScreen();
+      loadStock();
+    } else {
+      showPinScreen();
+    }
+  </script>
+</body>
+</html>
