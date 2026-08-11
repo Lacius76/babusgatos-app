@@ -328,6 +328,142 @@
         .lang-btn--active { background: #ffd87c; color: #795d08; }
         .lang-btn:hover:not(.lang-btn--active) { background: rgba(98, 55, 24, .06); }
         .lang-switcher--mobile { box-shadow: 0 4px 14px rgba(30, 27, 24, .12); }
+        .header-cart-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        .header-cart-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: none;
+            border-radius: 9999px;
+            color: #623718;
+            background: transparent;
+            cursor: pointer;
+        }
+        .header-cart-btn:hover { background: rgba(98, 55, 24, .06); }
+        .header-cart-btn .material-symbols-outlined { font-size: 24px; line-height: 1; }
+        .header-cart-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            border-radius: 9999px;
+            background: #623718;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 16px;
+            text-align: center;
+        }
+        .cart-popover {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: min(340px, calc(100vw - 24px));
+            z-index: 80;
+            border: 1px solid #d6c3b8;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 18px 40px rgba(54, 38, 28, .18);
+            padding: 16px;
+            display: none;
+        }
+        .cart-popover.is-open { display: block; }
+        .cart-popover h3 {
+            margin: 0 0 12px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #623718;
+        }
+        .cart-popover .cart-empty {
+            padding: 16px 8px;
+            color: #51443c;
+            font-size: 13px;
+            line-height: 1.45;
+            text-align: center;
+            border: 1px dashed #d6c3b8;
+            border-radius: 8px;
+            margin: 0 0 12px;
+        }
+        .cart-popover .cart-line {
+            display: grid;
+            grid-template-columns: 44px 1fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #d6c3b8;
+        }
+        .cart-popover .cart-line img {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .cart-popover .cart-line strong {
+            display: block;
+            font-size: 14px;
+            color: #1e1b18;
+        }
+        .cart-popover .cart-line span {
+            color: #51443c;
+            font-size: 12px;
+        }
+        .cart-line-remove {
+            border: none;
+            background: transparent;
+            color: #84746b;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 9999px;
+            line-height: 1;
+        }
+        .cart-line-remove:hover { color: #623718; background: rgba(98, 55, 24, .06); }
+        .cart-line-remove .material-symbols-outlined { font-size: 18px; }
+        .cart-popover .total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+            font-size: 16px;
+            font-weight: 800;
+            color: #1e1b18;
+        }
+        .cart-popover .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 42px;
+            border-radius: 8px;
+            background: #623718;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            border: none;
+        }
+        .cart-popover .primary-btn.is-disabled {
+            opacity: .45;
+            pointer-events: none;
+        }
+        .cart-popover-mobile-wrap {
+            position: absolute;
+            top: 3px;
+            right: 3.6rem;
+            z-index: 35;
+        }
+        .cart-popover-mobile-wrap .cart-popover {
+            right: 0;
+        }
         .push-town-chip {
             display: inline-flex;
             align-items: center;
@@ -409,6 +545,18 @@
 </div>
 
 <div class="flex items-center gap-4"><div class="lang-switcher mr-2" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv"><button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button><button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div><div class="hidden md:flex gap-8 mr-4"><a class="font-label-lg text-label-lg text-primary border-b-2 border-primary py-1" href="#" data-i18n="nav.map">Térkép</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="#" data-i18n="nav.stock">Készlet</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="elorendeles.html" data-i18n="nav.order">Előrendelés</a></div>
+<div class="header-cart-wrap">
+<button type="button" class="header-cart-btn" id="header-cart-btn" data-cart-toggle data-i18n-aria-label="order.cartTitle" aria-label="Kosár" aria-expanded="false" aria-controls="header-cart-popover">
+<span class="material-symbols-outlined">shopping_basket</span>
+<span class="header-cart-badge" data-cart-badge hidden>0</span>
+</button>
+<div class="cart-popover" id="header-cart-popover" role="dialog" aria-labelledby="header-cart-title">
+<h3 id="header-cart-title" data-i18n="order.cartTitle">Kosár</h3>
+<div id="header-cart-items" class="cart-items" aria-live="polite"></div>
+<div class="total"><span data-i18n="order.expectedPrice">Összesen</span><span id="header-cart-total">0 Ft</span></div>
+<a class="primary-btn is-disabled" id="header-cart-checkout" href="checkout.html" data-i18n="order.checkout" aria-disabled="true">Rendelés véglegesítése</a>
+</div>
+</div>
 </div>
 </div>
 </header>
@@ -543,6 +691,18 @@
 <div id="layout-mobile">
 <main class="pb-24 max-w-container-max mx-auto">
 <section id="terkep" class="relative overflow-hidden shadow-sm border border-outline-variant" style="height: 520px;">
+<div class="cart-popover-mobile-wrap header-cart-wrap">
+<button type="button" class="header-cart-btn" id="header-cart-btn-mobile" data-cart-toggle data-i18n-aria-label="order.cartTitle" aria-label="Kosár" aria-expanded="false" aria-controls="header-cart-popover-mobile" style="background:rgba(255,248,245,.92);border:1px solid #d6c3b8;box-shadow:0 4px 14px rgba(30,27,24,.12);">
+<span class="material-symbols-outlined">shopping_basket</span>
+<span class="header-cart-badge" data-cart-badge hidden>0</span>
+</button>
+<div class="cart-popover" id="header-cart-popover-mobile" role="dialog" aria-labelledby="header-cart-title-mobile">
+<h3 id="header-cart-title-mobile" data-i18n="order.cartTitle">Kosár</h3>
+<div id="header-cart-items-mobile" class="cart-items" aria-live="polite"></div>
+<div class="total"><span data-i18n="order.expectedPrice">Összesen</span><span id="header-cart-total-mobile">0 Ft</span></div>
+<a class="primary-btn is-disabled" id="header-cart-checkout-mobile" href="checkout.html" data-i18n="order.checkout" aria-disabled="true">Rendelés véglegesítése</a>
+</div>
+</div>
 <div class="lang-switcher lang-switcher--mobile absolute top-3 right-3 z-30" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv"><button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button><button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div>
 <div id="map-static-mobile" class="absolute inset-0 overflow-hidden">
 <img alt="Falu térképes illusztráció" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA94P3KrYZkGtJYuwsNoYK6kfD0a5A4wE8XM80imkb0bJE_2N69mvOqcS5L6M2c1K9oTfWfNAmUQNh9DwEsY-ElfVyCAxRdqjX_6bTVZqbyNqg0tV6jojEmVZmJCqQNe-bOMVqGPyD1nIEcqcTvqgLlDhIhxfterS41oBDdLS60Bdb7fwWB_aqWcN2rTNoiPtV605Ez_nj7KvSSzVtY0Sl15Wgxc_Mg1Qk_lnarSgHOAtk4JNZ8ZO9x0X2pyttrJqSG9EFoqubbmhE">
@@ -635,6 +795,7 @@
 </nav>
 </div>
 <script src="data/i18n.js"></script>
+<script src="data/cart.js"></script>
 <script src="data/stock-sheets.js"></script>
 <script src="data/town-coords.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -2172,8 +2333,81 @@
       };
     }
 
+    function initHeaderCart() {
+      const Cart = window.BabusgatosCart;
+      if (!Cart) return;
+
+      const surfaces = [
+        {
+          toggle: document.getElementById("header-cart-btn"),
+          popover: document.getElementById("header-cart-popover"),
+          items: document.getElementById("header-cart-items"),
+          total: document.getElementById("header-cart-total"),
+          checkout: document.getElementById("header-cart-checkout"),
+        },
+        {
+          toggle: document.getElementById("header-cart-btn-mobile"),
+          popover: document.getElementById("header-cart-popover-mobile"),
+          items: document.getElementById("header-cart-items-mobile"),
+          total: document.getElementById("header-cart-total-mobile"),
+          checkout: document.getElementById("header-cart-checkout-mobile"),
+        },
+      ];
+
+      function closeAll() {
+        surfaces.forEach(({ toggle, popover }) => {
+          if (!popover) return;
+          popover.classList.remove("is-open");
+          toggle?.setAttribute("aria-expanded", "false");
+        });
+      }
+
+      function renderSurface(surface, items) {
+        if (!surface.items || !surface.total || !surface.checkout) return;
+        surface.items.innerHTML = Cart.renderCartLines(items, { removable: true });
+        surface.total.textContent = Cart.formatHuf(Cart.cartTotal(items));
+        const empty = !items.length;
+        surface.checkout.classList.toggle("is-disabled", empty);
+        surface.checkout.setAttribute("aria-disabled", empty ? "true" : "false");
+        Cart.bindRemoveButtons(surface.items, () => renderAll());
+      }
+
+      function renderAll() {
+        const items = Cart.loadCart();
+        Cart.updateCartBadges(items);
+        surfaces.forEach((surface) => renderSurface(surface, items));
+      }
+
+      surfaces.forEach(({ toggle, popover }) => {
+        toggle?.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const willOpen = !popover?.classList.contains("is-open");
+          closeAll();
+          if (willOpen && popover) {
+            renderAll();
+            popover.classList.add("is-open");
+            toggle.setAttribute("aria-expanded", "true");
+          }
+        });
+      });
+
+      document.addEventListener("click", (e) => {
+        if (e.target.closest(".header-cart-wrap")) return;
+        closeAll();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeAll();
+      });
+
+      document.addEventListener("babusgatos:cartchange", () => renderAll());
+      document.addEventListener("babusgatos:langchange", () => renderAll());
+      renderAll();
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       I18N.init();
+      initHeaderCart();
       document.addEventListener("babusgatos:langchange", () => {
         refreshTrackerTexts();
         if (pushSubscribed) void resyncPushSubscription();

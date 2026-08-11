@@ -75,6 +75,7 @@
       flex-shrink: 0;
     }
     .top-bar-cart {
+      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -85,7 +86,7 @@
       border-radius: 9999px;
       color: var(--brown);
       background: transparent;
-      text-decoration: none;
+      cursor: pointer;
     }
     .top-bar-cart:hover {
       background: rgba(98, 55, 24, .06);
@@ -94,6 +95,99 @@
       font-size: 24px;
       line-height: 1;
     }
+    .header-cart-wrap { position: relative; }
+    .header-cart-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 9999px;
+      background: var(--brown);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 16px;
+      text-align: center;
+    }
+    .cart-popover {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: min(340px, calc(100vw - 24px));
+      z-index: 80;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 18px 40px rgba(54, 38, 28, .18);
+      padding: 16px;
+      display: none;
+    }
+    .cart-popover.is-open { display: block; }
+    .cart-popover h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--brown);
+    }
+    .cart-popover .cart-empty {
+      padding: 16px 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      text-align: center;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      margin: 0 0 12px;
+    }
+    .cart-popover .cart-line {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .cart-popover .cart-line img {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .cart-popover .total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 12px 0;
+      font-size: 16px;
+      font-weight: 800;
+    }
+    .cart-popover .primary-btn {
+      width: 100%;
+      text-decoration: none;
+      color: var(--on-primary) !important;
+      background: var(--primary);
+    }
+    .cart-popover .primary-btn:hover {
+      background: var(--primary-container);
+      color: var(--on-primary) !important;
+    }
+    .cart-popover .primary-btn.is-disabled {
+      pointer-events: none;
+      opacity: .55;
+    }
+    .cart-line-remove {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 9999px;
+      line-height: 1;
+    }
+    .cart-line-remove:hover { color: var(--brown); background: rgba(98, 55, 24, .06); }
+    .cart-line-remove .material-symbols-outlined { font-size: 18px; }
     .patisserie-feature {
       margin: 38px;
       display: grid;
@@ -210,10 +304,6 @@
     }
     .content-band {
       padding: 4px 38px 38px;
-      display: grid;
-      grid-template-columns: 1.55fr .75fr;
-      gap: 28px;
-      align-items: start;
     }
     .section-title {
       display: flex;
@@ -235,7 +325,7 @@
     }
     .products {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 14px;
     }
     .product {
@@ -249,7 +339,16 @@
     }
     .product .photo { height: 124px; background: #eee; overflow: hidden; }
     .product img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .product .meta { padding: 12px; display: grid; gap: 8px; flex: 1; }
+    .product .meta {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+    .product .meta .mini-add {
+      margin-top: auto;
+    }
     .price { color: var(--ink); font-weight: 850; font-size: 17px; }
     .mini-add {
       align-self: stretch;
@@ -259,37 +358,12 @@
       font-size: 13px;
     }
     .mini-add:active { transform: scale(0.98); }
-    .cart {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #fff;
-      padding: 18px;
-      position: sticky;
-      top: 18px;
+    .primary-btn.is-disabled {
+      pointer-events: none;
+      opacity: .55;
     }
-    .cart h3 { margin: 0 0 12px; font-size: 18px; }
-    .cart-line {
-      display: grid;
-      grid-template-columns: 52px 1fr;
-      gap: 12px;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .cart-line img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; }
-    .total {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 16px 0;
-      font-size: 20px;
-      font-weight: 900;
-    }
-    .full { width: 100%; }
     @media (max-width: 1100px) {
-      .patisserie-feature, .content-band { grid-template-columns: 1fr; }
-      .products { grid-template-columns: 1fr; }
-      .cart { position: static; }
+      .patisserie-feature { grid-template-columns: 1fr; }
     }
     @media (max-width: 760px) {
       .page { padding: 10px; }
@@ -321,9 +395,24 @@
     }
     .lang-btn--active { background: var(--secondary-container); color: var(--on-secondary-container); }
     .lang-btn:hover:not(.lang-btn--active) { background: rgba(98, 55, 24, .06); }
+    .mobile-cart-wrap {
+      display: none;
+    }
     @media (max-width: 899px) {
       body { padding-bottom: 88px; }
       .top-bar { display: none; }
+      .mobile-cart-wrap {
+        display: block;
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        z-index: 60;
+      }
+      .mobile-cart-wrap .top-bar-cart {
+        background: rgba(255, 248, 245, .95);
+        border: 1px solid var(--outline-variant);
+        box-shadow: 0 4px 14px rgba(30, 27, 24, .12);
+      }
       .mobile-bottom-nav {
         display: flex;
         position: fixed;
@@ -372,9 +461,18 @@
         <strong data-i18n="order.header">Torta és desszert előrendelés</strong>
         <div class="top-bar-actions">
           <div class="lang-switcher" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv"><button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button><button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div>
-          <a href="#order-cart" class="top-bar-cart" data-i18n-aria-label="order.cartTitle" aria-label="Torta összeállítás" title="Kosár">
-            <span class="material-symbols-outlined">shopping_basket</span>
-          </a>
+          <div class="header-cart-wrap">
+            <button type="button" class="top-bar-cart" id="header-cart-btn" data-i18n-aria-label="order.cartTitle" aria-label="Kosár" aria-expanded="false" aria-controls="header-cart-popover">
+              <span class="material-symbols-outlined">shopping_basket</span>
+              <span class="header-cart-badge" data-cart-badge hidden>0</span>
+            </button>
+            <div class="cart-popover" id="header-cart-popover" role="dialog" aria-labelledby="header-cart-title">
+              <h3 id="header-cart-title" data-i18n="order.cartTitle">Kosár</h3>
+              <div id="header-cart-items" class="cart-items" aria-live="polite"></div>
+              <div class="total"><span data-i18n="order.expectedPrice">Összesen</span><span id="header-cart-total">0 Ft</span></div>
+              <a class="primary-btn is-disabled" id="header-cart-checkout" href="checkout.html" data-i18n="order.checkout" aria-disabled="true">Rendelés véglegesítése</a>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -405,7 +503,17 @@
                 <strong>Málnás túrótorta</strong>
                 <span>Friss, gyümölcsös választás</span>
                 <div class="price">14 690 Ft-tól</div>
-                <button class="mini-add" type="button" data-i18n="order.customize">Testreszabom</button>
+                <button
+                  class="mini-add"
+                  type="button"
+                  data-i18n="order.customize"
+                  data-add-to-cart
+                  data-id="malnas-turotorta"
+                  data-name="Málnás túrótorta"
+                  data-detail="Alapválasztás"
+                  data-price="14690"
+                  data-img="assets/malnas-turotorta.jpg"
+                >Testreszabom</button>
               </div>
             </div>
             <div class="product">
@@ -414,7 +522,17 @@
                 <strong>Macaron box</strong>
                 <span>5 db-os ajándékdoboz</span>
                 <div class="price">2 500 Ft</div>
-                <button class="mini-add" type="button" data-i18n="order.addToCart">Kosárba</button>
+                <button
+                  class="mini-add"
+                  type="button"
+                  data-i18n="order.addToCart"
+                  data-add-to-cart
+                  data-id="macaron-box"
+                  data-name="Macaron box"
+                  data-detail="5 db-os ajándékdoboz"
+                  data-price="2500"
+                  data-img="assets/macaron.jpg"
+                >Kosárba</button>
               </div>
             </div>
             <div class="product">
@@ -422,35 +540,182 @@
               <div class="meta">
                 <strong>Kávé mellé</strong>
                 <span>Szelet sütik és pultos ajánlatok</span>
-                <div class="price">1 190 Ft-tól</div>
-                <button class="mini-add mini-add--ghost" type="button" data-i18n="order.browse">Nézem</button>
+                <div class="price">1 190 Ft</div>
+                <button
+                  class="mini-add"
+                  type="button"
+                  data-i18n="order.addToCart"
+                  data-add-to-cart
+                  data-id="kave-melle"
+                  data-name="Kávé mellé"
+                  data-detail="Szelet süti"
+                  data-price="1190"
+                  data-img="assets/cakes.jpg"
+                >Kosárba</button>
+              </div>
+            </div>
+            <div class="product">
+              <div class="photo"><img src="assets/zero-csoki-torta.jpg" alt="Zero csokitorta"></div>
+              <div class="meta">
+                <strong>Zero csokitorta</strong>
+                <span>Könnyed, csokis ünnepi választás</span>
+                <div class="price">9 500 Ft</div>
+                <button
+                  class="mini-add"
+                  type="button"
+                  data-i18n="order.addToCart"
+                  data-add-to-cart
+                  data-id="zero-csoki-torta"
+                  data-name="Zero csokitorta"
+                  data-detail="Egész torta"
+                  data-price="9500"
+                  data-img="assets/zero-csoki-torta.jpg"
+                >Kosárba</button>
+              </div>
+            </div>
+            <div class="product">
+              <div class="photo"><img src="assets/krem-torta.jpg" alt="Krémtorta"></div>
+              <div class="meta">
+                <strong>Krémtorta</strong>
+                <span>Klasszikus, selymes krém</span>
+                <div class="price">5 990 Ft</div>
+                <button
+                  class="mini-add"
+                  type="button"
+                  data-i18n="order.addToCart"
+                  data-add-to-cart
+                  data-id="krem-torta"
+                  data-name="Krémtorta"
+                  data-detail="Egész torta"
+                  data-price="5990"
+                  data-img="assets/krem-torta.jpg"
+                >Kosárba</button>
               </div>
             </div>
           </div>
         </section>
-        <aside class="cart" id="order-cart">
-          <h3 data-i18n="order.cartTitle">Torta összeállítás</h3>
-          <div class="cart-line">
-            <img src="assets/cake-cutout.png" alt="">
-            <div><strong>Málnás túrótorta</strong><span>10 szelet · „Boldog szülinapot”</span></div>
-          </div>
-          <div class="cart-line">
-            <img src="assets/macaron.jpg" alt="">
-            <div><strong>Macaron box</strong><span>Ajándék kiegészítő</span></div>
-          </div>
-          <div class="total"><span data-i18n="order.expectedPrice">Várható ár</span><span>17 190 Ft</span></div>
-          <a class="primary-btn full" href="checkout.html" data-i18n="order.checkout">Rendelés véglegesítése</a>
-        </aside>
       </div>
 
     </section>
   </main>
+  <div class="mobile-cart-wrap header-cart-wrap">
+    <button type="button" class="top-bar-cart" id="header-cart-btn-mobile" data-i18n-aria-label="order.cartTitle" aria-label="Kosár" aria-expanded="false" aria-controls="header-cart-popover-mobile">
+      <span class="material-symbols-outlined">shopping_basket</span>
+      <span class="header-cart-badge" data-cart-badge hidden>0</span>
+    </button>
+    <div class="cart-popover" id="header-cart-popover-mobile" role="dialog" aria-labelledby="header-cart-title-mobile">
+      <h3 id="header-cart-title-mobile" data-i18n="order.cartTitle">Kosár</h3>
+      <div id="header-cart-items-mobile" class="cart-items" aria-live="polite"></div>
+      <div class="total"><span data-i18n="order.expectedPrice">Összesen</span><span id="header-cart-total-mobile">0 Ft</span></div>
+      <a class="primary-btn is-disabled" id="header-cart-checkout-mobile" href="checkout.html" data-i18n="order.checkout" aria-disabled="true">Rendelés véglegesítése</a>
+    </div>
+  </div>
   <nav class="mobile-bottom-nav" data-i18n-aria-label="order.navAria" aria-label="Fő navigáció">
     <a href="index.html#terkep"><span class="material-symbols-outlined">local_shipping</span><span data-i18n="nav.map">Térkép</span></a>
     <a href="index.html#keszlet"><span class="material-symbols-outlined">inventory_2</span><span data-i18n="nav.stock">Készlet</span></a>
     <a href="elorendeles.html" class="is-active" aria-current="page"><span class="material-symbols-outlined">cake</span><span data-i18n="nav.order">Előrendelés</span></a>
   </nav>
   <script src="data/i18n.js"></script>
-  <script>document.addEventListener("DOMContentLoaded", () => window.BabusgatosI18n.init());</script>
+  <script src="data/cart.js"></script>
+  <script>
+    function renderCartPopover() {
+      const Cart = window.BabusgatosCart;
+      if (!Cart) return;
+
+      const surfaces = [
+        {
+          items: document.getElementById("header-cart-items"),
+          total: document.getElementById("header-cart-total"),
+          checkout: document.getElementById("header-cart-checkout"),
+        },
+        {
+          items: document.getElementById("header-cart-items-mobile"),
+          total: document.getElementById("header-cart-total-mobile"),
+          checkout: document.getElementById("header-cart-checkout-mobile"),
+        },
+      ];
+
+      const cartItems = Cart.loadCart();
+      Cart.updateCartBadges(cartItems);
+
+      surfaces.forEach((surface) => {
+        if (!surface.items || !surface.total || !surface.checkout) return;
+        surface.items.innerHTML = Cart.renderCartLines(cartItems, { removable: true });
+        surface.total.textContent = Cart.formatHuf(Cart.cartTotal(cartItems));
+        const empty = !cartItems.length;
+        surface.checkout.classList.toggle("is-disabled", empty);
+        surface.checkout.setAttribute("aria-disabled", empty ? "true" : "false");
+        Cart.bindRemoveButtons(surface.items, () => renderCartPopover());
+      });
+    }
+
+    function initCartPopover() {
+      const pairs = [
+        {
+          toggle: document.getElementById("header-cart-btn"),
+          popover: document.getElementById("header-cart-popover"),
+        },
+        {
+          toggle: document.getElementById("header-cart-btn-mobile"),
+          popover: document.getElementById("header-cart-popover-mobile"),
+        },
+      ];
+
+      function closeAll() {
+        pairs.forEach(({ toggle, popover }) => {
+          popover?.classList.remove("is-open");
+          toggle?.setAttribute("aria-expanded", "false");
+        });
+      }
+
+      pairs.forEach(({ toggle, popover }) => {
+        toggle?.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const willOpen = !popover?.classList.contains("is-open");
+          closeAll();
+          if (willOpen && popover) {
+            renderCartPopover();
+            popover.classList.add("is-open");
+            toggle.setAttribute("aria-expanded", "true");
+          }
+        });
+      });
+
+      document.addEventListener("click", (e) => {
+        if (e.target.closest(".header-cart-wrap")) return;
+        closeAll();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeAll();
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      window.BabusgatosI18n.init();
+      initCartPopover();
+      renderCartPopover();
+
+      document.addEventListener("babusgatos:langchange", () => renderCartPopover());
+      document.addEventListener("babusgatos:cartchange", () => renderCartPopover());
+
+      document.querySelectorAll("[data-add-to-cart]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          window.BabusgatosCart.addToCart({
+            id: btn.dataset.id,
+            name: btn.dataset.name,
+            detail: btn.dataset.detail || "",
+            price: Number(btn.dataset.price) || 0,
+            img: btn.dataset.img || "",
+          });
+          renderCartPopover();
+          const isMobile = window.matchMedia("(max-width: 899px)").matches;
+          const popover = document.getElementById(isMobile ? "header-cart-popover-mobile" : "header-cart-popover");
+          const toggle = document.getElementById(isMobile ? "header-cart-btn-mobile" : "header-cart-btn");
+          popover?.classList.add("is-open");
+          toggle?.setAttribute("aria-expanded", "true");
+        });
+      });
+    });
+  </script>
 </body>
 </html>
