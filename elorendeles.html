@@ -68,6 +68,32 @@
       font-size: 14px;
     }
     .top-bar strong { font-size: 18px; }
+    .top-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .top-bar-cart {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: none;
+      border-radius: 9999px;
+      color: var(--brown);
+      background: transparent;
+      text-decoration: none;
+    }
+    .top-bar-cart:hover {
+      background: rgba(98, 55, 24, .06);
+    }
+    .top-bar-cart .material-symbols-outlined {
+      font-size: 24px;
+      line-height: 1;
+    }
     .patisserie-feature {
       margin: 38px;
       display: grid;
@@ -146,6 +172,7 @@
       background: var(--primary);
       color: var(--on-primary);
       box-shadow: var(--shadow-soft);
+      text-decoration: none;
     }
     .primary-btn:hover {
       background: var(--primary-container);
@@ -343,7 +370,12 @@
       <header class="top-bar">
         <a href="index.html" data-i18n="order.back">← Vissza a furgonhoz</a>
         <strong data-i18n="order.header">Torta és desszert előrendelés</strong>
-        <div class="lang-switcher" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv"><button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button><button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div>
+        <div class="top-bar-actions">
+          <div class="lang-switcher" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv"><button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button><button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div>
+          <a href="#order-cart" class="top-bar-cart" data-i18n-aria-label="order.cartTitle" aria-label="Torta összeállítás" title="Kosár">
+            <span class="material-symbols-outlined">shopping_basket</span>
+          </a>
+        </div>
       </header>
 
       <section class="patisserie-feature" aria-label="Kiemelt cukrász termék">
@@ -396,7 +428,7 @@
             </div>
           </div>
         </section>
-        <aside class="cart">
+        <aside class="cart" id="order-cart">
           <h3 data-i18n="order.cartTitle">Torta összeállítás</h3>
           <div class="cart-line">
             <img src="assets/cake-cutout.png" alt="">
@@ -407,7 +439,7 @@
             <div><strong>Macaron box</strong><span>Ajándék kiegészítő</span></div>
           </div>
           <div class="total"><span data-i18n="order.expectedPrice">Várható ár</span><span>17 190 Ft</span></div>
-          <button class="primary-btn full" type="button" data-i18n="order.checkout">Rendelés véglegesítése</button>
+          <a class="primary-btn full" href="checkout.html" data-i18n="order.checkout">Rendelés véglegesítése</a>
         </aside>
       </div>
 

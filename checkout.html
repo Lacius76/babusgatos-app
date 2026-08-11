@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Babusgatós — Rendelés és fizetés</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&family=Work+Sans:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #623718;
+      --on-primary: #ffffff;
+      --primary-container: #7d4e2d;
+      --secondary-container: #ffd87c;
+      --on-secondary-container: #795d08;
+      --surface: #fff8f5;
+      --on-surface: #1e1b18;
+      --on-surface-variant: #51443c;
+      --outline: #84746b;
+      --outline-variant: #d6c3b8;
+      --ink: #1e1b18;
+      --muted: #51443c;
+      --brown: #623718;
+      --paper: #fff8f5;
+      --line: #d6c3b8;
+      --radius-btn: 0.5rem;
+      font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: linear-gradient(135deg, #fff9ef 0%, #f4eee6 45%, #eef3ee 100%);
+    }
+    button, input {
+      font: inherit;
+    }
+    button {
+      cursor: pointer;
+      transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .15s ease;
+    }
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--secondary-container);
+      outline-offset: 2px;
+    }
+    .page { width: min(1440px, 100%); margin: 0 auto; padding: 24px; }
+    .shell {
+      border: 1px solid rgba(65, 47, 38, .13);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: 0 26px 70px rgba(54, 38, 28, .18);
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.85);
+    }
+    .top-bar a {
+      color: var(--brown);
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .top-bar strong { font-size: 18px; }
+    .top-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-switcher {
+      display: inline-flex;
+      gap: 2px;
+      padding: 2px;
+      border-radius: 9999px;
+      background: rgba(255, 248, 245, .92);
+      border: 1px solid var(--outline-variant);
+    }
+    .lang-btn {
+      min-width: 2rem;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 9999px;
+      background: transparent;
+      color: var(--on-surface-variant);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      line-height: 1.2;
+    }
+    .lang-btn--active { background: var(--secondary-container); color: var(--on-secondary-container); }
+    .lang-btn:hover:not(.lang-btn--active) { background: rgba(98, 55, 24, .06); }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .checkout-wrap {
+      width: min(520px, 100%);
+      margin: 0 auto;
+      padding: 36px 24px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+    .cart {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 18px;
+    }
+    .cart h3 {
+      margin: 0 0 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 22px;
+      color: var(--brown);
+    }
+    .cart-line {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .cart-line img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; }
+    .cart-line strong { display: block; font-size: 15px; }
+    .cart-line span { color: var(--muted); font-size: 13px; }
+    .total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      font-size: 20px;
+      font-weight: 900;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 18px;
+    }
+    .checkout-form {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+    .panel h3 {
+      margin: 0 0 14px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20px;
+      color: var(--brown);
+    }
+    .pay-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .pay-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      cursor: pointer;
+      background: rgba(255,248,245,.6);
+      transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+    }
+    .pay-option:hover {
+      border-color: rgba(98, 55, 24, .35);
+      background: #fff;
+    }
+    .pay-option:has(input:checked) {
+      border-color: var(--brown);
+      background: #fff;
+      box-shadow: 0 0 0 2px rgba(98, 55, 24, .12);
+    }
+    .pay-option input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--brown);
+      flex-shrink: 0;
+    }
+    .pay-option .pay-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--secondary-container);
+      color: var(--on-secondary-container);
+      flex-shrink: 0;
+    }
+    .pay-option .pay-icon .material-symbols-outlined { font-size: 20px; }
+    .pay-option span.label {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--ink);
+    }
+    .field-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .field input {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+    }
+    .field input::placeholder { color: #a08f84; }
+    .primary-btn {
+      height: 48px;
+      border: none;
+      border-radius: var(--radius-btn);
+      background: var(--primary);
+      color: var(--on-primary);
+      font-weight: 700;
+      font-size: 16px;
+      width: 100%;
+    }
+    .primary-btn:hover { background: var(--primary-container); }
+    .primary-btn:active { transform: scale(0.99); }
+    .checkout-msg {
+      min-height: 20px;
+      margin: 0;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--brown);
+    }
+    .checkout-msg.is-error { color: #ba1a1a; }
+    .checkout-msg.is-ok { color: #2e7d32; }
+    .checkout-form.is-complete .pay-options {
+      pointer-events: none;
+    }
+    .checkout-form.is-complete .pay-option:not(.is-selected) {
+      display: none;
+    }
+    .checkout-form.is-complete .pay-option.is-selected {
+      cursor: default;
+      border-color: var(--brown);
+      background: #fff;
+      box-shadow: 0 0 0 2px rgba(98, 55, 24, .12);
+    }
+    .checkout-form.is-complete .pay-option.is-selected input {
+      display: none;
+    }
+    .success-panel {
+      text-align: center;
+      padding: 28px 22px;
+    }
+    .success-panel .success-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .success-panel .success-icon .material-symbols-outlined {
+      font-size: 30px;
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    .success-panel h3 {
+      margin: 0 0 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      color: var(--brown);
+    }
+    .success-panel .success-lead {
+      margin: 0 0 10px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .success-panel .success-body {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    .hidden { display: none !important; }
+    .mobile-bottom-nav { display: none; }
+    @media (max-width: 899px) {
+      body { padding-bottom: 88px; }
+      .top-bar { display: none; }
+      .page { padding: 10px; }
+      .checkout-wrap { padding: 24px 16px 40px; }
+      .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 390px;
+        z-index: 50;
+        background: var(--surface);
+        border-top: 1px solid var(--outline-variant);
+        box-shadow: 0 -4px 20px rgba(30, 27, 24, .08);
+        justify-content: space-around;
+        align-items: center;
+        padding: 12px 16px;
+      }
+      .mobile-bottom-nav a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        color: var(--on-surface-variant);
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 16px;
+        padding: 4px 20px;
+        border-radius: 9999px;
+      }
+      .mobile-bottom-nav a.is-active {
+        background: var(--secondary-container);
+        color: var(--on-secondary-container);
+      }
+      .mobile-bottom-nav .material-symbols-outlined { font-size: 24px; }
+      .mobile-bottom-nav a.is-active .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+    }
+  </style>
+</head>
+<body data-page="checkout">
+  <main class="page">
+    <section class="shell">
+      <header class="top-bar">
+        <a href="elorendeles.html" data-i18n="checkout.back">← Vissza az előrendeléshez</a>
+        <strong data-i18n="checkout.header">Rendelés véglegesítése</strong>
+        <div class="top-bar-actions">
+          <div class="lang-switcher" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv">
+            <button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button>
+            <button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button>
+            <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="checkout-wrap">
+        <aside class="cart" id="order-cart">
+          <h3 data-i18n="checkout.cartTitle">Kosarad tartalma</h3>
+          <div class="cart-line">
+            <img src="assets/cake-cutout.png" alt="">
+            <div><strong>Málnás túrótorta</strong><span>10 szelet · „Boldog szülinapot”</span></div>
+          </div>
+          <div class="cart-line">
+            <img src="assets/macaron.jpg" alt="">
+            <div><strong>Macaron box</strong><span>Ajándék kiegészítő</span></div>
+          </div>
+          <div class="total"><span data-i18n="order.expectedPrice">Várható ár</span><span>17 190 Ft</span></div>
+        </aside>
+
+        <form id="checkout-form" class="checkout-form" novalidate>
+          <section class="panel" id="payment-panel" aria-labelledby="payment-title">
+            <h3 id="payment-title" data-i18n="checkout.paymentTitle">Fizetési mód</h3>
+            <div class="pay-options" role="radiogroup" aria-labelledby="payment-title">
+              <label class="pay-option" data-payment="card">
+                <input type="radio" name="payment" value="card" required>
+                <span class="pay-icon" aria-hidden="true"><span class="material-symbols-outlined">credit_card</span></span>
+                <span class="label" data-i18n="checkout.payCard">Bankkártya</span>
+              </label>
+              <label class="pay-option" data-payment="paypal">
+                <input type="radio" name="payment" value="paypal">
+                <span class="pay-icon" aria-hidden="true"><span class="material-symbols-outlined">account_balance_wallet</span></span>
+                <span class="label" data-i18n="checkout.payPaypal">PayPal</span>
+              </label>
+              <label class="pay-option" data-payment="van">
+                <input type="radio" name="payment" value="van">
+                <span class="pay-icon" aria-hidden="true"><span class="material-symbols-outlined">local_shipping</span></span>
+                <span class="label" data-i18n="checkout.payVan">Fizetés a furgonnál átvételkor</span>
+              </label>
+            </div>
+          </section>
+
+          <section class="panel" id="contact-panel" aria-labelledby="contact-title">
+            <h3 id="contact-title" data-i18n="checkout.contactTitle">Kapcsolati adatok</h3>
+            <div class="field-grid">
+              <div class="field">
+                <label for="checkout-name" data-i18n="checkout.name">Név</label>
+                <input id="checkout-name" name="name" type="text" autocomplete="name" required data-i18n-placeholder="checkout.namePlaceholder" placeholder="Teljes név">
+              </div>
+              <div class="field">
+                <label for="checkout-email" data-i18n="checkout.email">E-mail</label>
+                <input id="checkout-email" name="email" type="email" autocomplete="email" required data-i18n-placeholder="checkout.emailPlaceholder" placeholder="pelda@email.com">
+              </div>
+              <div class="field">
+                <label for="checkout-phone" data-i18n="checkout.phone">Telefonszám</label>
+                <input id="checkout-phone" name="phone" type="tel" autocomplete="tel" required data-i18n-placeholder="checkout.phonePlaceholder" placeholder="+36 …">
+              </div>
+            </div>
+          </section>
+
+          <section class="panel success-panel hidden" id="success-panel" aria-labelledby="success-title" aria-live="polite">
+            <div class="success-icon" aria-hidden="true">
+              <span class="material-symbols-outlined">check_circle</span>
+            </div>
+            <h3 id="success-title" data-i18n="checkout.successTitle">Sikeresen fizetve</h3>
+            <p class="success-lead" data-i18n="checkout.successLead">Köszönjük! A rendelésed rögzítettük.</p>
+            <p class="success-body" data-i18n="checkout.successBody">Amikor a furgon legközelebb a településeden jár, átveheted a rendelésedet. Az átvételről e-mailben is értesítünk.</p>
+          </section>
+
+          <p id="checkout-msg" class="checkout-msg" role="status" aria-live="polite"></p>
+          <button class="primary-btn" id="checkout-submit" type="submit" data-i18n="checkout.pay">Fizetés</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <nav class="mobile-bottom-nav" data-i18n-aria-label="order.navAria" aria-label="Fő navigáció">
+    <a href="index.html#terkep"><span class="material-symbols-outlined">local_shipping</span><span data-i18n="nav.map">Térkép</span></a>
+    <a href="index.html#keszlet"><span class="material-symbols-outlined">inventory_2</span><span data-i18n="nav.stock">Készlet</span></a>
+    <a href="elorendeles.html" class="is-active" aria-current="page"><span class="material-symbols-outlined">cake</span><span data-i18n="nav.order">Előrendelés</span></a>
+  </nav>
+
+  <script src="data/i18n.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const I18N = window.BabusgatosI18n;
+      I18N.init();
+
+      const form = document.getElementById("checkout-form");
+      const msg = document.getElementById("checkout-msg");
+      const contactPanel = document.getElementById("contact-panel");
+      const successPanel = document.getElementById("success-panel");
+      const submitBtn = document.getElementById("checkout-submit");
+      const paymentTitle = document.getElementById("payment-title");
+
+      form?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const data = new FormData(form);
+        const name = String(data.get("name") || "").trim();
+        const email = String(data.get("email") || "").trim();
+        const phone = String(data.get("phone") || "").trim();
+        const payment = String(data.get("payment") || "").trim();
+
+        if (!name || !email || !phone || !payment) {
+          msg.textContent = I18N.t("checkout.required");
+          msg.classList.add("is-error");
+          msg.classList.remove("is-ok");
+          return;
+        }
+
+        msg.textContent = "";
+        msg.classList.remove("is-error", "is-ok");
+
+        form.querySelectorAll(".pay-option").forEach((opt) => {
+          const selected = opt.dataset.payment === payment;
+          opt.classList.toggle("is-selected", selected);
+          const input = opt.querySelector("input");
+          if (input) input.disabled = true;
+        });
+
+        form.classList.add("is-complete");
+        if (paymentTitle) paymentTitle.textContent = I18N.t("checkout.selectedPayment");
+        contactPanel?.classList.add("hidden");
+        successPanel?.classList.remove("hidden");
+        submitBtn?.classList.add("hidden");
+      });
+    });
+  </script>
+</body>
+</html>

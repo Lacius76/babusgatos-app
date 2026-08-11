@@ -288,7 +288,20 @@
         }
         .town-suggestions li:hover,
         .town-suggestions li.is-active { background: #f5ece7; color: #623718; }
-        #arrival-estimate { max-width: 220px; line-height: 1.35; word-break: break-word; }
+        #arrival-estimate { max-width: 220px; line-height: 1.35; }
+        #arrival-estimate .arrival-time-range { white-space: nowrap; }
+        #tracker-status {
+            margin: 0;
+            line-height: 1.35;
+            text-align: center;
+        }
+        /* Desktop tracker card: status sits under the clock row as one line */
+        html[data-layout-boot="desktop"] #tracker-status,
+        body[data-layout="desktop"] #tracker-status {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
         .mobile-tracker-panel { flex-direction: column; align-items: stretch !important; gap: 8px !important; }
         .mobile-tracker-panel .mobile-tracker-row { display: flex; align-items: center; gap: 8px; width: 100%; }
         .gps-status-stale { color: #b45309 !important; font-weight: 600; }
@@ -335,25 +348,43 @@
             line-height: 1;
             font-size: 14px;
         }
-        .push-enable-btn {
+        .push-enable-btn,
+        .push-off-btn {
             border: none;
             border-radius: 9999px;
-            padding: 10px 18px;
+            padding: 10px 14px;
             background: #623718;
             color: #fff;
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .push-enable-btn:disabled { opacity: .55; cursor: not-allowed; }
+        .push-off-btn {
+            background: #7d4e2d;
+        }
         .push-enabled-btn {
-            border: none;
-            border-radius: 9999px;
-            padding: 10px 18px;
-            background: #e8f5e9;
-            color: #2e7d32;
-            font-weight: 600;
-            font-size: 14px;
+            display: none !important;
+        }
+        .push-town-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .push-town-actions .town-autocomplete {
+            flex: 1;
+            min-width: 0;
+            margin-top: 0;
+        }
+        .push-secondary-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 4px;
         }
         .push-disable-link {
             border: none;
@@ -365,188 +396,10 @@
             padding: 0;
         }
         #arrival-estimate-mobile { display: block; width: 100%; line-height: 1.35; word-break: break-word; }
-
-        /* Private beta lockscreen */
-        html.site-unlocked #site-lockscreen { display: none !important; }
-        html.site-unlocked #site-app { display: block !important; }
-        html:not(.site-unlocked) #site-app { display: none !important; }
-        html:not(.site-unlocked) body { overflow: hidden; }
-        .site-lockscreen {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px 16px;
-            background: linear-gradient(135deg, #fff9ef 0%, #f4eee6 45%, #eef3ee 100%);
-        }
-        .site-lockscreen::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image: radial-gradient(#d6c3b8 0.5px, transparent 0.5px);
-            background-size: 16px 16px;
-            opacity: .35;
-            pointer-events: none;
-        }
-        .site-lockscreen-card {
-            position: relative;
-            width: min(440px, 100%);
-            padding: 36px 28px 32px;
-            border-radius: 16px;
-            border: 1px solid rgba(214, 195, 184, .45);
-            background: rgba(255, 248, 245, .92);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 24px 60px rgba(54, 38, 28, .14);
-        }
-        .site-lockscreen-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 28px;
-        }
-        .site-lockscreen-title {
-            margin: 0;
-            font-family: "Libre Caslon Text", Georgia, serif;
-            font-size: 22px;
-            font-weight: 600;
-            color: #623718;
-            letter-spacing: -.01em;
-        }
-        .site-lockscreen-lang {
-            display: inline-flex;
-            gap: 2px;
-            padding: 2px;
-            border-radius: 9999px;
-            background: rgba(255, 248, 245, .92);
-            border: 1px solid #d6c3b8;
-        }
-        .site-lockscreen-lang-btn {
-            min-width: 2.25rem;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 9999px;
-            background: transparent;
-            color: #51443c;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            line-height: 1.2;
-        }
-        .site-lockscreen-lang-btn--active {
-            background: #ffd87c;
-            color: #795d08;
-        }
-        .site-lockscreen-pin-label {
-            margin: 0 0 14px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: .06em;
-            text-transform: uppercase;
-            color: #84746b;
-        }
-        .site-lockscreen-pin-row {
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            margin-bottom: 10px;
-            cursor: text;
-        }
-        .site-lockscreen-pin-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            border: 2px solid #623718;
-            background: transparent;
-            transition: background .15s ease, transform .15s ease;
-        }
-        .site-lockscreen-pin-dot.filled { background: #623718; }
-        .site-lockscreen-pin-dot.error { border-color: #ba1a1a; background: #ba1a1a; }
-        .site-lockscreen-input {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-        .site-lockscreen-error {
-            min-height: 20px;
-            margin: 8px 0 20px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 600;
-            color: #ba1a1a;
-        }
-        .site-lockscreen-copy {
-            margin: 0;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #51443c;
-        }
-        .site-lockscreen-copy a {
-            color: #623718;
-            font-weight: 600;
-            text-decoration: none;
-            border-bottom: 1px solid rgba(98, 55, 24, .25);
-        }
-        .site-lockscreen-copy a:hover { border-bottom-color: #623718; }
-        .site-lockscreen-copy p + p { margin-top: 12px; }
     </style>
-    <script>
-      (function () {
-        if (sessionStorage.getItem("babusgatos_site_access") === "1") {
-          document.documentElement.classList.add("site-unlocked");
-        }
-      })();
-    </script>
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen">
 <script>document.documentElement.dataset.layoutBoot=(matchMedia("(min-width:900px)").matches?"desktop":"mobile");</script>
-
-<div id="site-lockscreen" class="site-lockscreen" role="dialog" aria-modal="true" aria-labelledby="site-lockscreen-title">
-  <div class="site-lockscreen-card">
-    <div class="site-lockscreen-top">
-      <h1 id="site-lockscreen-title" class="site-lockscreen-title" data-lock-i18n="title">Zárt béta</h1>
-      <div class="site-lockscreen-lang" role="group" aria-label="Language">
-        <button type="button" class="site-lockscreen-lang-btn site-lockscreen-lang-btn--active" data-lock-lang="hu" aria-pressed="true">HU</button>
-        <button type="button" class="site-lockscreen-lang-btn" data-lock-lang="en" aria-pressed="false">EN</button>
-      </div>
-    </div>
-    <p class="site-lockscreen-pin-label" data-lock-i18n="pinLabel">Hozzáférési kód</p>
-    <div class="site-lockscreen-pin-row" id="site-lockscreen-pin-row">
-      <span class="site-lockscreen-pin-dot" data-lock-dot></span>
-      <span class="site-lockscreen-pin-dot" data-lock-dot></span>
-      <span class="site-lockscreen-pin-dot" data-lock-dot></span>
-      <span class="site-lockscreen-pin-dot" data-lock-dot></span>
-    </div>
-    <input
-      id="site-lockscreen-input"
-      class="site-lockscreen-input"
-      type="password"
-      inputmode="numeric"
-      pattern="[0-9]*"
-      maxlength="4"
-      autocomplete="one-time-code"
-      aria-label="4-digit access PIN"
-      data-lock-i18n-aria="pinAria"
-    >
-    <p id="site-lockscreen-error" class="site-lockscreen-error" aria-live="polite"></p>
-    <div id="site-lockscreen-copy" class="site-lockscreen-copy">
-      <p data-lock-copy="hu">Amennyiben szeretné megtekinteni a működő rendszert, kérem, hívja a <a href="tel:+36203765469">+36 20 376 5469</a> számot, vagy kérjen hozzáférést e-mailben <a href="mailto:foeldvary@gmail.com">foeldvary@gmail.com</a> a PIN-kódért.</p>
-      <p data-lock-copy="en" hidden>This project is currently locked in a private beta / review phase.</p>
-      <p data-lock-copy="en" hidden>To protect the proprietary software architecture and custom UX workflows, access is restricted. If you are an investor, client, or recruiter interested in a live demonstration, please send an SMS to <a href="sms:+36203765469">+36 20 376 5469</a> or reach out via email <a href="mailto:foeldvary@gmail.com">foeldvary@gmail.com</a> to request your access PIN.</p>
-    </div>
-  </div>
-</div>
-
-<div id="site-app" aria-hidden="true">
 <div id="layout-desktop">
 <header class="bg-surface shadow-sm sticky top-0 z-[60]">
 <div class="flex items-center justify-between px-margin-mobile h-16 w-full max-w-container-max mx-auto">
@@ -556,7 +409,6 @@
 </div>
 
 <div class="flex items-center gap-4"><div class="lang-switcher mr-2" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv"><button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button><button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div><div class="hidden md:flex gap-8 mr-4"><a class="font-label-lg text-label-lg text-primary border-b-2 border-primary py-1" href="#" data-i18n="nav.map">Térkép</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="#" data-i18n="nav.stock">Készlet</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors py-1" href="elorendeles.html" data-i18n="nav.order">Előrendelés</a></div>
-<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-variant rounded-full transition-colors">shopping_basket</button>
 </div>
 </div>
 </header>
@@ -581,7 +433,8 @@
 </div>
 <div id="van-map" class="absolute inset-0 hidden" role="application" data-i18n-aria-label="map.vanLiveAria" aria-label="Élő furgon térkép"></div>
 <div class="absolute bottom-6 left-6 right-6 z-20">
-<div class="glass-effect p-4 rounded-xl flex items-center gap-4">
+<div class="glass-effect p-4 rounded-xl flex flex-col gap-2">
+<div class="flex items-center gap-4">
 <button type="button" id="town-map-btn" class="town-map-btn" data-i18n-aria-label="map.openMap" data-i18n-title="map.openMap" aria-label="Térkép megnyitása" title="Térkép megnyitása" disabled>
 <span class="material-symbols-outlined town-map-btn-icon town-map-btn-icon--map">map</span>
 <span class="material-symbols-outlined town-map-btn-icon town-map-btn-icon--van hidden" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
@@ -592,12 +445,13 @@
     <input type="text" id="town-search" data-town-sync class="town-search-input" data-i18n-placeholder="tracker.searchPlaceholder" placeholder="Keresés településre…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="town-suggestions-desktop" aria-autocomplete="list">
     <ul id="town-suggestions-desktop" class="town-suggestions hidden" role="listbox"></ul>
 </div>
-<p id="tracker-status" class="text-label-sm text-on-surface-variant mt-1" data-i18n="tracker.statusEmpty">Írj be településnevet a menetrendhez</p>
 </div>
 <div class="ml-auto text-right shrink-0">
 <p class="font-label-sm text-label-sm text-on-surface-variant" data-i18n="tracker.arrivalLabel">Várható érkezés</p>
 <p id="arrival-estimate" class="font-body-md text-body-md font-semibold text-secondary">—</p>
 </div>
+</div>
+<p id="tracker-status" class="text-label-sm text-on-surface-variant" data-i18n="tracker.statusEmpty">Írj be településnevet a menetrendhez</p>
 </div>
 </div>
 </div>
@@ -611,16 +465,18 @@
 <div>
 <p class="font-label-sm text-label-sm text-on-surface-variant mb-2" data-i18n="push.townsLabel">Települések</p>
 <div id="push-town-chips" class="flex flex-wrap gap-2 min-h-[28px]"></div>
-<div class="town-autocomplete mt-2">
+<div class="push-town-actions">
+<div class="town-autocomplete">
 <input type="text" id="push-town-input" class="town-search-input" data-i18n-placeholder="push.addTownPlaceholder" placeholder="Település hozzáadása…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="push-town-suggestions" aria-autocomplete="list">
 <ul id="push-town-suggestions" class="town-suggestions hidden" role="listbox"></ul>
 </div>
+<button type="button" id="push-enable-btn" class="push-enable-btn" data-i18n="push.enable">🔔 On</button>
+<button type="button" id="push-enabled-btn" class="push-enabled-btn hidden" disabled data-i18n="push.enabled">🔔 On</button>
+<button type="button" id="push-disable-btn" class="push-off-btn hidden" data-i18n="push.disable">🔔 Off</button>
 </div>
-<div class="flex items-center gap-3 flex-wrap mt-1">
-<button type="button" id="push-enable-btn" class="push-enable-btn" data-i18n="push.enable">🔔 Bekapcsolom</button>
-<button type="button" id="push-enabled-btn" class="push-enabled-btn hidden" disabled data-i18n="push.enabled">✓ Bekapcsolva</button>
+</div>
+<div class="push-secondary-actions">
 <button type="button" id="push-test-btn" class="push-disable-link hidden" data-i18n="push.test">Teszt értesítés</button>
-<button type="button" id="push-disable-btn" class="push-disable-link hidden" data-i18n="push.disable">Kikapcsolom</button>
 </div>
 <p class="text-label-sm text-on-surface-variant leading-snug" data-i18n="push.descriptionPrivacy">Csak az érkezésről értesítünk – semmi személyes adatot nem tárolunk.</p>
 <p id="push-status-msg" class="text-label-sm text-on-surface-variant hidden" role="status"></p>
@@ -731,16 +587,18 @@
 <div>
 <p class="font-label-sm text-label-sm text-on-surface-variant mb-2" data-i18n="push.townsLabel">Települések</p>
 <div id="push-town-chips-mobile" class="flex flex-wrap gap-2 min-h-[28px]"></div>
-<div class="town-autocomplete mt-2">
+<div class="push-town-actions">
+<div class="town-autocomplete">
 <input type="text" id="push-town-input-mobile" class="town-search-input" data-i18n-placeholder="push.addTownPlaceholder" placeholder="Település hozzáadása…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="push-town-suggestions-mobile" aria-autocomplete="list">
 <ul id="push-town-suggestions-mobile" class="town-suggestions hidden" role="listbox"></ul>
 </div>
+<button type="button" id="push-enable-btn-mobile" class="push-enable-btn" data-i18n="push.enable">🔔 On</button>
+<button type="button" id="push-enabled-btn-mobile" class="push-enabled-btn hidden" disabled data-i18n="push.enabled">🔔 On</button>
+<button type="button" id="push-disable-btn-mobile" class="push-off-btn hidden" data-i18n="push.disable">🔔 Off</button>
 </div>
-<div class="flex items-center gap-3 flex-wrap mt-1">
-<button type="button" id="push-enable-btn-mobile" class="push-enable-btn" data-i18n="push.enable">🔔 Bekapcsolom</button>
-<button type="button" id="push-enabled-btn-mobile" class="push-enabled-btn hidden" disabled data-i18n="push.enabled">✓ Bekapcsolva</button>
+</div>
+<div class="push-secondary-actions">
 <button type="button" id="push-test-btn-mobile" class="push-disable-link hidden" data-i18n="push.test">Teszt értesítés</button>
-<button type="button" id="push-disable-btn-mobile" class="push-disable-link hidden" data-i18n="push.disable">Kikapcsolom</button>
 </div>
 <p class="text-label-sm text-on-surface-variant leading-snug" data-i18n="push.descriptionPrivacy">Csak az érkezésről értesítünk – semmi személyes adatot nem tárolunk.</p>
 <p id="push-status-msg-mobile" class="text-label-sm text-on-surface-variant hidden" role="status"></p>
@@ -776,8 +634,6 @@
 <a href="elorendeles.html" class="flex flex-col items-center text-on-surface-variant no-underline"><span class="material-symbols-outlined">cake</span><span class="font-label-sm text-label-sm" data-i18n="nav.order">Előrendelés</span></a>
 </nav>
 </div>
-</div>
-
 <script src="data/i18n.js"></script>
 <script src="data/stock-sheets.js"></script>
 <script src="data/town-coords.js"></script>
@@ -1323,6 +1179,37 @@
       return localizeScheduleSlot(slot);
     }
 
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    /** Keep "13:30 - 17:00" as one unit so it wraps together onto the next line. */
+    function formatArrivalHtml(town) {
+      const text = formatArrival(town);
+      if (!text || text === "—") return escapeHtml(text || "—");
+      const match = text.match(/^(.*?)(\d{1,2}:\d{2}\s*[-–—]\s*\d{1,2}:\d{2})\s*$/);
+      if (!match) return escapeHtml(text);
+      const days = match[1].trim();
+      const time = match[2].trim();
+      if (!days) {
+        return `<span class="arrival-time-range">${escapeHtml(time)}</span>`;
+      }
+      return `${escapeHtml(days)} <span class="arrival-time-range">${escapeHtml(time)}</span>`;
+    }
+
+    function setArrivalEstimate(el, town) {
+      if (!el) return;
+      if (!town) {
+        el.textContent = "—";
+        return;
+      }
+      el.innerHTML = formatArrivalHtml(town);
+    }
+
     function rowsToSchedule(rows) {
       const schedule = {};
       rows.forEach((row) => {
@@ -1667,8 +1554,8 @@
       const knownTown = town && isKnownTown(town) ? town : null;
       const arrivalDesktop = document.getElementById("arrival-estimate");
       const arrivalMobile = document.getElementById("arrival-estimate-mobile");
-      if (arrivalDesktop) arrivalDesktop.textContent = knownTown ? formatArrival(knownTown) : "—";
-      if (arrivalMobile) arrivalMobile.textContent = knownTown ? formatArrival(knownTown) : "—";
+      setArrivalEstimate(arrivalDesktop, knownTown);
+      setArrivalEstimate(arrivalMobile, knownTown);
       const statusEl = document.getElementById("tracker-status");
       if (statusEl) {
         statusEl.textContent = getTrackerStatusText(knownTown);
@@ -2046,7 +1933,7 @@
       }
 
       function updateArrivalUi(townKey) {
-        if (arrivalEl) arrivalEl.textContent = townKey ? formatArrival(townKey) : "—";
+        if (arrivalEl) setArrivalEstimate(arrivalEl, townKey || null);
       }
 
       function updateStatusUi(townKey) {
@@ -2285,161 +2172,8 @@
       };
     }
 
-    const SITE_ACCESS_KEY = "babusgatos_site_access";
-    const SITE_ACCESS_API = "/api/site-access";
-
-    const LOCK_I18N = {
-      hu: {
-        title: "Zárt béta",
-        pinLabel: "Hozzáférési kód",
-        pinAria: "4 jegyű hozzáférési kód",
-        invalidPin: "Hibás kód.",
-        notConfigured: "A hozzáférés még nincs beállítva. Kérj PIN-kódot az alábbi elérhetőségeken.",
-        networkError: "Nem sikerült csatlakozni. Próbáld újra.",
-      },
-      en: {
-        title: "Private Beta",
-        pinLabel: "Access code",
-        pinAria: "4-digit access PIN",
-        invalidPin: "Invalid code.",
-        notConfigured: "Access is not configured yet. Request a PIN via the contact details below.",
-        networkError: "Could not connect. Please try again.",
-      },
-    };
-
-    function isSiteUnlocked() {
-      return sessionStorage.getItem(SITE_ACCESS_KEY) === "1";
-    }
-
-    function unlockSite() {
-      sessionStorage.setItem(SITE_ACCESS_KEY, "1");
-      document.documentElement.classList.add("site-unlocked");
-      const app = document.getElementById("site-app");
-      const lock = document.getElementById("site-lockscreen");
-      if (app) {
-        app.removeAttribute("aria-hidden");
-      }
-      if (lock) {
-        lock.setAttribute("aria-hidden", "true");
-      }
-      document.body.style.overflow = "";
-    }
-
-    function initSiteLockscreen(onUnlock) {
-      if (isSiteUnlocked()) {
-        unlockSite();
-        onUnlock();
-        return;
-      }
-
-      let lockLang = "hu";
-      let verifying = false;
-      const input = document.getElementById("site-lockscreen-input");
-      const pinRow = document.getElementById("site-lockscreen-pin-row");
-      const errorEl = document.getElementById("site-lockscreen-error");
-      const dots = () => document.querySelectorAll("[data-lock-dot]");
-      const copyBlocks = () => document.querySelectorAll("[data-lock-copy]");
-
-      function lockT(key) {
-        return LOCK_I18N[lockLang]?.[key] || LOCK_I18N.hu[key] || key;
-      }
-
-      function applyLockLang() {
-        document.querySelectorAll("[data-lock-i18n]").forEach((el) => {
-          const key = el.dataset.lockI18n;
-          if (LOCK_I18N[lockLang]?.[key]) el.textContent = LOCK_I18N[lockLang][key];
-        });
-        document.querySelectorAll("[data-lock-i18n-aria]").forEach((el) => {
-          const key = el.dataset.lockI18nAria;
-          if (LOCK_I18N[lockLang]?.[key]) el.setAttribute("aria-label", LOCK_I18N[lockLang][key]);
-        });
-        copyBlocks().forEach((el) => {
-          el.hidden = el.dataset.lockCopy !== lockLang;
-        });
-        document.querySelectorAll("[data-lock-lang]").forEach((btn) => {
-          const active = btn.dataset.lockLang === lockLang;
-          btn.classList.toggle("site-lockscreen-lang-btn--active", active);
-          btn.setAttribute("aria-pressed", active ? "true" : "false");
-        });
-      }
-
-      function updateDots(value, errored = false) {
-        dots().forEach((dot, i) => {
-          dot.classList.toggle("filled", i < value.length && !errored);
-          dot.classList.toggle("error", errored);
-        });
-      }
-
-      function clearPin() {
-        if (input) input.value = "";
-        updateDots("");
-        if (errorEl) errorEl.textContent = "";
-      }
-
-      async function verifyPin(pin) {
-        if (verifying) return;
-        verifying = true;
-        try {
-          const res = await fetch(SITE_ACCESS_API, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ pin }),
-          });
-          const data = await res.json().catch(() => ({}));
-          if (res.status === 401) {
-            updateDots(pin, true);
-            if (errorEl) errorEl.textContent = lockT("invalidPin");
-            setTimeout(clearPin, 450);
-            return;
-          }
-          if (res.status === 503) {
-            if (errorEl) errorEl.textContent = lockT("notConfigured");
-            clearPin();
-            return;
-          }
-          if (!res.ok) throw new Error("request_failed");
-          unlockSite();
-          onUnlock();
-        } catch {
-          if (errorEl) errorEl.textContent = lockT("networkError");
-          clearPin();
-        } finally {
-          verifying = false;
-          input?.focus();
-        }
-      }
-
-      document.querySelectorAll("[data-lock-lang]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          lockLang = btn.dataset.lockLang === "en" ? "en" : "hu";
-          applyLockLang();
-          input?.focus();
-        });
-      });
-
-      pinRow?.addEventListener("click", () => input?.focus());
-
-      input?.addEventListener("input", () => {
-        const digits = input.value.replace(/\D/g, "").slice(0, 4);
-        if (digits !== input.value) input.value = digits;
-        updateDots(digits);
-        if (errorEl) errorEl.textContent = "";
-        if (digits.length === 4) verifyPin(digits);
-      });
-
-      input?.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && input.value.length === 4) {
-          e.preventDefault();
-          verifyPin(input.value);
-        }
-      });
-
-      applyLockLang();
-      document.body.style.overflow = "hidden";
-      requestAnimationFrame(() => input?.focus());
-    }
-
-    function initMainApp() {
+    document.addEventListener("DOMContentLoaded", () => {
+      I18N.init();
       document.addEventListener("babusgatos:langchange", () => {
         refreshTrackerTexts();
         if (pushSubscribed) void resyncPushSubscription();
@@ -2545,13 +2279,6 @@
       LAYOUT_BREAKPOINT.addEventListener("change", applySiteLayout);
       loadVanStock();
       window.setInterval(loadVanStock, STOCK_REFRESH_MS);
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      initSiteLockscreen(() => {
-        I18N.init();
-        initMainApp();
-      });
     });
 </script>
 

@@ -49,9 +49,9 @@
       "push.descriptionPrivacy": "Csak az érkezésről értesítünk – semmi személyes adatot nem tárolunk.",
       "push.townsLabel": "Települések",
       "push.addTownPlaceholder": "Település hozzáadása…",
-      "push.enable": "🔔 Bekapcsolom",
-      "push.enabled": "✓ Bekapcsolva",
-      "push.disable": "Kikapcsolom",
+      "push.enable": "🔔 On",
+      "push.enabled": "🔔 On",
+      "push.disable": "🔔 Off",
       "push.needTown": "Válassz legalább egy települést.",
       "push.permissionDenied": "Az értesítéshez engedélyezd a böngészőben.",
       "push.permissionBlocked": "Az értesítések ki vannak kapcsolva. Engedélyezd a telefon vagy böngésző beállításaiban (pl. Safari: Beállítások → Értesítések → Safari).",
@@ -107,6 +107,27 @@
       "order.expectedPrice": "Várható ár",
       "order.checkout": "Rendelés véglegesítése",
       "order.navAria": "Fő navigáció",
+      "checkout.meta.title": "Babusgatós — Rendelés és fizetés",
+      "checkout.header": "Rendelés véglegesítése",
+      "checkout.back": "← Vissza az előrendeléshez",
+      "checkout.cartTitle": "Kosarad tartalma",
+      "checkout.paymentTitle": "Fizetési mód",
+      "checkout.payCard": "Bankkártya",
+      "checkout.payPaypal": "PayPal",
+      "checkout.payVan": "Fizetés a furgonnál átvételkor",
+      "checkout.contactTitle": "Kapcsolati adatok",
+      "checkout.name": "Név",
+      "checkout.email": "E-mail",
+      "checkout.phone": "Telefonszám",
+      "checkout.pay": "Fizetés",
+      "checkout.namePlaceholder": "Teljes név",
+      "checkout.emailPlaceholder": "pelda@email.com",
+      "checkout.phonePlaceholder": "+36 …",
+      "checkout.required": "Kérjük, töltsd ki az összes mezőt, és válassz fizetési módot.",
+      "checkout.successTitle": "Sikeresen fizetve",
+      "checkout.successLead": "Köszönjük! A rendelésed rögzítettük.",
+      "checkout.successBody": "Amikor a furgon legközelebb a településeden jár, átveheted a rendelésedet. Az átvételről e-mailben is értesítünk.",
+      "checkout.selectedPayment": "Választott fizetési mód",
     },
     de: {
       "meta.title": "Babusgatós — Mobiler Backwagen",
@@ -143,9 +164,9 @@
       "push.descriptionPrivacy": "Wir speichern keine persönlichen Daten.",
       "push.townsLabel": "Orte",
       "push.addTownPlaceholder": "Ort hinzufügen…",
-      "push.enable": "🔔 Aktivieren",
-      "push.enabled": "✓ Aktiviert",
-      "push.disable": "Deaktivieren",
+      "push.enable": "🔔 On",
+      "push.enabled": "🔔 On",
+      "push.disable": "🔔 Off",
       "push.needTown": "Wähle mindestens einen Ort.",
       "push.permissionDenied": "Bitte Benachrichtigungen im Browser erlauben.",
       "push.permissionBlocked": "Benachrichtigungen sind deaktiviert. Bitte in den Telefon- oder Browser-Einstellungen erlauben.",
@@ -201,6 +222,27 @@
       "order.expectedPrice": "Voraussichtlicher Preis",
       "order.checkout": "Bestellung abschließen",
       "order.navAria": "Hauptnavigation",
+      "checkout.meta.title": "Babusgatós — Bestellung und Zahlung",
+      "checkout.header": "Bestellung abschließen",
+      "checkout.back": "← Zurück zur Vorbestellung",
+      "checkout.cartTitle": "Dein Warenkorb",
+      "checkout.paymentTitle": "Zahlungsart",
+      "checkout.payCard": "Bankkarte",
+      "checkout.payPaypal": "PayPal",
+      "checkout.payVan": "Zahlung bei Abholung am Transporter",
+      "checkout.contactTitle": "Kontaktdaten",
+      "checkout.name": "Name",
+      "checkout.email": "E-Mail",
+      "checkout.phone": "Telefonnummer",
+      "checkout.pay": "Bezahlen",
+      "checkout.namePlaceholder": "Vollständiger Name",
+      "checkout.emailPlaceholder": "beispiel@email.com",
+      "checkout.phonePlaceholder": "+36 …",
+      "checkout.required": "Bitte alle Felder ausfüllen und eine Zahlungsart wählen.",
+      "checkout.successTitle": "Erfolgreich bezahlt",
+      "checkout.successLead": "Danke! Deine Bestellung ist erfasst.",
+      "checkout.successBody": "Wenn der Transporter das nächste Mal in deinem Ort ist, kannst du deine Bestellung abholen. Wir benachrichtigen dich auch per E-Mail.",
+      "checkout.selectedPayment": "Gewählte Zahlungsart",
     },
     en: {
       "meta.title": "Babusgatós — mobile bakery van",
@@ -237,9 +279,9 @@
       "push.descriptionPrivacy": "We store no personal data.",
       "push.townsLabel": "Towns",
       "push.addTownPlaceholder": "Add a town…",
-      "push.enable": "🔔 Turn on",
-      "push.enabled": "✓ Enabled",
-      "push.disable": "Turn off",
+      "push.enable": "🔔 On",
+      "push.enabled": "🔔 On",
+      "push.disable": "🔔 Off",
       "push.needTown": "Select at least one town.",
       "push.permissionDenied": "Please allow notifications in your browser.",
       "push.permissionBlocked": "Notifications are blocked. Enable them in your phone or browser settings.",
@@ -295,6 +337,27 @@
       "order.expectedPrice": "Estimated price",
       "order.checkout": "Complete order",
       "order.navAria": "Main navigation",
+      "checkout.meta.title": "Babusgatós — Order and payment",
+      "checkout.header": "Complete your order",
+      "checkout.back": "← Back to pre-order",
+      "checkout.cartTitle": "Your cart",
+      "checkout.paymentTitle": "Payment method",
+      "checkout.payCard": "Bank card",
+      "checkout.payPaypal": "PayPal",
+      "checkout.payVan": "Pay at the van on pickup",
+      "checkout.contactTitle": "Contact details",
+      "checkout.name": "Name",
+      "checkout.email": "Email",
+      "checkout.phone": "Phone number",
+      "checkout.pay": "Pay",
+      "checkout.namePlaceholder": "Full name",
+      "checkout.emailPlaceholder": "you@email.com",
+      "checkout.phonePlaceholder": "+36 …",
+      "checkout.required": "Please fill in all fields and choose a payment method.",
+      "checkout.successTitle": "Successfully paid",
+      "checkout.successLead": "Thank you! Your order is recorded.",
+      "checkout.successBody": "When the van next visits your town, you can pick up your order. We’ll also notify you by email.",
+      "checkout.selectedPayment": "Selected payment method",
     },
   };
 
@@ -388,6 +451,8 @@
     document.documentElement.lang = next;
     if (document.body.dataset.page === "order") {
       document.title = t("order.meta.title");
+    } else if (document.body.dataset.page === "checkout") {
+      document.title = t("checkout.meta.title");
     } else {
       document.title = t("meta.title");
     }
@@ -416,6 +481,8 @@
     applyI18n();
     if (document.body.dataset.page === "order") {
       document.title = t("order.meta.title");
+    } else if (document.body.dataset.page === "checkout") {
+      document.title = t("checkout.meta.title");
     } else {
       document.title = t("meta.title");
     }
