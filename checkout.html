@@ -129,6 +129,18 @@
     .cart.is-locked {
       border-color: #2e7d32;
       box-shadow: 0 0 0 2px rgba(46, 125, 50, .18);
+      pointer-events: none;
+      user-select: none;
+    }
+    .cart.is-locked h3,
+    .cart.is-locked .cart-line strong,
+    .cart.is-locked .cart-line span,
+    .cart.is-locked .total {
+      color: #8a8179;
+    }
+    .cart.is-locked .cart-line img {
+      opacity: .72;
+      filter: grayscale(18%);
     }
     .past-orders {
       border: 1px solid rgba(46, 125, 50, .35);
@@ -147,20 +159,35 @@
     .past-order-cards {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
     }
     .order-product {
       position: relative;
+      width: 100%;
+      font: inherit;
       border: 1px solid var(--line);
       border-radius: 10px;
       background: rgba(255,255,255,.92);
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    .order-product:hover {
+      border-color: rgba(98, 55, 24, .35);
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(54, 38, 28, .08);
     }
     .order-product .photo {
-      height: 110px;
+      height: 52px;
+      width: 64px;
       background: #eee;
+      border-radius: 8px;
       overflow: hidden;
     }
     .order-product img {
@@ -168,51 +195,52 @@
       height: 100%;
       object-fit: cover;
       display: block;
-      opacity: .88;
+      opacity: .9;
     }
     .order-product .meta {
-      padding: 10px 12px 12px;
+      padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 2px;
+      min-width: 0;
     }
     .order-product strong {
       display: block;
-      font-size: 14px;
-      color: #6f675f;
-      padding-right: 22px;
+      font-size: 13px;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .order-product span {
-      color: #8a8179;
-      font-size: 12px;
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .order-product .price {
-      color: #6f675f;
+      color: var(--ink);
       font-weight: 800;
-      font-size: 15px;
+      font-size: 13px;
     }
-    .order-product-remove {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      z-index: 1;
+    .order-product-add {
+      flex-shrink: 0;
       border: none;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 9999px;
-      background: rgba(255,255,255,.92);
-      color: var(--muted);
+      background: var(--secondary-container);
+      color: var(--on-secondary-container);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       padding: 0;
-      box-shadow: 0 2px 8px rgba(54, 38, 28, .16);
     }
-    .order-product-remove:hover {
-      color: var(--brown);
-      background: #fff;
+    .order-product:hover .order-product-add {
+      filter: brightness(0.97);
     }
-    .order-product-remove .material-symbols-outlined { font-size: 18px; }
+    .order-product-add .material-symbols-outlined { font-size: 20px; }
     @media (max-width: 720px) {
       .checkout-wrap.has-past-orders {
         grid-template-columns: minmax(0, 1fr);
@@ -233,9 +261,73 @@
       padding: 12px 0;
       border-bottom: 1px solid var(--line);
     }
+    .cart-line--editable {
+      grid-template-columns: 52px minmax(0, 1fr) auto auto;
+      grid-template-areas:
+        "name name name name"
+        "img detail qty remove";
+      gap: 6px 12px;
+      align-items: center;
+    }
+    .cart-line--editable .cart-line-name {
+      grid-area: name;
+      display: block;
+      margin: 0;
+    }
+    .cart-line--editable img { grid-area: img; }
+    .cart-line--editable .cart-line-detail { grid-area: detail; }
+    .cart-line--editable .cart-line-qty { grid-area: qty; }
+    .cart-line--editable .cart-line-remove { grid-area: remove; }
     .cart-line img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; }
-    .cart-line strong { display: block; font-size: 15px; }
-    .cart-line span { color: var(--muted); font-size: 13px; }
+    .cart-line strong,
+    .cart-line-name { display: block; font-size: 15px; min-width: 0; }
+    .cart-line span,
+    .cart-line-detail {
+      color: var(--muted);
+      font-size: 13px;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cart-line-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cart-line-qty {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .cart-qty-btn {
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: rgba(98, 55, 24, .08);
+      color: var(--brown);
+      font-weight: 800;
+      font-size: 15px;
+      line-height: 1;
+      padding: 0;
+    }
+    .cart-qty-btn:hover {
+      background: rgba(98, 55, 24, .14);
+    }
+    .cart-qty-value {
+      min-width: 20px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
     .cart-line-remove {
       border: none;
       background: transparent;
@@ -509,7 +601,7 @@
       <div class="checkout-wrap" id="checkout-wrap">
         <div class="checkout-main">
           <aside class="cart" id="order-cart">
-            <h3 data-i18n="checkout.cartTitle">Kosarad</h3>
+            <h3 id="checkout-cart-title" data-i18n="checkout.cartTitle">Kosarad</h3>
             <div id="checkout-cart-items" class="cart-items" aria-live="polite"></div>
             <div id="checkout-cart-total" class="total hidden"><span data-i18n="order.expectedPrice">Összesen</span><span id="checkout-total-value">0 Ft</span></div>
             <p id="checkout-cart-empty" class="cart-empty hidden">
@@ -593,29 +685,37 @@
   <script src="data/i18n.js"></script>
   <script src="data/cart.js"></script>
   <script>
-    let orderJustCompleted = false;
+    function refreshCheckout() {
+      renderCheckoutCart();
+      renderPastOrders();
+    }
 
     function renderCheckoutCart() {
       const Cart = window.BabusgatosCart;
+      const I18N = window.BabusgatosI18n;
       if (!Cart) return [];
 
-      const items = Cart.loadCart();
+      const cartItems = Cart.loadCart();
+      const latestOrder = Cart.getLatestOrder();
+      const latestItems = latestOrder?.items || [];
+      const locked = !cartItems.length && latestItems.length > 0;
+      const items = locked ? latestItems : cartItems;
+
       const list = document.getElementById("checkout-cart-items");
       const empty = document.getElementById("checkout-cart-empty");
       const totalWrap = document.getElementById("checkout-cart-total");
       const totalValue = document.getElementById("checkout-total-value");
       const form = document.getElementById("checkout-form");
       const cartAside = document.getElementById("order-cart");
+      const titleEl = document.getElementById("checkout-cart-title");
       if (!list || !empty || !totalWrap || !totalValue || !form || !cartAside) return items;
 
-      // After pay, hide the active cart list — items move to past-order cards.
-      if (orderJustCompleted || form.classList.contains("is-complete")) {
-        cartAside.classList.add("hidden");
-        form.classList.add("is-cart-empty");
-        return items;
-      }
-
       cartAside.classList.remove("hidden");
+      cartAside.classList.toggle("is-locked", locked);
+
+      if (titleEl) {
+        titleEl.textContent = I18N.t(locked ? "checkout.lastOrderTitle" : "checkout.cartTitle");
+      }
 
       if (!items.length) {
         list.innerHTML = "";
@@ -627,10 +727,13 @@
 
       empty.classList.add("hidden");
       totalWrap.classList.remove("hidden");
-      form.classList.remove("is-cart-empty");
-      list.innerHTML = Cart.renderCartLines(items, { removable: true });
+      form.classList.toggle("is-cart-empty", locked);
+      list.innerHTML = Cart.renderCartLines(items, { removable: !locked, quantityControls: !locked });
       totalValue.textContent = Cart.formatHuf(Cart.cartTotal(items));
-      Cart.bindRemoveButtons(list, () => renderCheckoutCart());
+      if (!locked) {
+        Cart.bindRemoveButtons(list, refreshCheckout);
+        Cart.bindQuantityButtons(list, refreshCheckout);
+      }
       return items;
     }
 
@@ -644,6 +747,7 @@
       const cards = document.getElementById("past-order-cards");
       if (!wrap || !panel || !cards) return;
 
+      const cartItems = Cart.loadCart();
       const orders = Cart.loadOrders();
       const flat = [];
       orders.forEach((order) => {
@@ -652,11 +756,11 @@
         });
       });
 
-      const hasPast = flat.length > 0;
-      wrap.classList.toggle("has-past-orders", hasPast);
-      panel.classList.toggle("hidden", !hasPast);
+      const showSidebar = cartItems.length > 0 && flat.length > 0;
+      wrap.classList.toggle("has-past-orders", showSidebar);
+      panel.classList.toggle("hidden", !showSidebar);
 
-      if (!hasPast) {
+      if (!showSidebar) {
         cards.innerHTML = "";
         return;
       }
@@ -668,26 +772,27 @@
           const qtyLabel = qty > 1 ? `${qty} × ` : "";
           const lineTotal = (Number(item.price) || 0) * qty;
           return `
-            <article class="order-product" data-order-id="${Cart.escapeHtml(orderId)}" data-item-index="${itemIndex}">
-              <button type="button" class="order-product-remove" data-remove-past aria-label="${Cart.escapeHtml(I18N.t("checkout.removePastItem"))}">
-                <span class="material-symbols-outlined">close</span>
-              </button>
+            <button type="button" class="order-product" data-order-id="${Cart.escapeHtml(orderId)}" data-item-index="${itemIndex}" aria-label="${Cart.escapeHtml(I18N.t("checkout.addPastItem"))}: ${Cart.escapeHtml(item.name || "")}">
               <div class="photo"><img src="${Cart.escapeHtml(item.img || "")}" alt=""></div>
               <div class="meta">
                 <strong>${Cart.escapeHtml(item.name || "")}</strong>
                 <span>${Cart.escapeHtml(qtyLabel + detail)}</span>
                 <div class="price">${Cart.escapeHtml(Cart.formatHuf(lineTotal))}</div>
               </div>
-            </article>`;
+              <span class="order-product-add" aria-hidden="true">
+                <span class="material-symbols-outlined">add</span>
+              </span>
+            </button>`;
         })
         .join("");
 
-      cards.querySelectorAll("[data-remove-past]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const card = btn.closest(".order-product");
-          if (!card) return;
-          Cart.removeOrderItem(card.dataset.orderId, card.dataset.itemIndex);
-          renderPastOrders();
+      cards.querySelectorAll(".order-product").forEach((card) => {
+        card.addEventListener("click", () => {
+          const order = Cart.loadOrders().find((entry) => entry.id === card.dataset.orderId);
+          const item = order?.items?.[Number(card.dataset.itemIndex)];
+          if (!item?.id) return;
+          Cart.addOrderItemToCart(item);
+          refreshCheckout();
         });
       });
     }
@@ -696,12 +801,9 @@
       const I18N = window.BabusgatosI18n;
       const Cart = window.BabusgatosCart;
       I18N.init();
-      renderCheckoutCart();
-      renderPastOrders();
-      document.addEventListener("babusgatos:langchange", () => {
-        renderCheckoutCart();
-        renderPastOrders();
-      });
+      refreshCheckout();
+      document.addEventListener("babusgatos:langchange", refreshCheckout);
+      document.addEventListener("babusgatos:cartchange", refreshCheckout);
 
       const form = document.getElementById("checkout-form");
       const contactPanel = document.getElementById("contact-panel");
@@ -837,9 +939,7 @@
 
         Cart.addOrder({ payment, items: orderedItems });
         Cart.clearCart();
-        orderJustCompleted = true;
-        renderCheckoutCart();
-        renderPastOrders();
+        refreshCheckout();
       });
     });
   </script>

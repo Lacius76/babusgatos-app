@@ -67,6 +67,31 @@
     return orders;
   }
 
+  function getLatestOrder() {
+    const orders = loadOrders();
+    return orders[0] || null;
+  }
+
+  function addOrderItemToCart(item) {
+    const items = loadCart();
+    const qty = Number(item.qty) || 1;
+    const existing = items.find((entry) => entry.id === item.id);
+    if (existing) {
+      existing.qty = (Number(existing.qty) || 1) + qty;
+    } else {
+      items.push({
+        id: item.id,
+        name: item.name,
+        detail: item.detail,
+        price: item.price,
+        img: item.img,
+        qty,
+      });
+    }
+    saveCart(items);
+    return items;
+  }
+
   function formatHuf(amount) {
     return `${Number(amount || 0).toLocaleString("hu-HU")} Ft`;
   }
@@ -105,11 +130,22 @@
     return items;
   }
 
+  function updateQtyAt(index, delta) {
+    const items = loadCart();
+    const i = Number(index);
+    if (!Number.isInteger(i) || i < 0 || i >= items.length) return items;
+    const currentQty = Number(items[i].qty) || 1;
+    const nextQty = Math.max(1, currentQty + Number(delta || 0));
+    items[i].qty = nextQty;
+    saveCart(items);
+    return items;
+  }
+
   function t(key) {
     return global.BabusgatosI18n?.t?.(key) || key;
   }
 
-  function renderCartLines(items, { removable = true } = {}) {
+  function renderCartLines(items, { removable = true, quantityControls = false } = {}) {
     if (!items.length) {
       return `<p class="cart-empty">${escapeHtml(t("order.cartEmpty"))}</p>`;
     }
@@ -123,6 +159,20 @@
               <span class="material-symbols-outlined">close</span>
             </button>`
           : "";
+        if (quantityControls) {
+          return `
+          <div class="cart-line cart-line--editable">
+            <strong class="cart-line-name">${escapeHtml(item.name || "")}</strong>
+            <img src="${escapeHtml(item.img || "")}" alt="">
+            <span class="cart-line-detail">${escapeHtml(detail)}</span>
+            <div class="cart-line-qty" role="group" aria-label="${escapeHtml(item.name || "Quantity")}">
+              <button type="button" class="cart-qty-btn" data-cart-qty-change="${index}" data-delta="-1" aria-label="${escapeHtml(t("order.decreaseQty"))}">-</button>
+              <span class="cart-qty-value">${String(qty).padStart(2, "0")}</span>
+              <button type="button" class="cart-qty-btn" data-cart-qty-change="${index}" data-delta="1" aria-label="${escapeHtml(t("order.increaseQty"))}">+</button>
+            </div>
+            ${removeBtn}
+          </div>`;
+        }
         return `
           <div class="cart-line">
             <img src="${escapeHtml(item.img || "")}" alt="">
@@ -147,6 +197,17 @@
     });
   }
 
+  function bindQuantityButtons(root, onChange) {
+    root?.querySelectorAll("[data-cart-qty-change]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        updateQtyAt(btn.getAttribute("data-cart-qty-change"), Number(btn.getAttribute("data-delta")));
+        onChange?.(loadCart());
+      });
+    });
+  }
+
   function updateCartBadges(items) {
     const count = (items || loadCart()).reduce((n, item) => n + (Number(item.qty) || 1), 0);
     document.querySelectorAll("[data-cart-badge]").forEach((badge) => {
@@ -165,13 +226,17 @@
     saveOrders,
     addOrder,
     removeOrderItem,
+    getLatestOrder,
+    addOrderItemToCart,
     formatHuf,
     escapeHtml,
     cartTotal,
     addToCart,
     removeAt,
+    updateQtyAt,
     renderCartLines,
     bindRemoveButtons,
+    bindQuantityButtons,
     updateCartBadges,
   };
 })(window);
