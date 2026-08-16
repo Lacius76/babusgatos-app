@@ -48,11 +48,14 @@
     .shell {
       border: 1px solid rgba(65, 47, 38, .13);
       border-radius: 12px;
-      overflow: hidden;
+      overflow: visible;
       background: var(--paper);
       box-shadow: 0 26px 70px rgba(54, 38, 28, .18);
     }
     .top-bar {
+      position: relative;
+      z-index: 30;
+      overflow: visible;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -60,6 +63,7 @@
       padding: 16px 24px;
       border-bottom: 1px solid var(--line);
       background: rgba(255,255,255,.85);
+      border-radius: 12px 12px 0 0;
     }
     .top-bar a {
       color: var(--brown);
@@ -181,6 +185,12 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      position: relative;
+      z-index: 2;
+    }
+    .cart-popover .cart-actions a {
+      pointer-events: auto;
+      cursor: pointer;
     }
     .cart-popover .ghost-btn {
       width: 100%;
@@ -670,8 +680,27 @@
         const empty = !cartItems.length;
         surface.checkout.classList.toggle("is-disabled", empty);
         surface.checkout.setAttribute("aria-disabled", empty ? "true" : "false");
+        if (empty) surface.checkout.setAttribute("tabindex", "-1");
+        else surface.checkout.removeAttribute("tabindex");
         surface.pastOrders?.classList.toggle("hidden", !hasPastOrders);
         Cart.bindRemoveButtons(surface.items, () => renderCartPopover());
+      });
+    }
+
+    function bindCheckoutLinks() {
+      document.querySelectorAll("#header-cart-checkout, #header-cart-checkout-mobile, #header-cart-past-orders, #header-cart-past-orders-mobile").forEach((link) => {
+        if (link.dataset.navBound === "1") return;
+        link.dataset.navBound = "1";
+        link.addEventListener("click", (e) => {
+          if (link.classList.contains("is-disabled") || link.getAttribute("aria-disabled") === "true") {
+            e.preventDefault();
+            return;
+          }
+          const href = link.getAttribute("href");
+          if (!href) return;
+          e.preventDefault();
+          window.location.assign(href);
+        });
       });
     }
 
@@ -719,6 +748,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       window.BabusgatosI18n.init();
       initCartPopover();
+      bindCheckoutLinks();
       renderCartPopover();
 
       document.addEventListener("babusgatos:langchange", () => renderCartPopover());

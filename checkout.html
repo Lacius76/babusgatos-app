@@ -378,6 +378,67 @@
     #payment-error {
       margin-top: 10px;
     }
+    .payment-details {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--line);
+      display: grid;
+      gap: 12px;
+    }
+    .payment-details.hidden { display: none !important; }
+    .payment-details-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--brown);
+    }
+    .payment-details .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .payment-demo-note {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .paypal-connect {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: rgba(255,248,245,.7);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .paypal-connect .material-symbols-outlined {
+      color: var(--brown);
+      font-size: 20px;
+    }
+    .order-payment-summary {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+      color: #8a8179;
+    }
+    .order-payment-summary strong {
+      color: #6f675f;
+      font-weight: 700;
+      text-align: right;
+    }
+    @media (max-width: 520px) {
+      .payment-details .field-row {
+        grid-template-columns: 1fr;
+      }
+    }
     .pay-option {
       display: flex;
       align-items: center;
@@ -604,6 +665,10 @@
             <h3 id="checkout-cart-title" data-i18n="checkout.cartTitle">Kosarad</h3>
             <div id="checkout-cart-items" class="cart-items" aria-live="polite"></div>
             <div id="checkout-cart-total" class="total hidden"><span data-i18n="order.expectedPrice">Összesen</span><span id="checkout-total-value">0 Ft</span></div>
+            <div id="checkout-payment-summary" class="order-payment-summary hidden">
+              <span data-i18n="checkout.orderPayment">Fizetés</span>
+              <strong id="checkout-payment-value"></strong>
+            </div>
             <p id="checkout-cart-empty" class="cart-empty hidden">
               <span data-i18n="checkout.cartEmpty">A kosár üres. Menj vissza, és válassz terméket.</span>
               <br>
@@ -632,6 +697,47 @@
                 </label>
               </div>
               <p id="payment-error" class="field-error" aria-live="polite"></p>
+
+              <div id="card-details" class="payment-details hidden" aria-labelledby="card-details-title">
+                <h4 id="card-details-title" class="payment-details-title" data-i18n="checkout.cardDetailsTitle">Kártyaadatok</h4>
+                <div class="field">
+                  <label for="card-holder" data-i18n="checkout.cardholder">Kártyatulajdonos neve</label>
+                  <input id="card-holder" name="cardHolder" type="text" autocomplete="cc-name" data-i18n-placeholder="checkout.cardholderPlaceholder" placeholder="Ahogy a kártyán szerepel">
+                  <p id="card-holder-error" class="field-error" aria-live="polite"></p>
+                </div>
+                <div class="field">
+                  <label for="card-number" data-i18n="checkout.cardNumber">Kártyaszám</label>
+                  <input id="card-number" name="cardNumber" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="19" data-i18n-placeholder="checkout.cardNumberPlaceholder" placeholder="ACCT-000035">
+                  <p id="card-number-error" class="field-error" aria-live="polite"></p>
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label for="card-expiry" data-i18n="checkout.cardExpiry">Lejárat</label>
+                    <input id="card-expiry" name="cardExpiry" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" data-i18n-placeholder="checkout.cardExpiryPlaceholder" placeholder="HH/ÉÉ">
+                    <p id="card-expiry-error" class="field-error" aria-live="polite"></p>
+                  </div>
+                  <div class="field">
+                    <label for="card-cvc" data-i18n="checkout.cardCvc">CVC</label>
+                    <input id="card-cvc" name="cardCvc" type="text" inputmode="numeric" autocomplete="cc-csc" maxlength="4" data-i18n-placeholder="checkout.cardCvcPlaceholder" placeholder="123">
+                    <p id="card-cvc-error" class="field-error" aria-live="polite"></p>
+                  </div>
+                </div>
+                <p class="payment-demo-note" data-i18n="checkout.cardDemoNote">Demo fizetés — valódi terhelés nem történik.</p>
+              </div>
+
+              <div id="paypal-details" class="payment-details hidden" aria-labelledby="paypal-details-title">
+                <h4 id="paypal-details-title" class="payment-details-title" data-i18n="checkout.paypalDetailsTitle">PayPal</h4>
+                <div class="field">
+                  <label for="paypal-email" data-i18n="checkout.paypalEmail">PayPal e-mail</label>
+                  <input id="paypal-email" name="paypalEmail" type="email" autocomplete="email" data-i18n-placeholder="checkout.paypalEmailPlaceholder" placeholder="paypal@email.com">
+                  <p id="paypal-email-error" class="field-error" aria-live="polite"></p>
+                </div>
+                <div class="paypal-connect" aria-hidden="true">
+                  <span class="material-symbols-outlined">link</span>
+                  <span data-i18n="checkout.paypalConnect">PayPal fiók csatlakoztatása (demo)</span>
+                </div>
+                <p class="payment-demo-note" data-i18n="checkout.paypalDemoNote">Demo PayPal — valódi PayPal-fizetés nincs.</p>
+              </div>
             </section>
 
             <section class="panel" id="contact-panel" aria-labelledby="contact-title">
@@ -660,8 +766,8 @@
                 <span class="material-symbols-outlined">check_circle</span>
               </div>
               <h3 id="success-title" data-i18n="checkout.successTitle">Sikeresen fizetve</h3>
-              <p class="success-lead" data-i18n="checkout.successLead">Köszönjük! A rendelésed rögzítettük.</p>
-              <p class="success-body" data-i18n="checkout.successBody">Amikor a furgon legközelebb a településeden jár, átveheted a rendelésedet. Az átvételről e-mailben is értesítünk.</p>
+              <p class="success-lead" id="success-lead" data-i18n="checkout.successLead">Köszönjük! A rendelésed rögzítettük.</p>
+              <p class="success-body" id="success-body" data-i18n="checkout.successBody">Amikor a furgon legközelebb a településeden jár, átveheted a rendelésedet. Az átvételről e-mailben is értesítünk.</p>
             </section>
 
             <button class="primary-btn" id="checkout-submit" type="submit" data-i18n="checkout.pay">Fizetés</button>
@@ -685,9 +791,37 @@
   <script src="data/i18n.js"></script>
   <script src="data/cart.js"></script>
   <script>
+    let completedPayment = null;
+
+    function paymentLabel(method) {
+      const I18N = window.BabusgatosI18n;
+      if (method === "card") return I18N.t("checkout.payCard");
+      if (method === "paypal") return I18N.t("checkout.payPaypal");
+      if (method === "van") return I18N.t("checkout.payVan");
+      return "";
+    }
+
+    function applyConfirmationCopy(payment) {
+      const I18N = window.BabusgatosI18n;
+      const title = document.getElementById("success-title");
+      const lead = document.getElementById("success-lead");
+      const body = document.getElementById("success-body");
+      const isVan = payment === "van";
+      if (title) title.textContent = I18N.t(isVan ? "checkout.successTitleVan" : "checkout.successTitle");
+      if (lead) lead.textContent = I18N.t(isVan ? "checkout.successLeadVan" : "checkout.successLead");
+      if (body) body.textContent = I18N.t(isVan ? "checkout.successBodyVan" : "checkout.successBody");
+    }
+
     function refreshCheckout() {
       renderCheckoutCart();
       renderPastOrders();
+      const form = document.getElementById("checkout-form");
+      const paymentTitle = document.getElementById("payment-title");
+      const I18N = window.BabusgatosI18n;
+      if (form?.classList.contains("is-complete") && paymentTitle) {
+        paymentTitle.textContent = I18N.t("checkout.selectedPayment");
+      }
+      if (completedPayment) applyConfirmationCopy(completedPayment);
     }
 
     function renderCheckoutCart() {
@@ -700,11 +834,14 @@
       const latestItems = latestOrder?.items || [];
       const locked = !cartItems.length && latestItems.length > 0;
       const items = locked ? latestItems : cartItems;
+      const lockedPayment = locked ? latestOrder?.payment || completedPayment : null;
 
       const list = document.getElementById("checkout-cart-items");
       const empty = document.getElementById("checkout-cart-empty");
       const totalWrap = document.getElementById("checkout-cart-total");
       const totalValue = document.getElementById("checkout-total-value");
+      const paymentSummary = document.getElementById("checkout-payment-summary");
+      const paymentValue = document.getElementById("checkout-payment-value");
       const form = document.getElementById("checkout-form");
       const cartAside = document.getElementById("order-cart");
       const titleEl = document.getElementById("checkout-cart-title");
@@ -721,6 +858,7 @@
         list.innerHTML = "";
         empty.classList.remove("hidden");
         totalWrap.classList.add("hidden");
+        paymentSummary?.classList.add("hidden");
         form.classList.add("is-cart-empty");
         return items;
       }
@@ -730,6 +868,14 @@
       form.classList.toggle("is-cart-empty", locked);
       list.innerHTML = Cart.renderCartLines(items, { removable: !locked, quantityControls: !locked });
       totalValue.textContent = Cart.formatHuf(Cart.cartTotal(items));
+
+      if (locked && lockedPayment) {
+        paymentSummary?.classList.remove("hidden");
+        if (paymentValue) paymentValue.textContent = paymentLabel(lockedPayment);
+      } else {
+        paymentSummary?.classList.add("hidden");
+      }
+
       if (!locked) {
         Cart.bindRemoveButtons(list, refreshCheckout);
         Cart.bindQuantityButtons(list, refreshCheckout);
@@ -802,7 +948,10 @@
       const Cart = window.BabusgatosCart;
       I18N.init();
       refreshCheckout();
-      document.addEventListener("babusgatos:langchange", refreshCheckout);
+      document.addEventListener("babusgatos:langchange", () => {
+        refreshCheckout();
+        syncPaymentUi();
+      });
       document.addEventListener("babusgatos:cartchange", refreshCheckout);
 
       const form = document.getElementById("checkout-form");
@@ -812,22 +961,56 @@
       const paymentTitle = document.getElementById("payment-title");
       const paymentError = document.getElementById("payment-error");
       const payOptions = document.querySelector("#payment-panel .pay-options");
+      const cardDetails = document.getElementById("card-details");
+      const paypalDetails = document.getElementById("paypal-details");
       const nameInput = document.getElementById("checkout-name");
       const emailInput = document.getElementById("checkout-email");
       const phoneInput = document.getElementById("checkout-phone");
       const nameError = document.getElementById("checkout-name-error");
       const emailError = document.getElementById("checkout-email-error");
       const phoneError = document.getElementById("checkout-phone-error");
+      const cardHolderInput = document.getElementById("card-holder");
+      const cardNumberInput = document.getElementById("card-number");
+      const cardExpiryInput = document.getElementById("card-expiry");
+      const cardCvcInput = document.getElementById("card-cvc");
+      const cardHolderError = document.getElementById("card-holder-error");
+      const cardNumberError = document.getElementById("card-number-error");
+      const cardExpiryError = document.getElementById("card-expiry-error");
+      const cardCvcError = document.getElementById("card-cvc-error");
+      const paypalEmailInput = document.getElementById("paypal-email");
+      const paypalEmailError = document.getElementById("paypal-email-error");
+
+      function selectedPayment() {
+        return form?.querySelector('input[name="payment"]:checked')?.value || "";
+      }
 
       function isValidEmail(value) {
         return /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(value);
       }
 
       function isValidPhone(value) {
-        // Accept international formats like +36203765469 / +36 20 376 5469.
-        // Only the digit count matters (8–15); spaces, +, (), - are allowed.
         const digits = String(value || "").replace(/\D/g, "");
         return digits.length >= 8 && digits.length <= 15;
+      }
+
+      function isValidCardNumber(value) {
+        const digits = String(value || "").replace(/\D/g, "");
+        return digits.length >= 13 && digits.length <= 19;
+      }
+
+      function isValidExpiry(value) {
+        const match = String(value || "").trim().match(/^(\d{2})\/(\d{2})$/);
+        if (!match) return false;
+        const month = Number(match[1]);
+        const year = 2000 + Number(match[2]);
+        if (month < 1 || month > 12) return false;
+        const now = new Date();
+        const exp = new Date(year, month, 0, 23, 59, 59);
+        return exp >= new Date(now.getFullYear(), now.getMonth(), 1);
+      }
+
+      function isValidCvc(value) {
+        return /^\d{3,4}$/.test(String(value || "").trim());
       }
 
       function setFieldError(input, errorEl, message) {
@@ -842,8 +1025,41 @@
         payOptions?.classList.toggle("is-invalid", Boolean(message));
       }
 
+      function clearCardErrors() {
+        setFieldError(cardHolderInput, cardHolderError, "");
+        setFieldError(cardNumberInput, cardNumberError, "");
+        setFieldError(cardExpiryInput, cardExpiryError, "");
+        setFieldError(cardCvcInput, cardCvcError, "");
+      }
+
+      function clearPaypalErrors() {
+        setFieldError(paypalEmailInput, paypalEmailError, "");
+      }
+
+      function clearSensitivePaymentFields() {
+        if (cardNumberInput) cardNumberInput.value = "";
+        if (cardCvcInput) cardCvcInput.value = "";
+        if (cardExpiryInput) cardExpiryInput.value = "";
+        if (cardHolderInput) cardHolderInput.value = "";
+        if (paypalEmailInput) paypalEmailInput.value = "";
+        clearCardErrors();
+        clearPaypalErrors();
+      }
+
+      function syncPaymentUi() {
+        const payment = selectedPayment();
+        const complete = form?.classList.contains("is-complete");
+        cardDetails?.classList.toggle("hidden", complete || payment !== "card");
+        paypalDetails?.classList.toggle("hidden", complete || payment !== "paypal");
+        if (submitBtn && !complete) {
+          submitBtn.textContent = I18N.t(payment === "van" ? "checkout.placeOrder" : "checkout.pay");
+        }
+        if (payment !== "card") clearCardErrors();
+        if (payment !== "paypal") clearPaypalErrors();
+      }
+
       function validatePayment(showError = false) {
-        const selected = form?.querySelector('input[name="payment"]:checked');
+        const selected = selectedPayment();
         if (!selected) {
           if (showError) setPaymentError(I18N.t("checkout.selectPayment"));
           return false;
@@ -890,6 +1106,87 @@
         return true;
       }
 
+      function validateCardFields(showEmptyError = false) {
+        if (selectedPayment() !== "card") {
+          clearCardErrors();
+          return true;
+        }
+
+        const holder = String(cardHolderInput?.value || "").trim();
+        const number = String(cardNumberInput?.value || "").trim();
+        const expiry = String(cardExpiryInput?.value || "").trim();
+        const cvc = String(cardCvcInput?.value || "").trim();
+
+        let ok = true;
+        if (!holder) {
+          setFieldError(cardHolderInput, cardHolderError, showEmptyError ? I18N.t("checkout.invalidCardholder") : "");
+          ok = false;
+        } else {
+          setFieldError(cardHolderInput, cardHolderError, "");
+        }
+
+        if (!number) {
+          setFieldError(cardNumberInput, cardNumberError, showEmptyError ? I18N.t("checkout.invalidCardNumber") : "");
+          ok = false;
+        } else if (!isValidCardNumber(number)) {
+          setFieldError(cardNumberInput, cardNumberError, I18N.t("checkout.invalidCardNumber"));
+          ok = false;
+        } else {
+          setFieldError(cardNumberInput, cardNumberError, "");
+        }
+
+        if (!expiry) {
+          setFieldError(cardExpiryInput, cardExpiryError, showEmptyError ? I18N.t("checkout.invalidCardExpiry") : "");
+          ok = false;
+        } else if (!isValidExpiry(expiry)) {
+          setFieldError(cardExpiryInput, cardExpiryError, I18N.t("checkout.invalidCardExpiry"));
+          ok = false;
+        } else {
+          setFieldError(cardExpiryInput, cardExpiryError, "");
+        }
+
+        if (!cvc) {
+          setFieldError(cardCvcInput, cardCvcError, showEmptyError ? I18N.t("checkout.invalidCardCvc") : "");
+          ok = false;
+        } else if (!isValidCvc(cvc)) {
+          setFieldError(cardCvcInput, cardCvcError, I18N.t("checkout.invalidCardCvc"));
+          ok = false;
+        } else {
+          setFieldError(cardCvcInput, cardCvcError, "");
+        }
+
+        return ok;
+      }
+
+      function validatePaypalFields(showEmptyError = false) {
+        if (selectedPayment() !== "paypal") {
+          clearPaypalErrors();
+          return true;
+        }
+        const value = String(paypalEmailInput?.value || "").trim();
+        if (!value) {
+          setFieldError(paypalEmailInput, paypalEmailError, showEmptyError ? I18N.t("checkout.invalidPaypalEmail") : "");
+          return false;
+        }
+        if (!isValidEmail(value)) {
+          setFieldError(paypalEmailInput, paypalEmailError, I18N.t("checkout.invalidPaypalEmail"));
+          return false;
+        }
+        setFieldError(paypalEmailInput, paypalEmailError, "");
+        return true;
+      }
+
+      function formatCardNumber(value) {
+        const digits = String(value || "").replace(/\D/g, "").slice(0, 19);
+        return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+      }
+
+      function formatExpiry(value) {
+        const digits = String(value || "").replace(/\D/g, "").slice(0, 4);
+        if (digits.length <= 2) return digits;
+        return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+      }
+
       nameInput?.addEventListener("blur", () => validateNameField(false));
       nameInput?.addEventListener("input", () => validateNameField(false));
 
@@ -897,30 +1194,59 @@
       emailInput?.addEventListener("input", () => validateEmailField(false));
 
       phoneInput?.addEventListener("input", () => {
-        // Keep digits and common phone separators; drop letters.
         const cleaned = String(phoneInput.value || "").replace(/[^\d+\s()-]/g, "");
         if (cleaned !== phoneInput.value) phoneInput.value = cleaned;
         validatePhoneField(false);
       });
       phoneInput?.addEventListener("blur", () => validatePhoneField(false));
 
-      form?.querySelectorAll('input[name="payment"]').forEach((input) => {
-        input.addEventListener("change", () => validatePayment(false));
+      cardHolderInput?.addEventListener("input", () => validateCardFields(false));
+      cardHolderInput?.addEventListener("blur", () => validateCardFields(false));
+
+      cardNumberInput?.addEventListener("input", () => {
+        cardNumberInput.value = formatCardNumber(cardNumberInput.value);
+        validateCardFields(false);
       });
+      cardNumberInput?.addEventListener("blur", () => validateCardFields(false));
+
+      cardExpiryInput?.addEventListener("input", () => {
+        cardExpiryInput.value = formatExpiry(cardExpiryInput.value);
+        validateCardFields(false);
+      });
+      cardExpiryInput?.addEventListener("blur", () => validateCardFields(false));
+
+      cardCvcInput?.addEventListener("input", () => {
+        cardCvcInput.value = String(cardCvcInput.value || "").replace(/\D/g, "").slice(0, 4);
+        validateCardFields(false);
+      });
+      cardCvcInput?.addEventListener("blur", () => validateCardFields(false));
+
+      paypalEmailInput?.addEventListener("input", () => validatePaypalFields(false));
+      paypalEmailInput?.addEventListener("blur", () => validatePaypalFields(false));
+
+      form?.querySelectorAll('input[name="payment"]').forEach((input) => {
+        input.addEventListener("change", () => {
+          validatePayment(false);
+          syncPaymentUi();
+        });
+      });
+
+      syncPaymentUi();
 
       form?.addEventListener("submit", (e) => {
         e.preventDefault();
         if (form.classList.contains("is-complete") || !Cart.loadCart().length) return;
 
-        const data = new FormData(form);
-        const payment = String(data.get("payment") || "").trim();
+        const payment = selectedPayment();
 
         const paymentOk = validatePayment(true);
         const nameOk = validateNameField(true);
         const emailOk = validateEmailField(true);
         const phoneOk = validatePhoneField(true);
+        const cardOk = validateCardFields(true);
+        const paypalOk = validatePaypalFields(true);
 
-        if (!paymentOk || !nameOk || !emailOk || !phoneOk) return;
+        if (!paymentOk || !nameOk || !emailOk || !phoneOk || !cardOk || !paypalOk) return;
 
         const orderedItems = Cart.loadCart().map((item) => ({ ...item }));
 
@@ -936,6 +1262,12 @@
         contactPanel?.classList.add("hidden");
         successPanel?.classList.remove("hidden");
         submitBtn?.classList.add("hidden");
+        cardDetails?.classList.add("hidden");
+        paypalDetails?.classList.add("hidden");
+
+        completedPayment = payment;
+        applyConfirmationCopy(payment);
+        clearSensitivePaymentFields();
 
         Cart.addOrder({ payment, items: orderedItems });
         Cart.clearCart();
