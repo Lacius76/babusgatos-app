@@ -434,6 +434,44 @@
       font-weight: 700;
       text-align: right;
     }
+    .order-review-note {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.72);
+      text-align: center;
+    }
+    .order-review-note.hidden { display: none !important; }
+    .order-review-note .review-thanks {
+      margin: 0 0 8px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--brown);
+    }
+    .order-review-note .review-body {
+      margin: 0 0 16px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    .order-review-note .ghost-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 18px;
+      border-radius: var(--radius-btn);
+      border: 1px solid var(--brown);
+      background: transparent;
+      color: var(--brown);
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .order-review-note .ghost-btn:hover {
+      background: rgba(98, 55, 24, .06);
+    }
     @media (max-width: 520px) {
       .payment-details .field-row {
         grid-template-columns: 1fr;
@@ -649,7 +687,7 @@
     <section class="shell">
       <header class="top-bar">
         <a href="elorendeles.html" data-i18n="checkout.back">← Vissza az előrendeléshez</a>
-        <strong data-i18n="checkout.header">Rendelés véglegesítése</strong>
+        <strong id="checkout-page-title" data-i18n="checkout.header">Rendelés véglegesítése</strong>
         <div class="top-bar-actions">
           <div class="lang-switcher" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv">
             <button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button>
@@ -674,6 +712,12 @@
               <br>
               <a href="elorendeles.html" data-i18n="checkout.backToShop">Vissza a termékekhez</a>
             </p>
+          </aside>
+
+          <aside class="order-review-note hidden" id="order-review-note">
+            <p class="review-thanks" data-i18n="checkout.reviewThanks">Köszönjük a rendelését.</p>
+            <p class="review-body" data-i18n="checkout.reviewNote">Itt bármikor újra megnézheti a leadott rendelés részleteit. Ha szeretné, új előrendelést indíthat a tortaválasztékból.</p>
+            <a class="ghost-btn" href="elorendeles.html" data-i18n="checkout.reviewCta">Új előrendelés indítása</a>
           </aside>
 
           <form id="checkout-form" class="checkout-form" novalidate>
@@ -845,20 +889,28 @@
       const form = document.getElementById("checkout-form");
       const cartAside = document.getElementById("order-cart");
       const titleEl = document.getElementById("checkout-cart-title");
+      const pageTitle = document.getElementById("checkout-page-title");
+      const reviewNote = document.getElementById("order-review-note");
       if (!list || !empty || !totalWrap || !totalValue || !form || !cartAside) return items;
 
       cartAside.classList.remove("hidden");
       cartAside.classList.toggle("is-locked", locked);
 
+      if (pageTitle) {
+        pageTitle.textContent = I18N.t(locked ? "checkout.headerReview" : "checkout.header");
+      }
       if (titleEl) {
         titleEl.textContent = I18N.t(locked ? "checkout.lastOrderTitle" : "checkout.cartTitle");
       }
+      reviewNote?.classList.toggle("hidden", !locked);
 
       if (!items.length) {
         list.innerHTML = "";
         empty.classList.remove("hidden");
         totalWrap.classList.add("hidden");
         paymentSummary?.classList.add("hidden");
+        reviewNote?.classList.add("hidden");
+        if (pageTitle) pageTitle.textContent = I18N.t("checkout.header");
         form.classList.add("is-cart-empty");
         return items;
       }
