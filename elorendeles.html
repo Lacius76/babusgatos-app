@@ -756,7 +756,8 @@
       document.addEventListener("babusgatos:orderschange", () => renderCartPopover());
 
       document.querySelectorAll("[data-add-to-cart]").forEach((btn) => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
           window.BabusgatosCart.addToCart({
             id: btn.dataset.id,
             name: btn.dataset.name,
@@ -768,6 +769,9 @@
           const isMobile = window.matchMedia("(max-width: 899px)").matches;
           const popover = document.getElementById(isMobile ? "header-cart-popover-mobile" : "header-cart-popover");
           const toggle = document.getElementById(isMobile ? "header-cart-btn-mobile" : "header-cart-btn");
+          // Close the other surface, keep the active one open and refreshed.
+          document.getElementById(isMobile ? "header-cart-popover" : "header-cart-popover-mobile")?.classList.remove("is-open");
+          document.getElementById(isMobile ? "header-cart-btn" : "header-cart-btn-mobile")?.setAttribute("aria-expanded", "false");
           popover?.classList.add("is-open");
           toggle?.setAttribute("aria-expanded", "true");
         });
