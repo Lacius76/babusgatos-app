@@ -86,6 +86,9 @@
         price: item.price,
         img: item.img,
         qty,
+        type: item.type,
+        summaryLines: item.summaryLines,
+        decorationLines: item.decorationLines,
       });
     }
     saveCart(items);
@@ -173,6 +176,36 @@
             ${removeBtn}
           </div>`;
         }
+        if (item.type === "custom-cake") {
+          const lines = Array.isArray(item.summaryLines) && item.summaryLines.length
+            ? item.summaryLines
+            : String(detail).split(" · ").filter(Boolean);
+          const decoLines = Array.isArray(item.decorationLines) ? item.decorationLines : [];
+          const decoToggle = decoLines.length
+            ? `<button type="button" class="cart-cake-toggle" data-cart-cake-toggle="${index}" aria-expanded="false">
+                <span>${escapeHtml(t("cfg.cartDecorations").replace("{n}", String(decoLines.length)))}</span>
+                <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+              </button>
+              <ul class="cart-cake-deco-list" hidden>
+                ${decoLines.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}
+              </ul>`
+            : "";
+          // Last summary line is often the decorations count — omit it when we have a toggle
+          const visibleLines = decoLines.length && lines.length > 3
+            ? lines.slice(0, -1)
+            : lines;
+          return `
+          <div class="cart-line cart-line--cake">
+            <img src="${escapeHtml(item.img || "")}" alt="">
+            <div class="cart-line-main">
+              <strong>${escapeHtml(qtyLabel + (item.name || ""))}</strong>
+              ${visibleLines.map((line) => `<span class="cart-line-detail">${escapeHtml(line)}</span>`).join("")}
+              ${decoToggle}
+              <span class="cart-line-price">${escapeHtml(formatHuf(item.price))}</span>
+            </div>
+            ${removeBtn}
+          </div>`;
+        }
         return `
           <div class="cart-line">
             <img src="${escapeHtml(item.img || "")}" alt="">
@@ -193,6 +226,25 @@
         e.stopPropagation();
         removeAt(btn.getAttribute("data-cart-remove"));
         onChange?.(loadCart());
+      });
+    });
+    bindCakeToggleButtons(root);
+  }
+
+  function bindCakeToggleButtons(root) {
+    root?.querySelectorAll("[data-cart-cake-toggle]").forEach((btn) => {
+      if (btn.dataset.bound === "1") return;
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const list = btn.parentElement?.querySelector(".cart-cake-deco-list");
+        if (!list) return;
+        const open = list.hasAttribute("hidden");
+        if (open) list.removeAttribute("hidden");
+        else list.setAttribute("hidden", "");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        btn.classList.toggle("is-open", open);
       });
     });
   }

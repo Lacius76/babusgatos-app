@@ -1,0 +1,2334 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Babusgatós — Torta összeállítás</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&family=Work+Sans:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #623718;
+      --on-primary: #ffffff;
+      --primary-container: #7d4e2d;
+      --secondary-container: #ffd87c;
+      --on-secondary-container: #795d08;
+      --surface: #fff8f5;
+      --on-surface: #1e1b18;
+      --on-surface-variant: #51443c;
+      --outline: #84746b;
+      --outline-variant: #d6c3b8;
+      --ink: #1e1b18;
+      --muted: #51443c;
+      --brown: #623718;
+      --paper: #fff8f5;
+      --line: #d6c3b8;
+      --radius-btn: 0.5rem;
+      --shadow-soft: 0 4px 14px rgba(125, 78, 45, 0.1);
+      --shadow-medium: 0 8px 22px rgba(125, 78, 45, 0.16);
+      font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: linear-gradient(135deg, #fff9ef 0%, #f4eee6 45%, #eef3ee 100%);
+    }
+    button {
+      font: inherit;
+      cursor: pointer;
+      transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .15s ease;
+    }
+    button:focus-visible {
+      outline: 2px solid var(--secondary-container);
+      outline-offset: 2px;
+    }
+    .page { width: min(1440px, 100%); margin: 0 auto; padding: 24px; }
+    .shell {
+      border: 1px solid rgba(65, 47, 38, .13);
+      border-radius: 12px;
+      overflow: visible;
+      background: var(--paper);
+      box-shadow: 0 26px 70px rgba(54, 38, 28, .18);
+    }
+    .top-bar {
+      position: relative;
+      z-index: 30;
+      overflow: visible;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.85);
+      border-radius: 12px 12px 0 0;
+    }
+    .top-bar a {
+      color: var(--brown);
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .top-bar strong { font-size: 18px; }
+    .top-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-switcher {
+      display: inline-flex;
+      border: 1px solid var(--outline-variant);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .lang-btn {
+      padding: 4px 10px;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .lang-btn--active {
+      background: var(--secondary-container);
+      color: var(--on-secondary-container);
+    }
+    .header-cart-wrap { position: relative; }
+    .top-bar-cart {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: none;
+      border-radius: 9999px;
+      color: var(--brown);
+      background: transparent;
+      cursor: pointer;
+    }
+    .top-bar-cart:hover { background: rgba(98, 55, 24, .06); }
+    .top-bar-cart .material-symbols-outlined { font-size: 24px; line-height: 1; }
+    .header-cart-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 9999px;
+      background: var(--brown);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 16px;
+      text-align: center;
+    }
+    .cart-popover {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: min(340px, calc(100vw - 24px));
+      z-index: 80;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 18px 40px rgba(54, 38, 28, .18);
+      padding: 16px;
+      display: none;
+    }
+    .cart-popover.is-open { display: block; }
+    .cart-popover h3 { margin: 0 0 12px; font-size: 18px; font-weight: 700; color: var(--brown); }
+    .cart-popover .cart-empty { padding: 16px 8px; color: var(--muted); font-size: 13px; line-height: 1.45; text-align: center; border: 1px dashed var(--line); border-radius: 8px; margin: 0 0 12px; }
+    .cart-popover .cart-line { display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .cart-popover .cart-line img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; }
+    .cart-popover .cart-line--cake { align-items: start; }
+    .cart-popover .cart-line-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .cart-popover .cart-line-main strong {
+      font-size: 14px;
+      color: var(--brown);
+    }
+    .cart-popover .cart-line-detail {
+      display: block;
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--muted);
+    }
+    .cart-popover .cart-line-price {
+      margin-top: 4px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--brown);
+    }
+    .cart-popover .cart-cake-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      margin-top: 4px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: var(--brown);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+    }
+    .cart-popover .cart-cake-toggle .material-symbols-outlined {
+      font-size: 16px;
+      transition: transform .2s ease;
+    }
+    .cart-popover .cart-cake-toggle.is-open .material-symbols-outlined {
+      transform: rotate(180deg);
+    }
+    .cart-popover .cart-cake-deco-list {
+      list-style: disc;
+      margin: 4px 0 0;
+      padding-left: 16px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+    .cart-popover .cart-line-remove {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+      box-shadow: none;
+    }
+    .cart-popover .cart-line-remove:hover {
+      color: var(--brown);
+      background: transparent;
+    }
+    .cart-popover .cart-line-remove .material-symbols-outlined {
+      font-size: 18px;
+    }
+    .cart-popover .total { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; font-size: 16px; font-weight: 800; }
+    .cart-popover .primary-btn {
+      width: 100%;
+      text-decoration: none;
+      color: var(--on-primary) !important;
+      background: var(--primary);
+      display: block;
+      text-align: center;
+      padding: 12px 24px;
+      border-radius: var(--radius-btn);
+      font-weight: 700;
+      font-size: 16px;
+      pointer-events: auto;
+      z-index: 10;
+      position: relative;
+    }
+    .cart-popover .primary-btn.is-disabled { opacity: .45; pointer-events: none; }
+    .cart-popover .cart-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .cart-popover .ghost-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 10px 24px;
+      border-radius: var(--radius-btn);
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--brown);
+      background: transparent;
+      border: 1px solid var(--line);
+      text-decoration: none;
+      cursor: pointer;
+      pointer-events: auto;
+      z-index: 10;
+      position: relative;
+    }
+
+    /* ── Configurator layout ───────────────────────────── */
+    .cfg-body {
+      padding: 74px 24px 20px;
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+    .cfg-title {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 16px;
+      color: var(--ink);
+    }
+    .cfg-grid {
+      display: grid;
+      grid-template-columns: 420px 420px;
+      gap: 24px;
+      align-items: start;
+      justify-content: center;
+    }
+
+    /* Cake preview panel */
+    .cfg-preview {
+      position: relative;
+      background-color: #c8bdb4;
+      background-image: url("assets/configurator/cacke-bg/step1.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 420px;
+      height: 420px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(98, 55, 24, .08);
+      transition: background-image .45s ease;
+    }
+    .cfg-preview::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,248,245,.18) 0%, rgba(200,189,180,.28) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .cfg-preview svg {
+      position: relative;
+      z-index: 1;
+      width: 90%;
+      height: auto;
+    }
+
+    /* Serving option cards */
+    .cfg-options {
+      display: flex;
+      flex-direction: column;
+      min-height: 420px;
+      height: auto;
+      max-height: 520px;
+      justify-content: space-between;
+      gap: 6px;
+      overflow-y: auto;
+      transition: opacity .35s ease;
+    }
+    .cfg-option.is-fly-out {
+      transform: translateX(120%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .55s cubic-bezier(0.23, 1, 0.32, 1),
+                  opacity .45s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .cfg-option.is-fly-in {
+      transform: translateX(120%);
+      opacity: 0;
+    }
+    .cfg-option.is-fly-in-active {
+      transform: translateX(0);
+      opacity: 1;
+      transition: transform .55s cubic-bezier(0.23, 1, 0.32, 1),
+                  opacity .45s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .cfg-option {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 3px;
+      padding-right: 16px;
+      min-height: 64px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(98, 55, 24, .08);
+      background: #fff;
+      cursor: pointer;
+      overflow: hidden;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+      width: 100%;
+      transition: border-color .18s, background .18s, box-shadow .18s;
+    }
+    .cfg-option:hover {
+      border-color: var(--outline);
+      box-shadow: var(--shadow-soft);
+    }
+    .cfg-option.is-selected {
+      border-color: var(--secondary-container);
+      background: rgba(255, 216, 124, .18);
+      box-shadow: var(--shadow-soft);
+    }
+    .cfg-option-icon {
+      width: 48px;
+      height: 48px;
+      margin-left: 2px;
+      overflow: hidden;
+      border-radius: 8px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .cfg-option-icon > * {
+      transition: transform .55s cubic-bezier(0.23, 1, 0.32, 1), opacity .45s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .cfg-option-icon > *.icon-exit-left {
+      transform: translateX(-110%);
+      opacity: 0;
+    }
+    .cfg-option-icon > *.icon-exit-right {
+      transform: translateX(110%);
+      opacity: 0;
+    }
+    .cfg-option-icon > *.icon-enter-from-left {
+      transform: translateX(-110%);
+      opacity: 0;
+    }
+    .cfg-option-icon > *.icon-enter-from-right {
+      transform: translateX(110%);
+      opacity: 0;
+    }
+    .cfg-option-icon > *.icon-enter-active {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    .cfg-option-num {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--brown);
+      text-align: center;
+      line-height: 1;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    .cfg-option.is-selected .cfg-option-num {
+      border-color: var(--brown);
+    }
+    .cfg-option-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: contain;
+      border: 2px solid var(--line);
+      background: #fff;
+      padding: 3px;
+      box-sizing: border-box;
+      display: block;
+    }
+    .cfg-option[data-flavor="strawberry"] .cfg-option-thumb {
+      background: rgba(232, 70, 112, .28);
+    }
+    .cfg-option[data-flavor="vanilla"] .cfg-option-thumb {
+      background: rgba(232, 196, 120, .4);
+    }
+    .cfg-option[data-flavor="mango"] .cfg-option-thumb {
+      background: rgba(245, 140, 40, .3);
+    }
+    .cfg-option[data-flavor="raspberry"] .cfg-option-thumb {
+      background: rgba(194, 24, 91, .28);
+    }
+    .cfg-option[data-flavor="lemon"] .cfg-option-thumb {
+      background: rgba(249, 220, 60, .4);
+    }
+    .cfg-option[data-flavor="chocolate"] .cfg-option-thumb {
+      background: rgba(93, 58, 26, .28);
+    }
+    .cfg-option[data-cream="strawberry"] .cfg-option-thumb {
+      background: rgba(232, 70, 112, .28);
+    }
+    .cfg-option[data-cream="vanilla"] .cfg-option-thumb {
+      background: rgba(245, 230, 200, .45);
+    }
+    .cfg-option[data-cream="butter"] .cfg-option-thumb {
+      background: rgba(255, 248, 230, .7);
+    }
+    .cfg-option[data-cream="raspberry"] .cfg-option-thumb {
+      background: rgba(194, 24, 91, .28);
+    }
+    .cfg-option[data-cream="lemon"] .cfg-option-thumb {
+      background: rgba(249, 220, 60, .4);
+    }
+    .cfg-option[data-cream="chocolate"] .cfg-option-thumb {
+      background: rgba(93, 58, 26, .28);
+    }
+    .cfg-option[data-deco="sugar-sticks"] .cfg-option-thumb,
+    .cfg-option[data-deco="mm"] .cfg-option-thumb,
+    .cfg-option[data-deco="chocolate-drip"] .cfg-option-thumb,
+    .cfg-option[data-deco="candles"] .cfg-option-thumb {
+      background: rgba(255, 248, 245, .9);
+    }
+    .cfg-option[data-deco="text"] .cfg-option-glyph {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--brown);
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-sizing: border-box;
+      font-family: "Libre Caslon Text", Georgia, serif;
+    }
+    .cfg-option.is-selected .cfg-option-thumb,
+    .cfg-option.is-selected .cfg-option-glyph {
+      border-color: var(--brown);
+    }
+    .cfg-option-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      width: 100%;
+    }
+    .cfg-option-body:has([data-extras="candles"]) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .cfg-option-label-slot {
+      position: relative;
+      display: block;
+      overflow: hidden;
+      height: 1.4em;
+      width: 100%;
+      min-width: 0;
+      text-align: left;
+    }
+    .cfg-option-body:has([data-extras="candles"]) .cfg-option-label-slot {
+      width: auto;
+      flex: 0 1 auto;
+    }
+    .cfg-deco-extras {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .cfg-deco-extras[data-extras="candles"] {
+      margin-left: auto;
+      flex-shrink: 0;
+      justify-content: flex-end;
+    }
+    .cfg-option[data-deco="text"].is-selected {
+      height: 98px;
+      min-height: 98px;
+      grid-template-rows: 48px auto;
+      align-items: center;
+      align-content: center;
+      gap: 6px 10px;
+      padding-top: 6px;
+      padding-bottom: 8px;
+    }
+    .cfg-option[data-deco="text"].is-selected .cfg-deco-extras[data-extras="text"] {
+      grid-column: 1 / -1;
+      width: 100%;
+      padding-left: 2px;
+    }
+    .cfg-option[data-deco="text"].is-selected .cfg-message-input {
+      width: 100%;
+    }
+    .cfg-candle-count {
+      width: 56px;
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 8px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      background: #fff;
+    }
+    .cfg-candle-modes {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .cfg-candle-mode {
+      border: none;
+      background: #fff;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+    }
+    .cfg-candle-mode:focus-visible {
+      outline: 2px solid var(--secondary-container);
+      outline-offset: -2px;
+    }
+    .cfg-candle-mode.is-active {
+      background: var(--secondary-container);
+      color: var(--on-secondary-container);
+    }
+    .cfg-message-input {
+      width: 100%;
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 10px;
+      font: inherit;
+      font-size: 13px;
+      color: var(--ink);
+      background: #fff;
+    }
+    .cfg-message-input.is-invalid {
+      border-color: #c62828;
+    }
+    .cfg-message-error {
+      font-size: 11px;
+      color: #c62828;
+      line-height: 1.2;
+    }
+    .cfg-step-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 420px;
+      width: 420px;
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      color: var(--muted);
+      font-size: 15px;
+      text-align: center;
+      padding: 24px;
+      background: rgba(255,255,255,.55);
+    }
+    .cfg-option-label {
+      display: block;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.4;
+      white-space: nowrap;
+      text-align: left;
+      transition: transform 1.125s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    .cfg-option-label.label-exit-up {
+      transform: translateY(-1.75rem);
+    }
+    .cfg-option-label.label-enter-from-below {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      transform: translateY(1.75rem);
+      text-align: left;
+    }
+    .cfg-option-label.label-enter-active {
+      transform: translateY(0);
+    }
+
+    /* Bottom bar: summary + progress + CTA */
+    .cfg-bottom {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 420px 420px;
+      gap: 24px;
+      align-items: end;
+      justify-content: center;
+    }
+    .cfg-body.is-summary .cfg-grid {
+      grid-template-columns: 420px;
+      gap: 0;
+    }
+    .cfg-body.is-summary .cfg-options {
+      display: none;
+    }
+    .cfg-body.is-summary .cfg-bottom {
+      grid-template-columns: 420px;
+      align-items: stretch;
+      gap: 16px;
+    }
+    .cfg-body.is-summary .cfg-summary {
+      align-items: flex-start;
+    }
+    .cfg-body.is-summary .cfg-summary-price {
+      transform: none;
+      align-self: flex-start;
+      margin-top: 0;
+    }
+    .cfg-body.is-summary .cfg-summary-breakdown {
+      transform: none;
+      align-self: flex-end;
+      margin-top: auto;
+    }
+    .cfg-body.is-summary .cfg-summary.is-deco-expanded {
+      align-items: stretch;
+    }
+    .cfg-body.is-summary .cfg-right-col {
+      width: 100%;
+    }
+    .cfg-summary {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      background: rgba(255, 216, 124, .22);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(98, 55, 24, .08);
+      transition: min-height .2s ease;
+    }
+    .cfg-summary-list {
+      list-style: disc;
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ink);
+      min-width: 0;
+      flex: 1;
+    }
+    .cfg-summary-list > li {
+      white-space: nowrap;
+    }
+    .cfg-summary-deco {
+      white-space: nowrap;
+    }
+    .cfg-summary-deco-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      min-width: 0;
+    }
+    .cfg-summary-deco-text {
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .cfg-summary-deco-toggle {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      margin-top: 0;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--brown);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .cfg-summary-deco-toggle .material-symbols-outlined {
+      font-size: 18px;
+      transition: transform .2s ease;
+    }
+    .cfg-summary.is-deco-expanded .cfg-summary-deco-toggle .material-symbols-outlined {
+      transform: rotate(180deg);
+    }
+    .cfg-summary.is-deco-expanded {
+      align-items: stretch;
+    }
+    .cfg-summary.is-deco-expanded .cfg-summary-list > li {
+      white-space: normal;
+    }
+    .cfg-summary.is-deco-expanded .cfg-summary-deco {
+      white-space: normal;
+    }
+    .cfg-summary.is-deco-expanded .cfg-summary-deco-text {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+    }
+    .cfg-summary.is-deco-expanded .cfg-summary-price,
+    .cfg-summary.is-deco-expanded .cfg-summary-breakdown {
+      align-self: flex-end;
+      transform: none;
+      margin-top: auto;
+    }
+    .cfg-summary-deco-list {
+      list-style: disc;
+      margin: 4px 0 0;
+      padding-left: 18px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .cfg-summary-deco-list li {
+      white-space: normal;
+    }
+    .cfg-summary-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+      background: rgba(255,248,245,.85);
+      padding: 10px 16px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      min-width: 150px;
+    }
+    .cfg-summary-breakdown .cfg-summary-total {
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px solid var(--line);
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--brown);
+    }
+    .cfg-summary-price {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--brown);
+      white-space: nowrap;
+      background: rgba(255,248,245,.85);
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin-left: 0;
+      flex-shrink: 0;
+      transform: translateY(-50px);
+    }
+    .cfg-right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+    .cfg-dots {
+      display: flex;
+      gap: 8px;
+    }
+    .cfg-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--line);
+      transition: background .2s;
+    }
+    .cfg-dot.is-active {
+      background: var(--brown);
+    }
+    .cfg-nav {
+      display: grid;
+      grid-template-columns: 0fr 1fr;
+      gap: 0;
+      width: 100%;
+      transition: grid-template-columns .55s cubic-bezier(0.23, 1, 0.32, 1),
+                  gap .45s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .cfg-nav.has-back {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .cfg-back-slot {
+      min-width: 0;
+      overflow: hidden;
+      display: flex;
+    }
+    .cfg-back,
+    .cfg-next {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 24px;
+      border-radius: var(--radius-btn);
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(98, 55, 24, .08);
+      white-space: nowrap;
+    }
+    .cfg-back {
+      border: 2px solid var(--primary);
+      background: #fff;
+      color: var(--primary);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .4s ease;
+    }
+    .cfg-nav.has-back .cfg-back {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .cfg-back:hover {
+      background: rgba(98, 55, 24, .06);
+    }
+    .cfg-next {
+      border: none;
+      background: var(--primary);
+      color: var(--on-primary);
+      transition: background-color .2s ease;
+    }
+    .cfg-next:hover {
+      background: var(--primary-container);
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 720px) {
+      .cfg-grid {
+        grid-template-columns: 1fr;
+      }
+      .cfg-bottom {
+        grid-template-columns: 1fr;
+      }
+      .cfg-right-col {
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body data-page="configurator">
+  <main class="page">
+    <section class="shell">
+      <header class="top-bar">
+        <a href="elorendeles.html" data-i18n="cfg.back">← Vissza az előrendeléshez</a>
+        <strong id="cfg-page-title" data-i18n="cfg.stepServings">Hány adag legyen?</strong>
+        <div class="top-bar-actions">
+          <div class="lang-switcher" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv">
+            <button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button>
+            <button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button>
+            <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+          </div>
+          <div class="header-cart-wrap">
+            <button type="button" class="top-bar-cart" id="header-cart-btn" data-i18n-aria-label="order.cartTitle" aria-label="Kosár" aria-expanded="false" aria-controls="header-cart-popover">
+              <span class="material-symbols-outlined">shopping_basket</span>
+              <span class="header-cart-badge" data-cart-badge hidden>0</span>
+            </button>
+            <div class="cart-popover" id="header-cart-popover" role="dialog" aria-labelledby="header-cart-title">
+              <h3 id="header-cart-title" data-i18n="order.cartTitle">Kosár</h3>
+              <div id="header-cart-items" class="cart-items" aria-live="polite"></div>
+              <div class="total"><span data-i18n="order.expectedPrice">Összesen</span><span id="header-cart-total">0 Ft</span></div>
+              <div class="cart-actions">
+                <a class="primary-btn is-disabled" id="header-cart-checkout" href="checkout.html" data-i18n="order.checkout" aria-disabled="true">Rendelés véglegesítése</a>
+                <a class="ghost-btn hidden" id="header-cart-past-orders" href="checkout.html" data-i18n="order.pastOrders">Korábbi rendelések</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="cfg-body">
+        <div class="cfg-grid">
+          <!-- Cake SVG preview -->
+          <div class="cfg-preview" id="cake-preview"></div>
+
+          <!-- Serving options -->
+          <div class="cfg-options" id="cfg-options"></div>
+        </div>
+
+        <div class="cfg-bottom">
+          <div class="cfg-summary" id="cfg-summary"></div>
+          <div class="cfg-right-col">
+            <div class="cfg-dots" id="cfg-dots"></div>
+            <div class="cfg-nav" id="cfg-nav">
+              <div class="cfg-back-slot">
+                <button type="button" class="cfg-back" id="cfg-back" data-i18n="cfg.backStep">Vissza</button>
+              </div>
+              <button type="button" class="cfg-next" id="cfg-next" data-i18n="cfg.next">Tovább</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="data/i18n.js"></script>
+  <script src="data/cart.js"></script>
+  <script>
+  (function () {
+    const SIZES = [
+      { servings: 6,  cm: 14, price: 4990 },
+      { servings: 8,  cm: 16, price: 5990 },
+      { servings: 11, cm: 18, price: 7490 },
+      { servings: 13, cm: 20, price: 8990 },
+      { servings: 16, cm: 22, price: 10990 },
+      { servings: 19, cm: 24, price: 12990 },
+    ];
+
+    const FLAVORS = [
+      { id: "strawberry", modifier: 0,   color: "#e84670" },
+      { id: "vanilla",    modifier: 0,   color: "#e8c36a" },
+      { id: "mango",      modifier: 500, color: "#f5a623" },
+      { id: "raspberry",  modifier: 300, color: "#c2185b" },
+      { id: "lemon",      modifier: 0,   color: "#f0d12e" },
+      { id: "chocolate",  modifier: 400, color: "#5d3a1a" },
+    ];
+
+    const CREAMS = [
+      { id: "strawberry", modifier: 300, color: { body: "#e85a7a", top: "#ffb3c1" } },
+      { id: "vanilla",    modifier: 0,   color: { body: "#f3e6c8", top: "#fffaf0" } },
+      { id: "butter",     modifier: 0,   color: { body: "#fff6e0", top: "#fffef5" } },
+      { id: "raspberry",  modifier: 400, color: { body: "#c2185b", top: "#f48fb1" } },
+      { id: "lemon",      modifier: 200, color: { body: "#f0e05a", top: "#fff9c4" } },
+      { id: "chocolate",  modifier: 400, color: { body: "#5d3a1a", top: "#8b5e3c" } },
+    ];
+
+    const DECORATIONS = [
+      { id: "sugar-sticks", modifier: 400, thumb: "sugar-sticks.png" },
+      { id: "mm",           modifier: 500, thumb: "m-m.png" },
+      { id: "chocolate-drip", modifier: 600, thumb: "chocolate.png" },
+      { id: "candles",      modifier: 70, unitPrice: 70, thumb: "candle.png" },
+      { id: "text",         modifier: 300, thumb: null },
+    ];
+
+    const TOTAL_STEPS = 5;
+    const DEFAULT_SIZE_IDX = 1;
+    const DEFAULT_FLAVOR_IDX = 0;
+    const DEFAULT_CREAM_IDX = 0;
+    const MESSAGE_MAX_LINES = 3;
+    const MESSAGE_MAX_LINE_LEN = 22;
+    const MESSAGE_MAX_CHARS = MESSAGE_MAX_LINES * MESSAGE_MAX_LINE_LEN;
+
+    const cakeConfig = {
+      sizeCm: SIZES[DEFAULT_SIZE_IDX].cm,
+      servings: SIZES[DEFAULT_SIZE_IDX].servings,
+      flavor: FLAVORS[DEFAULT_FLAVOR_IDX].id,
+      flavorModifier: 0,
+      cream: CREAMS[DEFAULT_CREAM_IDX].id,
+      creamModifier: CREAMS[DEFAULT_CREAM_IDX].modifier,
+      decoration: [],
+      decorationModifier: 0,
+      candleCount: 10,
+      candleMode: "digits",
+      message: "",
+      price: SIZES[DEFAULT_SIZE_IDX].price,
+    };
+
+    let currentStep = 1;
+    let sizeSelectedIdx = DEFAULT_SIZE_IDX;
+    let sizePreviewIdx = DEFAULT_SIZE_IDX;
+    let flavorSelectedIdx = DEFAULT_FLAVOR_IDX;
+    let flavorPreviewIdx = DEFAULT_FLAVOR_IDX;
+    let creamSelectedIdx = DEFAULT_CREAM_IDX;
+    let creamPreviewIdx = DEFAULT_CREAM_IDX;
+    let decorationSelected = new Set();
+    let decorationHoverIdx = null;
+    let summaryDecoExpanded = false;
+
+    const I18n = window.BabusgatosI18n;
+    const Cart = window.BabusgatosCart;
+
+    /* ── SVG cake builder ────────────────────────────── */
+    function buildChocolateDrips(cx, topY, rx, ry, layer) {
+      const drips = [];
+      const count = 14;
+      const src = "assets/configurator/decoration/chocolate.png";
+      const size = layer === "front" ? 28 : 22;
+      for (let i = 0; i < count; i++) {
+        const angle = (2 * Math.PI * i) / count - Math.PI / 2;
+        const isFront = Math.sin(angle) > 0.05;
+        if (layer === "back" && isFront) continue;
+        if (layer === "front" && !isFront) continue;
+        const cosA = Math.cos(angle);
+        let x = cx + (rx - 6) * cosA;
+        const y = topY + (ry - 2) * Math.sin(angle);
+        // Nudge leftmost/rightmost drips slightly inward
+        if (Math.abs(cosA) > 0.9) x += cosA > 0 ? -2 : 2;
+        const imgX = x - size / 2;
+        // Hang slightly over the rim; shift all drips up 15px; back layer +8px down
+        let imgY = y - size * 0.35 - 15;
+        if (layer === "back") imgY += 8;
+        drips.push(
+          `<image href="${src}" x="${imgX.toFixed(1)}" y="${imgY.toFixed(1)}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet"/>`
+        );
+      }
+      return drips.join("\n        ");
+    }
+
+    function buildCandlesSvg(cx, topY, rx, ry, count, mode) {
+      const n = Math.max(1, Math.min(99, count | 0));
+      const parts = [];
+      if (mode === "digits") {
+        const digits = String(n).split("");
+        const w = digits.length > 2 ? 56 : 72;
+        const h = w * 1.55;
+        // Pull digits together: left +18px / right -18px vs default spacing
+        const gap = digits.length > 2 ? -20 : -30;
+        const totalW = digits.length * w + (digits.length - 1) * gap;
+        let x = cx - totalW / 2;
+        digits.forEach((d) => {
+          parts.push(
+            `<image href="assets/configurator/decoration/candle-${d}.png" x="${x.toFixed(1)}" y="${(topY - h - 4).toFixed(1)}" width="${w}" height="${h}" preserveAspectRatio="xMidYMax meet"/>`
+          );
+          x += w + gap;
+        });
+        return parts.join("\n        ");
+      }
+
+      const shown = Math.min(n, 24);
+      const candleW = shown > 18 ? 28 : shown > 12 ? 36 : 44;
+      const candleH = candleW * 1.7;
+      const ringRx = rx * 0.55;
+      const ringRy = ry * 0.55;
+      for (let i = 0; i < shown; i++) {
+        const angle = (2 * Math.PI * i) / shown - Math.PI / 2;
+        const x = cx + ringRx * Math.cos(angle) - candleW / 2;
+        const y = topY + ringRy * Math.sin(angle) - candleH + 10;
+        parts.push(
+          `<image href="assets/configurator/decoration/candle.png" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${candleW}" height="${candleH}" preserveAspectRatio="xMidYMax meet"/>`
+        );
+      }
+      return parts.join("\n        ");
+    }
+
+    function escapeXml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function normalizeMessage(raw) {
+      return String(raw || "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\n+/g, " ")
+        .replace(/\s+/g, " ")
+        .trimStart()
+        .slice(0, MESSAGE_MAX_CHARS);
+    }
+
+    function messageTooLong(raw) {
+      return String(raw || "").length > MESSAGE_MAX_CHARS;
+    }
+
+    function wrapMessageLines(raw) {
+      const normalized = normalizeMessage(raw);
+      if (!normalized.trim()) return [];
+      if (normalized.includes("\n")) {
+        return normalized.split("\n").slice(0, MESSAGE_MAX_LINES);
+      }
+      const words = normalized.trim().split(/\s+/);
+      const lines = [];
+      let current = "";
+      words.forEach((word) => {
+        const next = current ? `${current} ${word}` : word;
+        if (next.length <= MESSAGE_MAX_LINE_LEN || !current) {
+          current = next.slice(0, MESSAGE_MAX_LINE_LEN);
+        } else if (lines.length < MESSAGE_MAX_LINES - 1) {
+          lines.push(current);
+          current = word.slice(0, MESSAGE_MAX_LINE_LEN);
+        } else {
+          current = next.slice(0, MESSAGE_MAX_LINE_LEN);
+        }
+      });
+      if (current) lines.push(current);
+      return lines.slice(0, MESSAGE_MAX_LINES);
+    }
+
+    function buildCakeTextSvg(cx, topY, rx, ry, opts) {
+      const lines = wrapMessageLines(opts.message || "");
+      if (!lines.length) return "";
+      const fill = opts.textColor || "#5d3a1a";
+      const longest = Math.max(...lines.map((l) => l.length), 1);
+      const fontSize = longest > 16 ? 14 : longest > 12 ? 16 : lines.length > 2 ? 15 : 18;
+      const lineH = fontSize + 3;
+      const blockH = lines.length * lineH;
+      const startY = topY - blockH / 2 + fontSize * 0.8;
+      const tspans = lines.map((line, i) => {
+        const y = startY + i * lineH;
+        return `<tspan x="${cx}" y="${y.toFixed(1)}">${escapeXml(line) || "\u00a0"}</tspan>`;
+      }).join("");
+      const clipRx = rx * 0.78;
+      const clipRy = Math.max(ry * 0.85, blockH / 2 + 4);
+      return `<defs><clipPath id="cake-text-clip"><ellipse cx="${cx}" cy="${topY}" rx="${clipRx}" ry="${clipRy}"/></clipPath></defs>
+        <text clip-path="url(#cake-text-clip)" text-anchor="middle" font-family="Libre Caslon Text, Georgia, serif" font-size="${fontSize}" font-weight="700" fill="${fill}">${tspans}</text>`;
+    }
+
+    function buildDecorationOverlay(ids, cx, topY, rx, ry, opts) {
+      if (!ids || !ids.length) return "";
+      const set = new Set(ids);
+      const parts = [];
+      const wantsDrip = set.has("chocolate-drip");
+
+      if (wantsDrip) parts.push(buildChocolateDrips(cx, topY, rx, ry, "back"));
+      if (set.has("sugar-sticks")) {
+        const colors = ["#e84670", "#f5a623", "#4caf50", "#42a5f5", "#ab47bc", "#ffee58"];
+        const bits = [];
+        const count = 56;
+        for (let i = 0; i < count; i++) {
+          const angle = (2 * Math.PI * i) / count + (i % 5) * 0.05;
+          // Bias to rim; keep center clear for text/candles
+          const ring = i % 3 === 0 ? 0.52 + (i % 4) * 0.04 : 0.68 + (i % 5) * 0.05;
+          const r = Math.min(0.92, ring);
+          const x = cx + rx * r * Math.cos(angle);
+          const y = topY + ry * r * Math.sin(angle);
+          const rot = (i * 41) % 180;
+          const w = 1.2;
+          const h = 5;
+          bits.push(
+            `<rect x="${(x - w / 2).toFixed(1)}" y="${(y - h / 2).toFixed(1)}" width="${w}" height="${h}" rx="0.5" fill="${colors[i % colors.length]}" transform="rotate(${rot} ${x.toFixed(1)} ${y.toFixed(1)})"/>`
+          );
+        }
+        parts.push(bits.join("\n        "));
+      }
+      if (set.has("mm")) {
+        const colors = ["#e53935", "#1e88e5", "#43a047", "#fdd835", "#8e24aa", "#fb8c00"];
+        const bits = [];
+        const aspect = ry / rx; // cake-top perspective ratio
+        const count = 36;
+        for (let i = 0; i < count; i++) {
+          const angle = (2 * Math.PI * i) / count + 0.15;
+          // Bias to rim; keep center clear for text/candles
+          const ring = i % 3 === 0 ? 0.52 + (i % 4) * 0.04 : 0.68 + (i % 5) * 0.05;
+          const r = Math.min(0.92, ring);
+          const x = cx + rx * r * Math.cos(angle);
+          const y = topY + ry * r * Math.sin(angle);
+          const erx = 6.5 + (i % 3) * 0.6;
+          const ery = erx * aspect + 0.5; // +1px visual height
+          bits.push(`<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${erx.toFixed(1)}" ry="${ery.toFixed(1)}" fill="${colors[i % colors.length]}"/>`);
+        }
+        parts.push(bits.join("\n        "));
+      }
+      if (set.has("candles")) {
+        parts.push(buildCandlesSvg(cx, topY, rx, ry, opts.candleCount, opts.candleMode));
+      }
+      if (wantsDrip) parts.push(buildChocolateDrips(cx, topY, rx, ry, "front"));
+      if (set.has("text")) parts.push(buildCakeTextSvg(cx, topY, rx, ry, opts));
+      return parts.join("\n        ");
+    }
+
+    function buildCakeSvg(cm, servings, flavorColor, creamColor, decoOpts) {
+      const W = 400, H = 340;
+      const cx = W / 2, plateY = 270;
+      const rx = 140, ry = 36;
+      const bodyH = 70;
+      const topY = plateY - bodyH;
+      const showDiameter = !decoOpts || decoOpts.showDiameter !== false;
+      const decoIds = (decoOpts && decoOpts.ids) || [];
+
+      // Cream paints the whole outer cake; flavor only colors the 3 layer rings
+      const bodyFill = creamColor ? creamColor.body : "#f5e1a4";
+      const topFill = creamColor ? creamColor.top : "#fef3d0";
+      const stripeFill = flavorColor || "#e8c36a";
+
+      // 3 flavor rings — only the front (bottom) arc so the cake looks solid
+      const stripeYs = [0.25, 0.5, 0.75].map((t, i) => topY + bodyH * t + 2 + (i === 1 ? 2 : 0) + (i === 2 ? 2 : 0));
+      const stripeRy = ry * 0.85 + 2;
+      const stripes = stripeYs.map((y, i) => {
+        const sw = i === 1 ? 6 : 5;
+        const op = i === 1 ? 0.85 : 0.7;
+        const x1 = cx - rx;
+        const x2 = cx + rx;
+        const thisRy = stripeRy + (i === 2 ? 1 : 0);
+        // Front half-arc only (bottom of ellipse in SVG = front of cake)
+        return `<path d="M ${x1} ${y} A ${rx} ${thisRy} 0 0 0 ${x2} ${y}" fill="none" stroke="${stripeFill}" stroke-width="${sw}" stroke-linecap="round" opacity="${op}"/>`;
+      }).join("\n        ");
+
+      const sliceLines = [];
+      const opacity = servings > 12 ? 0.18 : 0.3;
+
+      // Highlight one slice facing the viewer
+      const highlightIdx = Math.floor(servings / 2);
+      const a1 = (2 * Math.PI * highlightIdx) / servings - Math.PI / 2;
+      const a2 = (2 * Math.PI * (highlightIdx + 1)) / servings - Math.PI / 2;
+      const hx1 = cx + rx * Math.cos(a1), hy1 = topY + ry * Math.sin(a1);
+      const hx2 = cx + rx * Math.cos(a2), hy2 = topY + ry * Math.sin(a2);
+      const largeArc = (a2 - a1 > Math.PI) ? 1 : 0;
+      const hiTop = creamColor ? "rgba(255,255,255,.35)" : "rgba(255,255,240,.7)";
+      const hiSide = creamColor ? "rgba(255,255,255,.22)" : "rgba(255,255,240,.5)";
+      sliceLines.push(`<path d="M${cx},${topY} L${hx1.toFixed(1)},${hy1.toFixed(1)} A${rx},${ry} 0 ${largeArc},1 ${hx2.toFixed(1)},${hy2.toFixed(1)} Z" fill="${hiTop}"/>`);
+      const by1 = plateY + ry * Math.sin(a1);
+      const by2 = plateY + ry * Math.sin(a2);
+      sliceLines.push(`<path d="M${hx1.toFixed(1)},${hy1.toFixed(1)} L${hx1.toFixed(1)},${by1.toFixed(1)} A${rx},${ry} 0 ${largeArc},1 ${hx2.toFixed(1)},${by2.toFixed(1)} L${hx2.toFixed(1)},${hy2.toFixed(1)} A${rx},${ry} 0 ${largeArc},0 ${hx1.toFixed(1)},${hy1.toFixed(1)} Z" fill="${hiSide}"/>`);
+
+      for (let i = 0; i < servings; i++) {
+        const angle = (2 * Math.PI * i) / servings - Math.PI / 2;
+        const ex = cx + rx * Math.cos(angle);
+        const ey = topY + ry * Math.sin(angle);
+        sliceLines.push(`<line x1="${cx}" y1="${topY}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="#7d4e2d" stroke-width="1" opacity="${opacity}"/>`);
+        if (Math.sin(angle) > 0) {
+          const bottomEy = plateY + ry * Math.sin(angle);
+          sliceLines.push(`<line x1="${ex.toFixed(1)}" y1="${ey.toFixed(1)}" x2="${ex.toFixed(1)}" y2="${bottomEy.toFixed(1)}" stroke="#7d4e2d" stroke-width="1" opacity="${opacity}"/>`);
+        }
+      }
+
+      const diameterText = showDiameter
+        ? `<text x="${cx}" y="${topY - 92}" text-anchor="middle" font-family="Work Sans, sans-serif" font-size="28" font-weight="700" fill="#623718">${cm} cm</text>`
+        : "";
+      const decoration = buildDecorationOverlay(decoIds, cx, topY, rx, ry, decoOpts || {});
+
+      return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="${cx}" cy="${plateY + 14}" rx="${rx + 22}" ry="${ry + 8}" fill="#d4a34a"/>
+        <ellipse cx="${cx}" cy="${plateY + 10}" rx="${rx + 18}" ry="${ry + 5}" fill="#e8c36a"/>
+        <rect x="${cx - rx}" y="${topY}" width="${rx * 2}" height="${bodyH}" rx="0" fill="${bodyFill}"/>
+        <ellipse cx="${cx}" cy="${plateY}" rx="${rx}" ry="${ry}" fill="${bodyFill}"/>
+        ${stripes}
+        <ellipse cx="${cx}" cy="${topY}" rx="${rx}" ry="${ry}" fill="${topFill}"/>
+        ${sliceLines.join("\n        ")}
+        ${decoration}
+        ${diameterText}
+      </svg>`;
+    }
+
+    /* ── Computed state helpers ───────────────────────── */
+    function getActiveDecorationIndices() {
+      const set = new Set(decorationSelected);
+      if (currentStep === 4 && decorationHoverIdx != null) set.add(decorationHoverIdx);
+      return [...set].sort((a, b) => a - b);
+    }
+
+    function getDecorationItemPrice(d) {
+      if (!d) return 0;
+      if (d.id === "candles" && d.unitPrice != null) {
+        return d.unitPrice * Math.max(1, Math.min(99, cakeConfig.candleCount | 0));
+      }
+      return d.modifier || 0;
+    }
+
+    function getDecorationModifier(indices) {
+      return (indices || []).reduce((sum, i) => sum + getDecorationItemPrice(DECORATIONS[i]), 0);
+    }
+
+    function getTotalPrice() {
+      const base = SIZES[sizeSelectedIdx].price;
+      const flavorMod = FLAVORS[flavorSelectedIdx].modifier;
+      const creamMod = currentStep >= 3 ? CREAMS[creamSelectedIdx].modifier : 0;
+      const decoMod = currentStep >= 4 ? getDecorationModifier([...decorationSelected]) : 0;
+      return base + flavorMod + creamMod + decoMod;
+    }
+
+    function previewTotalPrice(sizeIdx, flavorIdx, creamIdx, decoIndices) {
+      let total = SIZES[sizeIdx].price + FLAVORS[flavorIdx].modifier;
+      if (creamIdx != null) total += CREAMS[creamIdx].modifier;
+      if (decoIndices && decoIndices.length) total += getDecorationModifier(decoIndices);
+      return total;
+    }
+
+    function syncDecorationConfig() {
+      const indices = [...decorationSelected].sort((a, b) => a - b);
+      cakeConfig.decoration = indices.map((i) => DECORATIONS[i].id);
+      cakeConfig.decorationModifier = getDecorationModifier(indices);
+      cakeConfig.candleCount = Math.max(1, Math.min(99, cakeConfig.candleCount | 0));
+      cakeConfig.message = normalizeMessage(cakeConfig.message);
+      cakeConfig.price = getTotalPrice();
+    }
+
+    function isDecorationSelected(idx) {
+      return decorationSelected.has(idx);
+    }
+
+    function decoIconHtml(d, name, enterClass) {
+      const cls = enterClass ? ` ${enterClass}` : "";
+      if (d.thumb) {
+        return `<img class="cfg-option-thumb${cls}" src="assets/configurator/decoration/${d.thumb}" alt="${name}">`;
+      }
+      return `<span class="cfg-option-glyph${cls}" aria-hidden="true">Aa</span>`;
+    }
+
+    function decoExtrasHtml(d) {
+      if (!isDecorationSelected(DECORATIONS.findIndex((x) => x.id === d.id))) return "";
+      if (d.id === "candles") {
+        return `<div class="cfg-deco-extras" data-extras="candles">
+          <input type="number" class="cfg-candle-count" min="1" max="99" value="${cakeConfig.candleCount}" aria-label="${I18n.t("cfg.candleCountLabel")}">
+          <div class="cfg-candle-modes" role="group">
+            <span role="button" tabindex="0" class="cfg-candle-mode${cakeConfig.candleMode === "digits" ? " is-active" : ""}" data-mode="digits">${I18n.t("cfg.candleModeDigits")}</span>
+            <span role="button" tabindex="0" class="cfg-candle-mode${cakeConfig.candleMode === "sticks" ? " is-active" : ""}" data-mode="sticks">${I18n.t("cfg.candleModeSticks")}</span>
+          </div>
+        </div>`;
+      }
+      if (d.id === "text") {
+        const tooLong = messageTooLong(cakeConfig.message);
+        const safe = escapeXml(cakeConfig.message).replace(/"/g, "&quot;");
+        return `<div class="cfg-deco-extras" data-extras="text">
+          <input type="text" class="cfg-message-input${tooLong ? " is-invalid" : ""}" maxlength="${MESSAGE_MAX_CHARS}" value="${safe}" aria-label="${I18n.t("cfg.messageLabel")}" placeholder="${I18n.t("cfg.messagePlaceholder")}">
+          ${tooLong ? `<span class="cfg-message-error">${I18n.t("cfg.messageTooLong")}</span>` : ""}
+        </div>`;
+      }
+      return "";
+    }
+
+    /* ── Step 1: Servings ─────────────────────────────── */
+    function renderServingsOptions() {
+      const container = document.getElementById("cfg-options");
+      container.innerHTML = SIZES.map((s, i) => {
+        const label = I18n.t("cfg.servingsLabel").replace("{cm}", s.cm).replace("{n}", s.servings);
+        return `<button type="button" class="cfg-option${i === sizeSelectedIdx ? " is-selected" : ""}" data-idx="${i}">
+          <span class="cfg-option-icon"><span class="cfg-option-num">${s.servings}</span></span>
+          <span class="cfg-option-body"><span class="cfg-option-label-slot"><span class="cfg-option-label">${label}</span></span></span>
+        </button>`;
+      }).join("");
+    }
+
+    function initOptionsDelegation() {
+      const container = document.getElementById("cfg-options");
+      if (!container || container.dataset.bound === "1") return;
+      container.dataset.bound = "1";
+
+      container.addEventListener("click", (e) => {
+        if (e.target.closest(".cfg-deco-extras")) {
+          const modeBtn = e.target.closest(".cfg-candle-mode");
+          if (modeBtn) {
+            e.preventDefault();
+            cakeConfig.candleMode = modeBtn.dataset.mode;
+            renderStep();
+          }
+          return;
+        }
+        const btn = e.target.closest(".cfg-option");
+        if (!btn || isAnimating) return;
+        const idx = +btn.dataset.idx;
+        if (currentStep === 1) {
+          sizeSelectedIdx = idx;
+          sizePreviewIdx = idx;
+          cakeConfig.sizeCm = SIZES[idx].cm;
+          cakeConfig.servings = SIZES[idx].servings;
+          cakeConfig.price = getTotalPrice();
+          renderStep();
+        } else if (currentStep === 2) {
+          flavorSelectedIdx = idx;
+          flavorPreviewIdx = idx;
+          cakeConfig.flavor = FLAVORS[idx].id;
+          cakeConfig.flavorModifier = FLAVORS[idx].modifier;
+          cakeConfig.price = getTotalPrice();
+          renderStep();
+        } else if (currentStep === 3) {
+          creamSelectedIdx = idx;
+          creamPreviewIdx = idx;
+          cakeConfig.cream = CREAMS[idx].id;
+          cakeConfig.creamModifier = CREAMS[idx].modifier;
+          cakeConfig.price = getTotalPrice();
+          renderStep();
+        } else if (currentStep === 4) {
+          if (decorationSelected.has(idx)) decorationSelected.delete(idx);
+          else decorationSelected.add(idx);
+          decorationHoverIdx = null;
+          syncDecorationConfig();
+          renderStep();
+        }
+      });
+
+      container.addEventListener("input", (e) => {
+        if (currentStep !== 4) return;
+        if (e.target.classList.contains("cfg-candle-count")) {
+          let v = parseInt(e.target.value, 10);
+          if (Number.isNaN(v)) v = 10;
+          cakeConfig.candleCount = Math.max(1, Math.min(99, v));
+          syncDecorationConfig();
+          renderPreview();
+          renderSummary();
+        } else if (e.target.classList.contains("cfg-message-input")) {
+          const tooLong = messageTooLong(e.target.value);
+          const normalized = normalizeMessage(e.target.value);
+          cakeConfig.message = normalized;
+          if (e.target.value !== normalized) e.target.value = normalized;
+          e.target.classList.toggle("is-invalid", tooLong);
+          const err = e.target.parentElement.querySelector(".cfg-message-error");
+          if (tooLong) {
+            if (!err) {
+              const span = document.createElement("span");
+              span.className = "cfg-message-error";
+              span.textContent = I18n.t("cfg.messageTooLong");
+              e.target.parentElement.appendChild(span);
+            }
+          } else if (err) {
+            err.remove();
+          }
+          renderPreview();
+          renderSummary();
+        }
+      });
+
+      container.addEventListener("change", (e) => {
+        if (currentStep !== 4) return;
+        if (e.target.classList.contains("cfg-candle-count")) {
+          let v = parseInt(e.target.value, 10);
+          if (Number.isNaN(v)) v = 10;
+          cakeConfig.candleCount = Math.max(1, Math.min(99, v));
+          e.target.value = String(cakeConfig.candleCount);
+          syncDecorationConfig();
+          renderPreview();
+          renderSummary();
+        }
+      });
+
+      container.addEventListener("keydown", (e) => {
+        if (currentStep !== 4) return;
+        // Space/Enter inside extras must not toggle the option row
+        if (e.target.closest(".cfg-deco-extras")) {
+          if (e.key === " " || e.code === "Space") e.stopPropagation();
+          const modeBtn = e.target.closest(".cfg-candle-mode");
+          if (modeBtn && (e.key === "Enter" || e.key === " ")) {
+            e.preventDefault();
+            cakeConfig.candleMode = modeBtn.dataset.mode;
+            renderStep();
+          }
+          return;
+        }
+        const opt = e.target.closest(".cfg-option");
+        if (opt && (e.target === opt || e.target.closest(".cfg-option-label-slot, .cfg-option-icon")) && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          opt.click();
+        }
+      });
+
+      container.addEventListener("keyup", (e) => {
+        if (currentStep !== 4) return;
+        if (!e.target.closest(".cfg-deco-extras")) return;
+        if (e.key === " " || e.code === "Space") {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      });
+
+      container.addEventListener("mouseenter", (e) => {
+        const btn = e.target.closest(".cfg-option");
+        if (!btn || isAnimating) return;
+        const idx = +btn.dataset.idx;
+        if (currentStep === 1) {
+          sizePreviewIdx = idx;
+          renderPreview();
+          renderSummary();
+        } else if (currentStep === 2) {
+          flavorPreviewIdx = idx;
+          renderPreview();
+          renderSummary();
+        } else if (currentStep === 3) {
+          creamPreviewIdx = idx;
+          renderPreview();
+          renderSummary();
+        } else if (currentStep === 4) {
+          decorationHoverIdx = idx;
+          renderPreview();
+          renderSummary();
+        }
+      }, true);
+
+      container.addEventListener("mouseleave", (e) => {
+        const btn = e.target.closest(".cfg-option");
+        if (!btn || isAnimating) return;
+        if (currentStep === 1) {
+          sizePreviewIdx = sizeSelectedIdx;
+          renderPreview();
+          renderSummary();
+        } else if (currentStep === 2) {
+          flavorPreviewIdx = flavorSelectedIdx;
+          renderPreview();
+          renderSummary();
+        } else if (currentStep === 3) {
+          creamPreviewIdx = creamSelectedIdx;
+          renderPreview();
+          renderSummary();
+        } else if (currentStep === 4) {
+          decorationHoverIdx = null;
+          renderPreview();
+          renderSummary();
+        }
+      }, true);
+    }
+
+    /* ── Step 2: Flavor ───────────────────────────────── */
+    function renderFlavorOptions() {
+      const container = document.getElementById("cfg-options");
+      container.innerHTML = FLAVORS.map((f, i) => {
+        const name = I18n.t("cfg.flavor." + f.id);
+        return `<button type="button" class="cfg-option${i === flavorSelectedIdx ? " is-selected" : ""}" data-idx="${i}" data-flavor="${f.id}">
+          <span class="cfg-option-icon"><img class="cfg-option-thumb" src="assets/configurator/flavor/${f.id}.png" alt="${name}"></span>
+          <span class="cfg-option-body"><span class="cfg-option-label-slot"><span class="cfg-option-label">${name}</span></span></span>
+        </button>`;
+      }).join("");
+    }
+
+    /* ── Step 3: Cream / coating ──────────────────────── */
+    function renderCreamOptions() {
+      const container = document.getElementById("cfg-options");
+      container.innerHTML = CREAMS.map((c, i) => {
+        const name = I18n.t("cfg.cream." + c.id);
+        return `<button type="button" class="cfg-option${i === creamSelectedIdx ? " is-selected" : ""}" data-idx="${i}" data-cream="${c.id}">
+          <span class="cfg-option-icon"><img class="cfg-option-thumb" src="assets/configurator/cream/${c.id}.png" alt="${name}"></span>
+          <span class="cfg-option-body"><span class="cfg-option-label-slot"><span class="cfg-option-label">${name}</span></span></span>
+        </button>`;
+      }).join("");
+    }
+
+    /* ── Step 4: Decoration ───────────────────────────── */
+    function renderDecorationOptions() {
+      const container = document.getElementById("cfg-options");
+      container.innerHTML = DECORATIONS.map((d, i) => {
+        const name = I18n.t("cfg.deco." + d.id);
+        const extras = decoExtrasHtml(d);
+        if (d.id === "text") {
+          return `<div role="button" tabindex="0" class="cfg-option${isDecorationSelected(i) ? " is-selected" : ""}" data-idx="${i}" data-deco="${d.id}">
+            <span class="cfg-option-icon">${decoIconHtml(d, name)}</span>
+            <span class="cfg-option-body">
+              <span class="cfg-option-label-slot"><span class="cfg-option-label">${name}</span></span>
+            </span>
+            ${extras}
+          </div>`;
+        }
+        return `<div role="button" tabindex="0" class="cfg-option${isDecorationSelected(i) ? " is-selected" : ""}" data-idx="${i}" data-deco="${d.id}">
+          <span class="cfg-option-icon">${decoIconHtml(d, name)}</span>
+          <span class="cfg-option-body">
+            <span class="cfg-option-label-slot"><span class="cfg-option-label">${name}</span></span>
+            ${extras}
+          </span>
+        </div>`;
+      }).join("");
+    }
+
+    function renderStepPlaceholder() {
+      const container = document.getElementById("cfg-options");
+      container.innerHTML = "";
+    }
+
+    function setNextButtonLabel() {
+      const nextBtn = document.getElementById("cfg-next");
+      if (!nextBtn) return;
+      nextBtn.textContent = currentStep >= 5 ? I18n.t("cfg.addToCart") : I18n.t("cfg.next");
+    }
+
+    function buildCakeCartPayload() {
+      syncDecorationConfig();
+      const decoIds = cakeConfig.decoration || [];
+      const decorationLines = decoIds.map((id) => {
+        if (id === "candles") {
+          return `${I18n.t("cfg.deco.candles")}: ${I18n.t("cfg.candlePcs").replace("{n}", String(cakeConfig.candleCount))}`;
+        }
+        if (id === "text") {
+          const msg = cakeConfig.message.trim();
+          return msg
+            ? `${I18n.t("cfg.cartTextShort")}: „${msg}”`
+            : I18n.t("cfg.deco.text");
+        }
+        return I18n.t("cfg.deco." + id);
+      });
+      const summaryLines = [
+        `${cakeConfig.sizeCm} cm · ${I18n.t("cfg.cartServings").replace("{n}", String(cakeConfig.servings))}`,
+        I18n.t("cfg.flavor." + cakeConfig.flavor),
+        I18n.t("cfg.cream." + cakeConfig.cream),
+      ];
+      if (decorationLines.length) {
+        summaryLines.push(I18n.t("cfg.cartDecorations").replace("{n}", String(decorationLines.length)));
+      }
+      return {
+        id: "custom-cake-" + Date.now(),
+        type: "custom-cake",
+        name: I18n.t("cfg.customCake"),
+        detail: summaryLines.join(" · "),
+        summaryLines,
+        decorationLines,
+        price: cakeConfig.price || getTotalPrice(),
+        img: "assets/configurator/flavor/" + cakeConfig.flavor + ".png",
+      };
+    }
+
+    function openCartPopover() {
+      const popover = document.getElementById("header-cart-popover");
+      const toggle = document.getElementById("header-cart-btn");
+      renderCartPopover();
+      popover?.classList.add("is-open");
+      toggle?.setAttribute("aria-expanded", "true");
+    }
+
+    function addConfiguredCakeToCart() {
+      Cart.addToCart(buildCakeCartPayload());
+      // Defer open so the same click's document listener doesn't immediately close it
+      setTimeout(() => openCartPopover(), 0);
+    }
+
+    function flipMove(els, applyLayout) {
+      const first = els.map((el) => el.getBoundingClientRect());
+      applyLayout();
+      const last = els.map((el) => el.getBoundingClientRect());
+      els.forEach((el, i) => {
+        const dx = first[i].left - last[i].left;
+        const dy = first[i].top - last[i].top;
+        el.style.transition = "none";
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+      // force reflow
+      void document.body.offsetWidth;
+      return new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            els.forEach((el) => {
+              el.style.transition = "transform .7s cubic-bezier(0.23, 1, 0.32, 1)";
+              el.style.transform = "translate(0, 0)";
+            });
+            setTimeout(() => {
+              els.forEach((el) => {
+                el.style.transition = "";
+                el.style.transform = "";
+              });
+              resolve();
+            }, 720);
+          });
+        });
+      });
+    }
+
+    async function transitionToSummary() {
+      const body = document.querySelector(".cfg-body");
+      const options = document.getElementById("cfg-options");
+      const preview = document.getElementById("cake-preview");
+      const summary = document.getElementById("cfg-summary");
+      const rightCol = document.querySelector(".cfg-right-col");
+      const buttons = [...options.querySelectorAll(".cfg-option")];
+      const stagger = 90;
+      options.classList.add("is-exiting");
+      options.style.overflow = "visible";
+
+      buttons.forEach((btn, i) => {
+        setTimeout(() => btn.classList.add("is-fly-out"), i * stagger);
+      });
+
+      await wait(480 + buttons.length * stagger);
+
+      summaryDecoExpanded = false;
+      setNextButtonLabel();
+      await flipMove([preview, summary, rightCol], () => {
+        body?.classList.add("is-summary");
+        options.innerHTML = "";
+        options.classList.remove("is-exiting");
+        options.style.overflow = "";
+        renderSummary();
+        renderDots();
+      });
+    }
+
+    async function transitionFromSummary() {
+      const body = document.querySelector(".cfg-body");
+      const preview = document.getElementById("cake-preview");
+      const summary = document.getElementById("cfg-summary");
+      const rightCol = document.querySelector(".cfg-right-col");
+      const options = document.getElementById("cfg-options");
+
+      summaryDecoExpanded = false;
+      setNextButtonLabel();
+
+      await flipMove([preview, summary, rightCol], () => {
+        body?.classList.remove("is-summary");
+        renderDecorationOptions();
+        renderSummary();
+        renderDots();
+      });
+
+      const buttons = [...options.querySelectorAll(".cfg-option")];
+      const stagger = 90;
+      options.style.overflow = "visible";
+      buttons.forEach((btn) => btn.classList.add("is-fly-in"));
+      void options.offsetWidth;
+      buttons.forEach((btn, i) => {
+        setTimeout(() => {
+          btn.classList.add("is-fly-in-active");
+          btn.classList.remove("is-fly-in");
+        }, i * stagger);
+      });
+
+      await wait(700 + buttons.length * stagger);
+      buttons.forEach((btn) => btn.classList.remove("is-fly-in-active"));
+      options.style.overflow = "";
+    }
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function modeOptionCount(mode) {
+      if (mode === "flavor") return FLAVORS.length;
+      if (mode === "cream") return CREAMS.length;
+      if (mode === "decoration") return DECORATIONS.length;
+      return SIZES.length;
+    }
+
+    function applyButtonMeta(btn, i, mode) {
+      btn.dataset.idx = String(i);
+      delete btn.dataset.flavor;
+      delete btn.dataset.cream;
+      delete btn.dataset.deco;
+      btn.removeAttribute("data-flavor");
+      btn.removeAttribute("data-cream");
+      btn.removeAttribute("data-deco");
+
+      // Normalize body structure for label slot
+      let body = btn.querySelector(".cfg-option-body");
+      if (!body) {
+        const slot = btn.querySelector(".cfg-option-label-slot");
+        body = document.createElement("span");
+        body.className = "cfg-option-body";
+        if (slot) {
+          slot.replaceWith(body);
+          body.appendChild(slot);
+        } else {
+          btn.appendChild(body);
+          const newSlot = document.createElement("span");
+          newSlot.className = "cfg-option-label-slot";
+          newSlot.innerHTML = `<span class="cfg-option-label"></span>`;
+          body.appendChild(newSlot);
+        }
+      }
+      body.querySelectorAll(".cfg-deco-extras").forEach((el) => el.remove());
+      btn.querySelectorAll(":scope > .cfg-deco-extras").forEach((el) => el.remove());
+
+      if (mode === "flavor") {
+        const f = FLAVORS[i];
+        btn.dataset.flavor = f.id;
+        btn.classList.toggle("is-selected", i === flavorSelectedIdx);
+        return I18n.t("cfg.flavor." + f.id);
+      }
+      if (mode === "cream") {
+        const c = CREAMS[i];
+        btn.dataset.cream = c.id;
+        btn.classList.toggle("is-selected", i === creamSelectedIdx);
+        return I18n.t("cfg.cream." + c.id);
+      }
+      if (mode === "decoration") {
+        const d = DECORATIONS[i];
+        btn.dataset.deco = d.id;
+        btn.classList.toggle("is-selected", isDecorationSelected(i));
+        const extras = decoExtrasHtml(d);
+        if (extras) {
+          if (d.id === "text") btn.insertAdjacentHTML("beforeend", extras);
+          else body.insertAdjacentHTML("beforeend", extras);
+        }
+        return I18n.t("cfg.deco." + d.id);
+      }
+      const s = SIZES[i];
+      btn.classList.toggle("is-selected", i === sizeSelectedIdx);
+      return I18n.t("cfg.servingsLabel").replace("{cm}", s.cm).replace("{n}", s.servings);
+    }
+
+    function swapIcon(btn, i, mode, direction) {
+      const iconWrap = btn.querySelector(".cfg-option-icon");
+      const enterFrom = direction > 0 ? "icon-enter-from-right" : "icon-enter-from-left";
+      let html;
+      if (mode === "flavor") {
+        const f = FLAVORS[i];
+        const name = I18n.t("cfg.flavor." + f.id);
+        html = `<img class="cfg-option-thumb ${enterFrom}" src="assets/configurator/flavor/${f.id}.png" alt="${name}">`;
+      } else if (mode === "cream") {
+        const c = CREAMS[i];
+        const name = I18n.t("cfg.cream." + c.id);
+        html = `<img class="cfg-option-thumb ${enterFrom}" src="assets/configurator/cream/${c.id}.png" alt="${name}">`;
+      } else if (mode === "decoration") {
+        const d = DECORATIONS[i];
+        const name = I18n.t("cfg.deco." + d.id);
+        html = decoIconHtml(d, name, enterFrom);
+      } else {
+        html = `<span class="cfg-option-num ${enterFrom}">${SIZES[i].servings}</span>`;
+      }
+      iconWrap.innerHTML = html;
+      const el = iconWrap.firstElementChild;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.classList.remove(enterFrom);
+          el.classList.add("icon-enter-active");
+          setTimeout(() => {
+            el.classList.remove("icon-enter-active");
+          }, 600);
+        });
+      });
+    }
+
+    function swapLabel(btn, newText) {
+      let slot = btn.querySelector(".cfg-option-label-slot");
+      if (!slot) {
+        const body = btn.querySelector(".cfg-option-body") || btn;
+        slot = document.createElement("span");
+        slot.className = "cfg-option-label-slot";
+        slot.innerHTML = `<span class="cfg-option-label"></span>`;
+        body.prepend(slot);
+      }
+      const old = slot.querySelector(".cfg-option-label");
+      if (!old) {
+        slot.innerHTML = `<span class="cfg-option-label">${newText}</span>`;
+        return;
+      }
+      old.classList.add("label-exit-up");
+
+      const neu = document.createElement("span");
+      neu.className = "cfg-option-label label-enter-from-below";
+      neu.textContent = newText;
+      slot.appendChild(neu);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          neu.classList.add("label-enter-active");
+        });
+      });
+
+      setTimeout(() => {
+        // Replace with a clean static label to avoid absolute → flow jump
+        slot.innerHTML = "";
+        const final = document.createElement("span");
+        final.className = "cfg-option-label";
+        final.textContent = newText;
+        slot.appendChild(final);
+      }, 1150);
+    }
+
+    async function animateIconsEnter(direction) {
+      const buttons = [...document.querySelectorAll("#cfg-options .cfg-option")];
+      const stagger = 90;
+      const enterFrom = direction > 0 ? "icon-enter-from-right" : "icon-enter-from-left";
+      buttons.forEach((btn, i) => {
+        const el = btn.querySelector(".cfg-option-icon > *");
+        if (!el) return;
+        el.classList.add(enterFrom);
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              el.classList.remove(enterFrom);
+              el.classList.add("icon-enter-active");
+              setTimeout(() => el.classList.remove("icon-enter-active"), 600);
+            });
+          });
+        }, i * stagger);
+      });
+      await wait(700 + buttons.length * stagger);
+    }
+
+    /* Per-button staggered transition: icon horizontal + label vertical */
+    async function transitionOptions(direction, mode) {
+      const buttons = [...document.querySelectorAll("#cfg-options .cfg-option")];
+      const stagger = 90;
+      const exitClass = direction > 0 ? "icon-exit-left" : "icon-exit-right";
+      const targetCount = modeOptionCount(mode);
+
+      buttons.forEach((btn, i) => {
+        setTimeout(() => {
+          const icon = btn.querySelector(".cfg-option-icon > *");
+          icon?.classList.add(exitClass);
+        }, i * stagger);
+      });
+
+      await wait(480);
+
+      if (buttons.length !== targetCount) {
+        if (mode === "decoration") renderDecorationOptions();
+        else if (mode === "cream") renderCreamOptions();
+        else if (mode === "flavor") renderFlavorOptions();
+        else renderServingsOptions();
+        await animateIconsEnter(direction);
+        return;
+      }
+
+      buttons.forEach((btn, i) => {
+        setTimeout(() => {
+          const newText = applyButtonMeta(btn, i, mode);
+          swapIcon(btn, i, mode, direction);
+          swapLabel(btn, newText);
+        }, i * stagger);
+      });
+
+      await wait(1200 + buttons.length * stagger);
+    }
+
+    /* ── Shared renders ───────────────────────────────── */
+    function renderPreview() {
+      const previewEl = document.getElementById("cake-preview");
+      const bgStep = Math.min(5, Math.max(1, currentStep | 0));
+      previewEl.style.backgroundImage = `url("assets/configurator/cacke-bg/step${bgStep}.jpg")`;
+      previewEl.dataset.step = String(bgStep);
+
+      const s = SIZES[currentStep === 1 ? sizePreviewIdx : sizeSelectedIdx];
+      const flavorColor = currentStep >= 2
+        ? FLAVORS[currentStep === 2 ? flavorPreviewIdx : flavorSelectedIdx].color
+        : null;
+      const creamIdx = currentStep >= 3 ? creamPreviewIdx : null;
+      const creamColor = creamIdx != null ? CREAMS[creamIdx].color : null;
+      let decoOpts = null;
+      if (currentStep >= 4) {
+        const indices = getActiveDecorationIndices();
+        const creamId = CREAMS[creamSelectedIdx].id;
+        decoOpts = {
+          showDiameter: false,
+          ids: indices.map((i) => DECORATIONS[i].id),
+          candleCount: cakeConfig.candleCount,
+          candleMode: cakeConfig.candleMode,
+          message: cakeConfig.message,
+          textColor: creamId === "chocolate" ? "#ffffff" : "#5d3a1a",
+        };
+      }
+      previewEl.innerHTML = buildCakeSvg(s.cm, s.servings, flavorColor, creamColor, decoOpts);
+    }
+
+    function renderSummary() {
+      const t = I18n.t.bind(I18n);
+      const nf = new Intl.NumberFormat("hu-HU");
+      const s = SIZES[currentStep === 1 ? sizePreviewIdx : sizeSelectedIdx];
+      const fIdx = currentStep === 2 ? flavorPreviewIdx : flavorSelectedIdx;
+      const f = FLAVORS[fIdx];
+      const cIdx = currentStep >= 3 ? creamPreviewIdx : null;
+      const creamModIdx = currentStep >= 3 ? creamPreviewIdx : creamSelectedIdx;
+      const decoIndices = currentStep >= 4 ? getActiveDecorationIndices() : [];
+      const cream = creamModIdx != null ? CREAMS[creamModIdx] : null;
+      const decoTotal = currentStep >= 4 ? getDecorationModifier(decoIndices) : 0;
+      const totalPrice = previewTotalPrice(
+        currentStep === 1 ? sizePreviewIdx : sizeSelectedIdx,
+        fIdx,
+        currentStep >= 3 ? creamModIdx : null,
+        currentStep >= 4 ? decoIndices : null
+      );
+
+      let flavorText = "";
+      if (currentStep >= 2) {
+        const fName = I18n.t("cfg.flavor." + f.id);
+        flavorText = f.modifier > 0 ? `${fName} +${nf.format(f.modifier)} Ft` : fName;
+      }
+
+      let creamText = "";
+      if (currentStep >= 3 && cIdx != null) {
+        const c = CREAMS[cIdx];
+        const cName = I18n.t("cfg.cream." + c.id);
+        creamText = c.modifier > 0 ? `${cName} +${nf.format(c.modifier)} Ft` : cName;
+      }
+
+      function formatDecoPart(d, expanded) {
+        const dName = I18n.t("cfg.deco." + d.id);
+        const price = getDecorationItemPrice(d);
+        const priceTxt = price > 0 ? ` +${nf.format(price)} Ft` : "";
+        if (d.id === "candles") {
+          const n = Math.max(1, Math.min(99, cakeConfig.candleCount | 0));
+          if (expanded) {
+            const unit = d.unitPrice != null ? d.unitPrice : d.modifier;
+            return `${dName}: ${I18n.t("cfg.candleBreakdown")
+              .replace("{n}", String(n))
+              .replace("{unit}", nf.format(unit))
+              .replace("{total}", nf.format(price))}`;
+          }
+          return `${dName}${priceTxt}`;
+        }
+        if (d.id === "text" && cakeConfig.message.trim()) {
+          const msg = cakeConfig.message.trim();
+          return expanded ? `${dName}: „${msg}”${priceTxt}` : `${dName}${priceTxt} „${msg}”`;
+        }
+        return `${dName}${priceTxt}`;
+      }
+
+      let decoText = "";
+      let decoHtmlCollapsed = "";
+      let decoHtmlExpanded = "";
+      let decoNeedsToggle = false;
+      if (currentStep >= 4 && decoIndices.length) {
+        const partsExpanded = decoIndices.map((i) => formatDecoPart(DECORATIONS[i], true));
+        decoText = I18n.t("cfg.decoCount").replace("{n}", String(decoIndices.length));
+        decoHtmlCollapsed = `${t("cfg.summaryDecoration")}: ${decoText}`;
+        decoHtmlExpanded = `
+          <div class="cfg-summary-deco-title">${t("cfg.summaryDecoration")}:</div>
+          <ul class="cfg-summary-deco-list">
+            ${partsExpanded.map((p) => `<li>${p}</li>`).join("")}
+          </ul>`;
+        decoNeedsToggle = true;
+      }
+
+      const decoLi = decoNeedsToggle
+        ? `<li class="cfg-summary-deco">
+            <div class="cfg-summary-deco-head">
+              <span class="cfg-summary-deco-text">${summaryDecoExpanded ? decoHtmlExpanded : decoHtmlCollapsed}</span>
+              <button type="button" class="cfg-summary-deco-toggle" aria-expanded="${summaryDecoExpanded ? "true" : "false"}" aria-label="${t("cfg.summaryDecoration")}">
+                <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+              </button>
+            </div>
+          </li>`
+        : `<li>${t("cfg.summaryDecoration")}: ${decoText}</li>`;
+
+      const showBreakdown = summaryDecoExpanded && decoNeedsToggle;
+      let priceHtml;
+      if (showBreakdown) {
+        const flavorLine = f.modifier > 0
+          ? `${t("cfg.summaryFlavor")}: +${nf.format(f.modifier)} Ft`
+          : `${t("cfg.summaryFlavor")}: ${t("cfg.summaryIncluded")}`;
+        const creamLine = cream
+          ? (cream.modifier > 0
+            ? `${t("cfg.summaryCream")}: +${nf.format(cream.modifier)} Ft`
+            : `${t("cfg.summaryCream")}: ${t("cfg.summaryIncluded")}`)
+          : "";
+        priceHtml = `
+          <div class="cfg-summary-breakdown">
+            <div>${t("cfg.summaryBase")}: ${nf.format(s.price)} Ft</div>
+            <div>${flavorLine}</div>
+            ${creamLine ? `<div>${creamLine}</div>` : ""}
+            <div>${t("cfg.summaryDecorationsTotal")}: +${nf.format(decoTotal)} Ft</div>
+            <div class="cfg-summary-total">${t("cfg.summaryTotal")}: ${nf.format(totalPrice)} Ft</div>
+          </div>`;
+      } else {
+        priceHtml = `<div class="cfg-summary-price">${t("cfg.summaryPrice")}: ${nf.format(totalPrice)} Ft</div>`;
+      }
+
+      const summaryEl = document.getElementById("cfg-summary");
+      summaryEl.classList.toggle("is-deco-expanded", showBreakdown);
+      summaryEl.innerHTML = `
+        <ul class="cfg-summary-list">
+          <li>${t("cfg.summarySize")}: ${s.cm} cm</li>
+          <li>${t("cfg.summaryServings")}: ${s.servings}</li>
+          <li>${t("cfg.summaryFlavor")}: ${flavorText}</li>
+          <li>${t("cfg.summaryCream")}: ${creamText}</li>
+          ${decoLi}
+        </ul>
+        ${priceHtml}
+      `;
+    }
+
+    function renderDots() {
+      const container = document.getElementById("cfg-dots");
+      container.innerHTML = Array.from({ length: TOTAL_STEPS }, (_, i) =>
+        `<div class="cfg-dot${i < currentStep ? " is-active" : ""}"></div>`
+      ).join("");
+    }
+
+    function renderStep() {
+      const titleEl = document.getElementById("cfg-page-title");
+      const backLink = document.querySelector(".top-bar a");
+      const nav = document.getElementById("cfg-nav");
+      const body = document.querySelector(".cfg-body");
+      const showStepBack = currentStep > 1;
+
+      nav?.classList.toggle("has-back", showStepBack);
+      body?.classList.toggle("is-summary", currentStep === 5);
+
+      if (currentStep === 1) {
+        titleEl.textContent = I18n.t("cfg.stepServings");
+        backLink.textContent = I18n.t("cfg.back");
+        backLink.href = "elorendeles.html";
+        renderServingsOptions();
+      } else if (currentStep === 2) {
+        titleEl.textContent = I18n.t("cfg.stepFlavor");
+        backLink.textContent = I18n.t("cfg.back");
+        backLink.href = "elorendeles.html";
+        renderFlavorOptions();
+      } else if (currentStep === 3) {
+        titleEl.textContent = I18n.t("cfg.stepCream");
+        backLink.textContent = I18n.t("cfg.back");
+        backLink.href = "elorendeles.html";
+        renderCreamOptions();
+      } else if (currentStep === 4) {
+        titleEl.textContent = I18n.t("cfg.stepDecoration");
+        backLink.textContent = I18n.t("cfg.back");
+        backLink.href = "elorendeles.html";
+        renderDecorationOptions();
+      } else {
+        titleEl.textContent = I18n.t("cfg.stepSummary");
+        backLink.textContent = I18n.t("cfg.back");
+        backLink.href = "elorendeles.html";
+        summaryDecoExpanded = false;
+        renderStepPlaceholder();
+      }
+      setNextButtonLabel();
+      renderPreview();
+      renderSummary();
+      renderDots();
+    }
+
+    let isAnimating = false;
+
+    async function goNext() {
+      if (isAnimating) return;
+      if (currentStep === 5) {
+        addConfiguredCakeToCart();
+        return;
+      }
+      if (currentStep >= TOTAL_STEPS) return;
+      if (currentStep === 1) {
+        isAnimating = true;
+        currentStep = 2;
+        document.getElementById("cfg-page-title").textContent = I18n.t("cfg.stepFlavor");
+        document.getElementById("cfg-nav")?.classList.add("has-back");
+        setNextButtonLabel();
+        renderPreview();
+        renderSummary();
+        renderDots();
+        await transitionOptions(1, "flavor");
+        isAnimating = false;
+        return;
+      }
+      if (currentStep === 2) {
+        isAnimating = true;
+        currentStep = 3;
+        cakeConfig.cream = CREAMS[creamSelectedIdx].id;
+        cakeConfig.creamModifier = CREAMS[creamSelectedIdx].modifier;
+        cakeConfig.price = getTotalPrice();
+        creamPreviewIdx = creamSelectedIdx;
+        document.getElementById("cfg-page-title").textContent = I18n.t("cfg.stepCream");
+        document.getElementById("cfg-nav")?.classList.add("has-back");
+        setNextButtonLabel();
+        renderPreview();
+        renderSummary();
+        renderDots();
+        await transitionOptions(1, "cream");
+        isAnimating = false;
+        return;
+      }
+      if (currentStep === 3) {
+        isAnimating = true;
+        currentStep = 4;
+        creamPreviewIdx = creamSelectedIdx;
+        decorationHoverIdx = null;
+        syncDecorationConfig();
+        document.getElementById("cfg-page-title").textContent = I18n.t("cfg.stepDecoration");
+        document.getElementById("cfg-nav")?.classList.add("has-back");
+        setNextButtonLabel();
+        renderPreview();
+        renderSummary();
+        renderDots();
+        await transitionOptions(1, "decoration");
+        isAnimating = false;
+        return;
+      }
+      if (currentStep === 4) {
+        isAnimating = true;
+        currentStep = 5;
+        syncDecorationConfig();
+        document.getElementById("cfg-page-title").textContent = I18n.t("cfg.stepSummary");
+        document.getElementById("cfg-nav")?.classList.add("has-back");
+        setNextButtonLabel();
+        renderPreview();
+        renderDots();
+        await transitionToSummary();
+        isAnimating = false;
+        return;
+      }
+    }
+
+    async function goBack() {
+      if (isAnimating || currentStep <= 1) return;
+      if (currentStep === 2) {
+        isAnimating = true;
+        currentStep = 1;
+        document.getElementById("cfg-page-title").textContent = I18n.t("cfg.stepServings");
+        document.getElementById("cfg-nav")?.classList.remove("has-back");
+        setNextButtonLabel();
+        renderPreview();
+        renderSummary();
+        renderDots();
+        await transitionOptions(-1, "servings");
+        isAnimating = false;
+        return;
+      }
+      if (currentStep === 3) {
+        isAnimating = true;
+        currentStep = 2;
+        document.getElementById("cfg-page-title").textContent = I18n.t("cfg.stepFlavor");
+        document.getElementById("cfg-nav")?.classList.add("has-back");
+        setNextButtonLabel();
+        renderPreview();
+        renderSummary();
+        renderDots();
+        await transitionOptions(-1, "flavor");
+        isAnimating = false;
+        return;
+      }
+      if (currentStep === 4) {
+        isAnimating = true;
+        currentStep = 3;
+        creamPreviewIdx = creamSelectedIdx;
+        document.getElementById("cfg-page-title").textContent = I18n.t("cfg.stepCream");
+        document.getElementById("cfg-nav")?.classList.add("has-back");
+        setNextButtonLabel();
+        renderPreview();
+        renderSummary();
+        renderDots();
+        await transitionOptions(-1, "cream");
+        isAnimating = false;
+        return;
+      }
+      if (currentStep === 5) {
+        isAnimating = true;
+        currentStep = 4;
+        document.getElementById("cfg-page-title").textContent = I18n.t("cfg.stepDecoration");
+        document.getElementById("cfg-nav")?.classList.add("has-back");
+        setNextButtonLabel();
+        renderPreview();
+        await transitionFromSummary();
+        isAnimating = false;
+        return;
+      }
+      currentStep--;
+      renderStep();
+    }
+
+    /* ── Cart popover ─────────────────────────────────── */
+    function renderCartPopover() {
+      const container = document.getElementById("header-cart-items");
+      const totalEl = document.getElementById("header-cart-total");
+      const checkoutBtn = document.getElementById("header-cart-checkout");
+      const pastOrdersBtn = document.getElementById("header-cart-past-orders");
+      if (!container) return;
+      const cartItems = Cart.loadCart();
+      Cart.updateCartBadges(cartItems);
+      container.innerHTML = Cart.renderCartLines(cartItems, { removable: true });
+      const sum = cartItems.reduce((a, c) => a + c.price * (c.qty || 1), 0);
+      totalEl.textContent = new Intl.NumberFormat("hu-HU").format(sum) + " Ft";
+      const hasItems = cartItems.length > 0;
+      checkoutBtn?.classList.toggle("is-disabled", !hasItems);
+      checkoutBtn?.setAttribute("aria-disabled", hasItems ? "false" : "true");
+      const hasPastOrders = (Cart.loadOrders?.() || []).length > 0;
+      pastOrdersBtn?.classList.toggle("hidden", !hasPastOrders);
+      Cart.bindRemoveButtons(container, () => renderCartPopover());
+    }
+
+    function initCartPopover() {
+      const toggle = document.getElementById("header-cart-btn");
+      const popover = document.getElementById("header-cart-popover");
+      if (!toggle || !popover) return;
+
+      function closeAll() {
+        popover.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const willOpen = !popover.classList.contains("is-open");
+        closeAll();
+        if (willOpen) {
+          renderCartPopover();
+          popover.classList.add("is-open");
+          toggle.setAttribute("aria-expanded", "true");
+        }
+      });
+
+      document.addEventListener("click", (e) => {
+        if (e.target.closest(".header-cart-wrap")) return;
+        closeAll();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeAll();
+      });
+    }
+
+    /* ── Init ─────────────────────────────────────────── */
+    document.addEventListener("DOMContentLoaded", () => {
+      I18n.init();
+      initCartPopover();
+      initOptionsDelegation();
+      renderCartPopover();
+      renderStep();
+
+      document.addEventListener("babusgatos:langchange", () => { renderStep(); renderCartPopover(); });
+      document.addEventListener("babusgatos:cartchange", () => renderCartPopover());
+      document.addEventListener("babusgatos:orderschange", () => renderCartPopover());
+
+      document.getElementById("cfg-next").addEventListener("click", goNext);
+      document.getElementById("cfg-back").addEventListener("click", goBack);
+      document.getElementById("cfg-summary").addEventListener("click", (e) => {
+        const toggle = e.target.closest(".cfg-summary-deco-toggle");
+        if (!toggle) return;
+        e.preventDefault();
+        summaryDecoExpanded = !summaryDecoExpanded;
+        renderSummary();
+      });
+    });
+
+    window.__cakeConfig = cakeConfig;
+  })();
+  </script>
+</body>
+</html>
