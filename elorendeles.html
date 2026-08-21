@@ -262,19 +262,26 @@
     .patisserie-feature {
       margin: 38px;
       display: grid;
-      grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
-      gap: 24px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 28px;
       align-items: center;
+    }
+    .feature-copy {
+      min-width: 0;
+      position: relative;
+      z-index: 1;
     }
     .feature-copy h2 {
       margin: 0 0 12px;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(32px, 4vw, 52px);
-      line-height: .95;
+      font-size: clamp(28px, 3.2vw, 42px);
+      line-height: 1.05;
+      overflow-wrap: break-word;
+      hyphens: auto;
     }
     .feature-copy p {
       margin: 0;
-      max-width: 560px;
+      max-width: 36rem;
       color: var(--muted);
       line-height: 1.6;
       font-size: 17px;
@@ -368,6 +375,7 @@
     .ghost-btn {
       height: 44px;
       padding: 0 20px;
+      text-decoration: none;
     }
     .ghost-btn:hover,
     .mini-add--ghost:hover {
@@ -410,18 +418,6 @@
     }
     .product .photo { height: 124px; background: #eee; overflow: hidden; }
     .product img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .product--builder .photo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #fff3d8 0%, #ffe0ab 55%, #ffd488 100%);
-    }
-    .product--builder .photo .plus {
-      font-size: 62px;
-      line-height: 1;
-      color: rgba(98, 55, 24, .9);
-      font-weight: 500;
-    }
     .mini-add-link {
       display: inline-flex;
       align-items: center;
@@ -593,10 +589,10 @@
           <p data-i18n="order.heroText">A furgon követése után jöhetnek az előrendelhető torták és cukrász kedvencek: méret, íz, felirat és átvétel egy folyamatban.</p>
         </div>
         <div class="media-stage">
-          <img src="assets/cake-cutout.png" alt="Málnás túrótorta">
+          <img src="assets/cake-cutout.png" alt="Málnás túrótorta" data-i18n-alt="order.product.malnas.name">
           <div class="floating-card">
-            <div class="floating-card-copy"><strong>Málnás túrótorta</strong><span>Könnyed, ünnepi, látványos szeleteléshez.</span></div>
-            <button class="ghost-btn" type="button" data-i18n="order.details">Részletek</button>
+            <div class="floating-card-copy"><strong data-i18n="order.product.malnas.name">Málnás túrótorta</strong><span data-i18n="order.product.malnas.teaser">Könnyed, ünnepi, látványos szeleteléshez.</span></div>
+            <a class="ghost-btn" href="malnas-turotorta.html" data-i18n="order.details">Részletek</a>
           </div>
         </div>
       </section>
@@ -609,7 +605,7 @@
           </div>
           <div class="products">
             <div class="product product--builder">
-              <div class="photo" aria-hidden="true"><span class="plus">+</span></div>
+              <div class="photo"><img src="assets/configurator/config-card.jpg" alt="Torta összeállítás" data-i18n-alt="order.cakeBuilderTitle"></div>
               <div class="meta">
                 <strong data-i18n="order.cakeBuilderTitle">Torta összeállítás</strong>
                 <span data-i18n="order.cakeBuilderTeaser">Állítsd össze a saját tortádat lépésről lépésre.</span>
@@ -618,29 +614,19 @@
               </div>
             </div>
             <div class="product">
-              <div class="photo"><img src="assets/malnas-turotorta.jpg" alt="Málnás túrótorta"></div>
+              <div class="photo"><img src="assets/malnas-turotorta.jpg" alt="Málnás túrótorta" data-i18n-alt="order.product.malnas.name"></div>
               <div class="meta">
-                <strong>Málnás túrótorta</strong>
-                <span>Friss, gyümölcsös választás</span>
+                <strong data-i18n="order.product.malnas.name">Málnás túrótorta</strong>
+                <span data-i18n="order.product.malnas.desc">Friss, gyümölcsös választás</span>
                 <div class="price">14 690 Ft-tól</div>
-                <button
-                  class="mini-add"
-                  type="button"
-                  data-i18n="order.customize"
-                  data-add-to-cart
-                  data-id="malnas-turotorta"
-                  data-name="Málnás túrótorta"
-                  data-detail="Alapválasztás"
-                  data-price="14690"
-                  data-img="assets/malnas-turotorta.jpg"
-                >Testreszabom</button>
+                <a class="mini-add-link" href="malnas-turotorta.html" data-i18n="order.customize">Testreszabom</a>
               </div>
             </div>
             <div class="product">
-              <div class="photo"><img src="assets/macaron.jpg" alt="Macaron"></div>
+              <div class="photo"><img src="assets/macaron.jpg" alt="Macaron" data-i18n-alt="order.product.macaron.name"></div>
               <div class="meta">
-                <strong>Macaron box</strong>
-                <span>5 db-os ajándékdoboz</span>
+                <strong data-i18n="order.product.macaron.name">Macaron box</strong>
+                <span data-i18n="order.product.macaron.desc">5 db-os ajándékdoboz</span>
                 <div class="price">2 500 Ft</div>
                 <button
                   class="mini-add"
@@ -649,17 +635,19 @@
                   data-add-to-cart
                   data-id="macaron-box"
                   data-name="Macaron box"
+                  data-i18n-name="order.product.macaron.name"
                   data-detail="5 db-os ajándékdoboz"
+                  data-i18n-detail="order.product.macaron.desc"
                   data-price="2500"
                   data-img="assets/macaron.jpg"
                 >Kosárba</button>
               </div>
             </div>
             <div class="product">
-              <div class="photo"><img src="assets/cakes.jpg" alt="Sütemények"></div>
+              <div class="photo"><img src="assets/cakes.jpg" alt="Sütemények" data-i18n-alt="order.product.pastries.alt"></div>
               <div class="meta">
-                <strong>Kávé mellé</strong>
-                <span>Szelet sütik és pultos ajánlatok</span>
+                <strong data-i18n="order.product.coffee.name">Kávé mellé</strong>
+                <span data-i18n="order.product.coffee.desc">Szelet sütik és pultos ajánlatok</span>
                 <div class="price">1 190 Ft</div>
                 <button
                   class="mini-add"
@@ -668,17 +656,19 @@
                   data-add-to-cart
                   data-id="kave-melle"
                   data-name="Kávé mellé"
+                  data-i18n-name="order.product.coffee.name"
                   data-detail="Szelet süti"
+                  data-i18n-detail="order.product.coffee.detail"
                   data-price="1190"
                   data-img="assets/cakes.jpg"
                 >Kosárba</button>
               </div>
             </div>
             <div class="product">
-              <div class="photo"><img src="assets/zero-csoki-torta.jpg" alt="Zero csokitorta"></div>
+              <div class="photo"><img src="assets/zero-csoki-torta.jpg" alt="Zero csokitorta" data-i18n-alt="order.product.zero.name"></div>
               <div class="meta">
-                <strong>Zero csokitorta</strong>
-                <span>Könnyed, csokis ünnepi választás</span>
+                <strong data-i18n="order.product.zero.name">Zero csokitorta</strong>
+                <span data-i18n="order.product.zero.desc">Könnyed, csokis ünnepi választás</span>
                 <div class="price">9 500 Ft</div>
                 <button
                   class="mini-add"
@@ -687,17 +677,19 @@
                   data-add-to-cart
                   data-id="zero-csoki-torta"
                   data-name="Zero csokitorta"
+                  data-i18n-name="order.product.zero.name"
                   data-detail="Egész torta"
+                  data-i18n-detail="order.product.zero.detail"
                   data-price="9500"
                   data-img="assets/zero-csoki-torta.jpg"
                 >Kosárba</button>
               </div>
             </div>
             <div class="product">
-              <div class="photo"><img src="assets/krem-torta.jpg" alt="Krémtorta"></div>
+              <div class="photo"><img src="assets/krem-torta.jpg" alt="Krémtorta" data-i18n-alt="order.product.cream.name"></div>
               <div class="meta">
-                <strong>Krémtorta</strong>
-                <span>Klasszikus, selymes krém</span>
+                <strong data-i18n="order.product.cream.name">Krémtorta</strong>
+                <span data-i18n="order.product.cream.desc">Klasszikus, selymes krém</span>
                 <div class="price">5 990 Ft</div>
                 <button
                   class="mini-add"
@@ -706,7 +698,9 @@
                   data-add-to-cart
                   data-id="krem-torta"
                   data-name="Krémtorta"
+                  data-i18n-name="order.product.cream.name"
                   data-detail="Egész torta"
+                  data-i18n-detail="order.product.cream.detail"
                   data-price="5990"
                   data-img="assets/krem-torta.jpg"
                 >Kosárba</button>

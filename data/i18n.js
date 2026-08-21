@@ -116,6 +116,41 @@
       "order.decreaseQty": "Mennyiség csökkentése",
       "order.increaseQty": "Mennyiség növelése",
       "order.navAria": "Fő navigáció",
+      "order.product.malnas.name": "Málnás túrótorta",
+      "order.product.malnas.teaser": "Könnyed, ünnepi, látványos szeleteléshez.",
+      "order.product.malnas.desc": "Friss, gyümölcsös választás",
+      "order.product.malnas.detail": "Alapválasztás",
+      "order.product.macaron.name": "Macaron box",
+      "order.product.macaron.desc": "5 db-os ajándékdoboz",
+      "order.product.coffee.name": "Kávé mellé",
+      "order.product.coffee.desc": "Szelet sütik és pultos ajánlatok",
+      "order.product.coffee.detail": "Szelet süti",
+      "order.product.zero.name": "Zero csokitorta",
+      "order.product.zero.desc": "Könnyed, csokis ünnepi választás",
+      "order.product.zero.detail": "Egész torta",
+      "order.product.cream.name": "Krémtorta",
+      "order.product.cream.desc": "Klasszikus, selymes krém",
+      "order.product.cream.detail": "Egész torta",
+      "order.product.pastries.alt": "Sütemények",
+      "product.malnas.meta.title": "Babusgatós — Málnás túrótorta",
+      "product.malnas.back": "← Vissza az előrendeléshez",
+      "product.malnas.lead": "Friss málna és selymes túrókrém — könnyed, ünnepi torta látványos szeleteléshez.",
+      "product.malnas.size": "Méret / szeletek",
+      "product.malnas.sizeOption": "{cm} cm · {n} szelet",
+      "product.malnas.extras": "Extrák",
+      "product.malnas.candle": "Számgyertya",
+      "product.malnas.candlePrice": "+490 Ft",
+      "product.malnas.candleNumber": "Milyen szám?",
+      "product.malnas.candleDetail": "Számgyertya: {n}",
+      "product.malnas.customText": "Egyedi felirat",
+      "product.malnas.customTextHint": "Opcionális szöveg a tortára",
+      "product.malnas.customTextPlaceholder": "pl. Boldog születésnapot!",
+      "product.malnas.plaque": "Boldog születésnapot tábla",
+      "product.malnas.plaquePrice": "+690 Ft",
+      "product.malnas.qty": "Darabszám",
+      "product.malnas.priceFrom": "Ár",
+      "product.malnas.gallery": "Képgaléria",
+      "product.malnas.thumb": "Kép {n}",
       "checkout.meta.title": "Babusgatós — Rendelés és fizetés",
       "checkout.header": "Rendelés véglegesítése",
       "checkout.headerReview": "Rendelés összesítő",
@@ -332,6 +367,41 @@
       "order.decreaseQty": "Menge verringern",
       "order.increaseQty": "Menge erhöhen",
       "order.navAria": "Hauptnavigation",
+      "order.product.malnas.name": "Himbeer-Quarktorte",
+      "order.product.malnas.teaser": "Leicht, festlich, ideal zum Anschneiden.",
+      "order.product.malnas.desc": "Frische, fruchtige Wahl",
+      "order.product.malnas.detail": "Basisauswahl",
+      "order.product.macaron.name": "Macaron-Box",
+      "order.product.macaron.desc": "5er-Geschenkbox",
+      "order.product.coffee.name": "Zum Kaffee",
+      "order.product.coffee.desc": "Kuchenstücke und Thekenangebote",
+      "order.product.coffee.detail": "Kuchenstück",
+      "order.product.zero.name": "Zero-Schokotorte",
+      "order.product.zero.desc": "Leichte, schokoladige Festtagswahl",
+      "order.product.zero.detail": "Ganze Torte",
+      "order.product.cream.name": "Cremetorte",
+      "order.product.cream.desc": "Klassische, seidige Creme",
+      "order.product.cream.detail": "Ganze Torte",
+      "order.product.pastries.alt": "Gebäck",
+      "product.malnas.meta.title": "Babusgatós — Himbeer-Quarktorte",
+      "product.malnas.back": "← Zurück zur Vorbestellung",
+      "product.malnas.lead": "Frische Himbeeren und seidige Quarkcreme — leichte Festtagstorte, ideal zum Anschneiden.",
+      "product.malnas.size": "Größe / Stücke",
+      "product.malnas.sizeOption": "{cm} cm · {n} Stücke",
+      "product.malnas.extras": "Extras",
+      "product.malnas.candle": "Zahlenkerze",
+      "product.malnas.candlePrice": "+490 Ft",
+      "product.malnas.candleNumber": "Welche Zahl?",
+      "product.malnas.candleDetail": "Zahlenkerze: {n}",
+      "product.malnas.customText": "Individuelle Aufschrift",
+      "product.malnas.customTextHint": "Optionaler Text auf der Torte",
+      "product.malnas.customTextPlaceholder": "z. B. Alles Gute zum Geburtstag!",
+      "product.malnas.plaque": "Alles-Gute-zum-Geburtstag-Schild",
+      "product.malnas.plaquePrice": "+690 Ft",
+      "product.malnas.qty": "Anzahl",
+      "product.malnas.priceFrom": "Preis",
+      "product.malnas.gallery": "Bildergalerie",
+      "product.malnas.thumb": "Bild {n}",
       "checkout.meta.title": "Babusgatós — Bestellung und Zahlung",
       "checkout.header": "Bestellung abschließen",
       "checkout.headerReview": "Bestellübersicht",
@@ -548,6 +618,41 @@
       "order.decreaseQty": "Decrease quantity",
       "order.increaseQty": "Increase quantity",
       "order.navAria": "Main navigation",
+      "order.product.malnas.name": "Raspberry cottage cheese cake",
+      "order.product.malnas.teaser": "Light, festive, beautiful for slicing.",
+      "order.product.malnas.desc": "Fresh, fruity choice",
+      "order.product.malnas.detail": "Base option",
+      "order.product.macaron.name": "Macaron box",
+      "order.product.macaron.desc": "Gift box of 5",
+      "order.product.coffee.name": "With coffee",
+      "order.product.coffee.desc": "Slice cakes and counter treats",
+      "order.product.coffee.detail": "Slice cake",
+      "order.product.zero.name": "Zero chocolate cake",
+      "order.product.zero.desc": "Light, chocolatey festive choice",
+      "order.product.zero.detail": "Whole cake",
+      "order.product.cream.name": "Cream cake",
+      "order.product.cream.desc": "Classic, silky cream",
+      "order.product.cream.detail": "Whole cake",
+      "order.product.pastries.alt": "Pastries",
+      "product.malnas.meta.title": "Babusgatós — Raspberry cottage cheese cake",
+      "product.malnas.back": "← Back to pre-order",
+      "product.malnas.lead": "Fresh raspberry and silky cottage-cheese cream — a light festive cake, beautiful for slicing.",
+      "product.malnas.size": "Size / slices",
+      "product.malnas.sizeOption": "{cm} cm · {n} slices",
+      "product.malnas.extras": "Extras",
+      "product.malnas.candle": "Number candle",
+      "product.malnas.candlePrice": "+490 Ft",
+      "product.malnas.candleNumber": "Which number?",
+      "product.malnas.candleDetail": "Number candle: {n}",
+      "product.malnas.customText": "Custom inscription",
+      "product.malnas.customTextHint": "Optional text on the cake",
+      "product.malnas.customTextPlaceholder": "e.g. Happy birthday!",
+      "product.malnas.plaque": "Happy birthday plaque",
+      "product.malnas.plaquePrice": "+690 Ft",
+      "product.malnas.qty": "Quantity",
+      "product.malnas.priceFrom": "Price",
+      "product.malnas.gallery": "Image gallery",
+      "product.malnas.thumb": "Image {n}",
       "checkout.meta.title": "Babusgatós — Order and payment",
       "checkout.header": "Complete your order",
       "checkout.headerReview": "Order summary",
@@ -735,6 +840,14 @@
       const key = el.getAttribute("data-i18n-alt");
       if (key) el.setAttribute("alt", t(key));
     });
+    scope.querySelectorAll("[data-i18n-name]").forEach((el) => {
+      const key = el.getAttribute("data-i18n-name");
+      if (key) el.setAttribute("data-name", t(key));
+    });
+    scope.querySelectorAll("[data-i18n-detail]").forEach((el) => {
+      const key = el.getAttribute("data-i18n-detail");
+      if (key) el.setAttribute("data-detail", t(key));
+    });
     scope.querySelectorAll(".lang-btn").forEach((btn) => {
       const active = btn.dataset.lang === currentLang;
       btn.classList.toggle("lang-btn--active", active);
@@ -756,6 +869,8 @@
       document.title = t("order.meta.title");
     } else if (document.body.dataset.page === "checkout") {
       document.title = t("checkout.meta.title");
+    } else if (document.body.dataset.page === "product-malnas") {
+      document.title = t("product.malnas.meta.title");
     } else {
       document.title = t("meta.title");
     }
@@ -786,6 +901,8 @@
       document.title = t("order.meta.title");
     } else if (document.body.dataset.page === "checkout") {
       document.title = t("checkout.meta.title");
+    } else if (document.body.dataset.page === "product-malnas") {
+      document.title = t("product.malnas.meta.title");
     } else {
       document.title = t("meta.title");
     }

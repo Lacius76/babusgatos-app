@@ -327,7 +327,28 @@
         }
         .lang-btn--active { background: #ffd87c; color: #795d08; }
         .lang-btn:hover:not(.lang-btn--active) { background: rgba(98, 55, 24, .06); }
-        .lang-switcher--mobile { box-shadow: 0 4px 14px rgba(30, 27, 24, .12); }
+        .lang-switcher--mobile {
+            position: static;
+            box-shadow: 0 4px 14px rgba(30, 27, 24, .12);
+        }
+        .map-top-actions {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            z-index: 35;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cart-popover-mobile-wrap.header-cart-wrap {
+            position: relative;
+            top: auto;
+            right: auto;
+        }
+        .cart-popover-mobile-wrap .cart-popover {
+            right: 0;
+            left: auto;
+        }
         .header-cart-wrap {
             position: relative;
             display: inline-flex;
@@ -484,15 +505,6 @@
             background: rgba(98, 55, 24, .06);
         }
         .cart-popover .hidden { display: none !important; }
-        .cart-popover-mobile-wrap {
-            position: absolute;
-            top: 3px;
-            right: 3.6rem;
-            z-index: 35;
-        }
-        .cart-popover-mobile-wrap .cart-popover {
-            right: 0;
-        }
         .push-town-chip {
             display: inline-flex;
             align-items: center;
@@ -723,6 +735,8 @@
 <div id="layout-mobile">
 <main class="pb-24 max-w-container-max mx-auto">
 <section id="terkep" class="relative overflow-hidden shadow-sm border border-outline-variant" style="height: 520px;">
+<div class="map-top-actions">
+<div class="lang-switcher lang-switcher--mobile" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv"><button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button><button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div>
 <div class="cart-popover-mobile-wrap header-cart-wrap">
 <button type="button" class="header-cart-btn" id="header-cart-btn-mobile" data-cart-toggle data-i18n-aria-label="order.cartTitle" aria-label="Kosár" aria-expanded="false" aria-controls="header-cart-popover-mobile" style="background:rgba(255,248,245,.92);border:1px solid #d6c3b8;box-shadow:0 4px 14px rgba(30,27,24,.12);">
 <span class="material-symbols-outlined">shopping_basket</span>
@@ -738,7 +752,7 @@
 </div>
 </div>
 </div>
-<div class="lang-switcher lang-switcher--mobile absolute top-3 right-3 z-30" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv"><button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button><button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div>
+</div>
 <div id="map-static-mobile" class="absolute inset-0 overflow-hidden">
 <img alt="Falu térképes illusztráció" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA94P3KrYZkGtJYuwsNoYK6kfD0a5A4wE8XM80imkb0bJE_2N69mvOqcS5L6M2c1K9oTfWfNAmUQNh9DwEsY-ElfVyCAxRdqjX_6bTVZqbyNqg0tV6jojEmVZmJCqQNe-bOMVqGPyD1nIEcqcTvqgLlDhIhxfterS41oBDdLS60Bdb7fwWB_aqWcN2rTNoiPtV605Ez_nj7KvSSzVtY0Sl15Wgxc_Mg1Qk_lnarSgHOAtk4JNZ8ZO9x0X2pyttrJqSG9EFoqubbmhE">
 <div id="map-static-van-mobile" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center pointer-events-none">
@@ -747,7 +761,7 @@
 <div class="mt-2 px-3 py-1 bg-primary text-on-primary text-label-lg font-label-lg rounded-full shadow-lg" data-i18n="mobile.onTheWay">Úton hozzád!</div>
 </div>
 </div>
-<p id="map-pick-hint-mobile" class="absolute top-3 left-3 right-3 right-24 glass-effect rounded-xl px-3 py-2 text-center text-label-sm text-on-surface-variant" data-i18n="map.hint">Keress települést — menetrend és térkép.</p>
+<p id="map-pick-hint-mobile" class="absolute top-14 left-3 right-3 glass-effect rounded-xl px-3 py-2 text-center text-label-sm text-on-surface-variant" data-i18n="map.hint">Keress települést — menetrend és térkép.</p>
 <div id="map-static-not-today-mobile" class="map-static-not-today hidden" aria-live="polite">
 <div class="map-static-not-today-card glass-effect rounded-xl px-3 py-3">
 <p class="text-label-sm text-on-surface-variant" data-i18n="map.notToday">Ezen a napon nem látogatunk el hozzátok, de az alábbi időpontban megtalálsz minket a településeden:</p>

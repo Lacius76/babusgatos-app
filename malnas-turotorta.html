@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Babusgatós — Málnás túrótorta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&family=Work+Sans:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #623718;
+      --on-primary: #ffffff;
+      --primary-container: #7d4e2d;
+      --secondary-container: #ffd87c;
+      --on-secondary-container: #795d08;
+      --surface: #fff8f5;
+      --on-surface: #1e1b18;
+      --on-surface-variant: #51443c;
+      --outline: #84746b;
+      --outline-variant: #d6c3b8;
+      --ink: #1e1b18;
+      --muted: #51443c;
+      --brown: #623718;
+      --paper: #fff8f5;
+      --line: #d6c3b8;
+      --radius-btn: 0.5rem;
+      --shadow-soft: 0 4px 14px rgba(125, 78, 45, 0.1);
+      font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: linear-gradient(135deg, #fff9ef 0%, #f4eee6 45%, #eef3ee 100%);
+    }
+    button, input, select {
+      font: inherit;
+    }
+    button {
+      cursor: pointer;
+      transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .15s ease;
+    }
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--secondary-container);
+      outline-offset: 2px;
+    }
+    .page { width: min(1440px, 100%); margin: 0 auto; padding: 24px; }
+    .shell {
+      border: 1px solid rgba(65, 47, 38, .13);
+      border-radius: 12px;
+      overflow: visible;
+      background: var(--paper);
+      box-shadow: 0 26px 70px rgba(54, 38, 28, .18);
+    }
+    .top-bar {
+      position: relative;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.85);
+      border-radius: 12px 12px 0 0;
+    }
+    .top-bar a {
+      color: var(--brown);
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .top-bar strong {
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+      font-size: clamp(15px, 2.5vw, 18px);
+      line-height: 1.25;
+    }
+    .top-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-switcher {
+      display: inline-flex;
+      gap: 2px;
+      padding: 2px;
+      border-radius: 9999px;
+      background: rgba(255, 248, 245, .92);
+      border: 1px solid var(--outline-variant);
+    }
+    .lang-btn {
+      min-width: 2rem;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 9999px;
+      background: transparent;
+      color: var(--on-surface-variant);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      line-height: 1.2;
+    }
+    .lang-btn--active { background: var(--secondary-container); color: var(--on-secondary-container); }
+    .lang-btn:hover:not(.lang-btn--active) { background: rgba(98, 55, 24, .06); }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .header-cart-wrap { position: relative; }
+    .top-bar-cart {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: none;
+      border-radius: 9999px;
+      color: var(--brown);
+      background: transparent;
+      cursor: pointer;
+    }
+    .top-bar-cart:hover { background: rgba(98, 55, 24, .06); }
+    .top-bar-cart .material-symbols-outlined { font-size: 24px; line-height: 1; }
+    .header-cart-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 9999px;
+      background: var(--brown);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 16px;
+      text-align: center;
+    }
+    .cart-popover {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: min(340px, calc(100vw - 24px));
+      z-index: 80;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 18px 40px rgba(54, 38, 28, .18);
+      padding: 16px;
+      display: none;
+    }
+    .cart-popover.is-open { display: block; }
+    .cart-popover h3 { margin: 0 0 12px; font-size: 18px; font-weight: 700; color: var(--brown); }
+    .cart-popover .cart-empty { padding: 16px 8px; color: var(--muted); font-size: 13px; line-height: 1.45; text-align: center; border: 1px dashed var(--line); border-radius: 8px; margin: 0 0 12px; }
+    .cart-popover .cart-line { display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .cart-popover .cart-line img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; }
+    .cart-popover .cart-line strong { display: block; font-size: 14px; }
+    .cart-popover .cart-line span { display: block; color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .cart-popover .cart-line-remove {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+    .cart-popover .total { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; font-size: 16px; font-weight: 800; }
+    .cart-popover .primary-btn {
+      width: 100%;
+      text-decoration: none;
+      color: var(--on-primary) !important;
+      background: var(--primary);
+      display: block;
+      text-align: center;
+      padding: 12px 24px;
+      border-radius: var(--radius-btn);
+      font-weight: 700;
+    }
+    .cart-popover .primary-btn.is-disabled { opacity: .45; pointer-events: none; }
+    .cart-popover .cart-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .cart-popover .ghost-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 38px;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--brown);
+      border: 1px solid var(--brown);
+      font-weight: 600;
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .hidden { display: none !important; }
+
+    .pd-body {
+      padding: 28px 24px 32px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+      gap: 32px;
+      align-items: start;
+    }
+
+    .pd-gallery {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+    .pd-hero {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #d7c3aa;
+      box-shadow: var(--shadow-soft);
+    }
+    .pd-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .pd-thumbs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .pd-thumb {
+      aspect-ratio: 1;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 0;
+      background: #eee;
+      cursor: pointer;
+    }
+    .pd-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .pd-thumb.is-active {
+      border-color: var(--brown);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .pd-info { min-width: 0; }
+    .pd-info h1 {
+      margin: 0 0 10px;
+      font-family: "Libre Caslon Text", Georgia, serif;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.1;
+      color: var(--brown);
+    }
+    .pd-lead {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+      max-width: 36rem;
+    }
+    .pd-price {
+      margin: 0 0 22px;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--brown);
+    }
+    .pd-price span {
+      display: block;
+      margin-top: 2px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .pd-field {
+      margin-bottom: 18px;
+    }
+    .pd-field label,
+    .pd-field-label,
+    .pd-extras-title {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--brown);
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    .pd-select-wrap {
+      position: relative;
+    }
+    .pd-select-btn {
+      width: 100%;
+      height: 48px;
+      padding: 0 40px 0 14px;
+      border: 1px solid var(--brown);
+      border-radius: 10px;
+      background-color: #fff;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23623718' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 16px;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+    }
+    .pd-select-btn:hover {
+      border-color: var(--primary-container);
+    }
+    .pd-select-wrap.is-open .pd-select-btn {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      outline: 2px solid var(--secondary-container);
+      outline-offset: 0;
+    }
+    .pd-select-wrap.is-open .pd-select-btn {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23623718' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 15 12 9 18 15'/%3E%3C/svg%3E");
+    }
+    .pd-select-menu {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      z-index: 40;
+      display: none;
+      margin: 0;
+      padding: 6px;
+      list-style: none;
+      border: 1px solid var(--brown);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(54, 38, 28, .14);
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .pd-select-wrap.is-open .pd-select-menu {
+      display: block;
+    }
+    .pd-select-option {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+    }
+    .pd-select-option:hover {
+      background: rgba(98, 55, 24, .06);
+    }
+    .pd-select-option.is-active {
+      background: rgba(255, 216, 124, .35);
+      color: var(--brown);
+    }
+
+    .pd-extras {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .pd-check {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .pd-check:has(input:checked) {
+      border-color: var(--secondary-container);
+      background: rgba(255, 216, 124, .18);
+    }
+    .pd-check input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--brown);
+    }
+    .pd-check strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .pd-check em {
+      display: block;
+      margin-top: 2px;
+      font-style: normal;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .pd-check .pd-extra-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--brown);
+      white-space: nowrap;
+    }
+    .pd-text-wrap {
+      margin-top: -4px;
+      margin-bottom: 18px;
+      padding-left: 2px;
+    }
+    .pd-text-wrap[hidden],
+    .pd-candle-wrap[hidden] { display: none !important; }
+    .pd-text-wrap input {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+    .pd-candle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: -4px;
+      margin-bottom: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 216, 124, .12);
+    }
+    .pd-candle-wrap label {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--brown);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .pd-candle-number {
+      width: 72px;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 10px;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .pd-actions {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .pd-qty {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #fff;
+    }
+    .pd-qty button {
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: rgba(98, 55, 24, .08);
+      color: var(--brown);
+      font-weight: 800;
+      font-size: 18px;
+      line-height: 1;
+      padding: 0;
+    }
+    .pd-qty button:hover { background: rgba(98, 55, 24, .14); }
+    .pd-qty-value {
+      min-width: 28px;
+      text-align: center;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .pd-add {
+      height: 52px;
+      border: none;
+      border-radius: var(--radius-btn);
+      background: var(--primary);
+      color: var(--on-primary);
+      font-size: 16px;
+      font-weight: 700;
+      box-shadow: var(--shadow-soft);
+    }
+    .pd-add:hover { background: var(--primary-container); }
+    .pd-add:active { transform: scale(0.99); }
+
+    @media (max-width: 920px) {
+      .page { padding: 10px; }
+      .top-bar { padding: 12px 14px; gap: 8px; }
+      .pd-body {
+        grid-template-columns: 1fr;
+        padding: 18px 14px 24px;
+        gap: 22px;
+      }
+      .pd-actions {
+        grid-template-columns: 1fr;
+      }
+      .pd-qty { justify-self: start; }
+      .cart-popover {
+        position: fixed;
+        top: 72px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+      }
+    }
+  </style>
+</head>
+<body data-page="product-malnas">
+  <main class="page">
+    <section class="shell">
+      <header class="top-bar">
+        <a href="elorendeles.html" data-i18n="product.malnas.back">← Vissza az előrendeléshez</a>
+        <strong data-i18n="order.product.malnas.name">Málnás túrótorta</strong>
+        <div class="top-bar-actions">
+          <div class="lang-switcher" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv">
+            <button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button>
+            <button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button>
+            <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+          </div>
+          <div class="header-cart-wrap">
+            <button type="button" class="top-bar-cart" id="header-cart-btn" data-i18n-aria-label="order.cartTitle" aria-label="Kosár" aria-expanded="false" aria-controls="header-cart-popover">
+              <span class="material-symbols-outlined">shopping_basket</span>
+              <span class="header-cart-badge" data-cart-badge hidden>0</span>
+            </button>
+            <div class="cart-popover" id="header-cart-popover" role="dialog" aria-labelledby="header-cart-title">
+              <h3 id="header-cart-title" data-i18n="order.cartTitle">Kosár</h3>
+              <div id="header-cart-items" class="cart-items" aria-live="polite"></div>
+              <div class="total"><span data-i18n="order.expectedPrice">Összesen</span><span id="header-cart-total">0 Ft</span></div>
+              <div class="cart-actions">
+                <a class="primary-btn is-disabled" id="header-cart-checkout" href="checkout.html" data-i18n="order.checkout" aria-disabled="true">Rendelés véglegesítése</a>
+                <a class="ghost-btn hidden" id="header-cart-past-orders" href="checkout.html" data-i18n="order.pastOrders">Korábbi rendelések</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="pd-body">
+        <section class="pd-gallery" aria-label="Képgaléria" data-i18n-aria-label="product.malnas.gallery">
+          <div class="pd-hero">
+            <img id="pd-hero-img" src="assets/raspberry-cake/raspberry-cake.jpg" alt="Málnás túrótorta" data-i18n-alt="order.product.malnas.name">
+          </div>
+          <div class="pd-thumbs" id="pd-thumbs" role="list"></div>
+        </section>
+
+        <section class="pd-info">
+          <h1 data-i18n="order.product.malnas.name">Málnás túrótorta</h1>
+          <p class="pd-lead" data-i18n="product.malnas.lead">Friss málna és selymes túrókrém — könnyed, ünnepi torta látványos szeleteléshez.</p>
+          <div class="pd-price" id="pd-price">14 690 Ft<span data-i18n="product.malnas.priceFrom">Ár</span></div>
+
+          <div class="pd-field">
+            <span class="pd-field-label" id="pd-size-label" data-i18n="product.malnas.size">Méret / szeletek</span>
+            <div class="pd-select-wrap" id="pd-size-wrap">
+              <button type="button" class="pd-select-btn" id="pd-size-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="pd-size-label pd-size-btn">14 cm · 6 szelet</button>
+              <ul class="pd-select-menu" id="pd-size-menu" role="listbox" aria-labelledby="pd-size-label" hidden></ul>
+            </div>
+          </div>
+
+          <div class="pd-extras-title" data-i18n="product.malnas.extras">Extrák</div>
+          <div class="pd-extras">
+            <label class="pd-check">
+              <input type="checkbox" id="pd-candle">
+              <span>
+                <strong data-i18n="product.malnas.candle">Számgyertya</strong>
+              </span>
+              <span class="pd-extra-price" data-i18n="product.malnas.candlePrice">+490 Ft</span>
+            </label>
+            <div class="pd-candle-wrap" id="pd-candle-wrap" hidden>
+              <label for="pd-candle-number" data-i18n="product.malnas.candleNumber">Milyen szám?</label>
+              <input type="number" class="pd-candle-number" id="pd-candle-number" min="1" max="99" value="10" inputmode="numeric">
+            </div>
+            <label class="pd-check">
+              <input type="checkbox" id="pd-custom-text">
+              <span>
+                <strong data-i18n="product.malnas.customText">Egyedi felirat</strong>
+                <em data-i18n="product.malnas.customTextHint">Opcionális szöveg a tortára</em>
+              </span>
+              <span class="pd-extra-price"></span>
+            </label>
+            <label class="pd-check">
+              <input type="checkbox" id="pd-plaque">
+              <span>
+                <strong data-i18n="product.malnas.plaque">Boldog születésnapot tábla</strong>
+              </span>
+              <span class="pd-extra-price" data-i18n="product.malnas.plaquePrice">+690 Ft</span>
+            </label>
+          </div>
+
+          <div class="pd-text-wrap" id="pd-text-wrap" hidden>
+            <input
+              type="text"
+              id="pd-message"
+              maxlength="48"
+              data-i18n-placeholder="product.malnas.customTextPlaceholder"
+              placeholder="pl. Boldog születésnapot!"
+            >
+          </div>
+
+          <div class="pd-actions">
+            <div class="pd-qty" role="group" data-i18n-aria-label="product.malnas.qty" aria-label="Darabszám">
+              <button type="button" id="pd-qty-dec" data-i18n-aria-label="order.decreaseQty" aria-label="Mennyiség csökkentése">−</button>
+              <span class="pd-qty-value" id="pd-qty-value">1</span>
+              <button type="button" id="pd-qty-inc" data-i18n-aria-label="order.increaseQty" aria-label="Mennyiség növelése">+</button>
+            </div>
+            <button type="button" class="pd-add" id="pd-add" data-i18n="order.addToCart">Kosárba</button>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="data/i18n.js"></script>
+  <script src="data/cart.js"></script>
+  <script>
+  (function () {
+    const I18n = window.BabusgatosI18n;
+    const Cart = window.BabusgatosCart;
+
+    const GALLERY = [
+      "assets/raspberry-cake/raspberry-cake.jpg",
+      "assets/raspberry-cake/cake-detail.jpg",
+      "assets/raspberry-cake/cake-profil.jpg",
+      "assets/raspberry-cake/cake-cutout.png",
+    ];
+
+    const SIZES = [
+      { servings: 6,  cm: 14, price: 14690 },
+      { servings: 8,  cm: 16, price: 16990 },
+      { servings: 11, cm: 18, price: 19990 },
+      { servings: 13, cm: 20, price: 22990 },
+      { servings: 16, cm: 22, price: 26990 },
+      { servings: 19, cm: 24, price: 30990 },
+    ];
+
+    const CANDLE_PRICE = 490;
+    const PLAQUE_PRICE = 690;
+
+    let galleryIdx = 0;
+    let qty = 1;
+
+    const heroImg = document.getElementById("pd-hero-img");
+    const thumbs = document.getElementById("pd-thumbs");
+    const sizeWrap = document.getElementById("pd-size-wrap");
+    const sizeBtn = document.getElementById("pd-size-btn");
+    const sizeMenu = document.getElementById("pd-size-menu");
+    let sizeIdx = 0;
+    const candleEl = document.getElementById("pd-candle");
+    const candleWrap = document.getElementById("pd-candle-wrap");
+    const candleNumberEl = document.getElementById("pd-candle-number");
+    const customTextEl = document.getElementById("pd-custom-text");
+    const plaqueEl = document.getElementById("pd-plaque");
+    const textWrap = document.getElementById("pd-text-wrap");
+    const messageEl = document.getElementById("pd-message");
+    const priceEl = document.getElementById("pd-price");
+    const qtyValue = document.getElementById("pd-qty-value");
+
+    function formatHuf(n) {
+      return Cart.formatHuf(n);
+    }
+
+    function candleNumber() {
+      const n = Math.max(1, Math.min(99, Number(candleNumberEl.value) || 10));
+      candleNumberEl.value = String(n);
+      return n;
+    }
+
+    function sizeLabel(s) {
+      return I18n.t("product.malnas.sizeOption")
+        .replace("{cm}", String(s.cm))
+        .replace("{n}", String(s.servings));
+    }
+
+    function selectedSize() {
+      return SIZES[sizeIdx] || SIZES[0];
+    }
+
+    function unitPrice() {
+      let total = selectedSize().price;
+      if (candleEl.checked) total += CANDLE_PRICE;
+      if (plaqueEl.checked) total += PLAQUE_PRICE;
+      return total;
+    }
+
+    function renderPrice() {
+      priceEl.innerHTML = "";
+      priceEl.append(document.createTextNode(formatHuf(unitPrice() * qty)));
+      const sub = document.createElement("span");
+      sub.setAttribute("data-i18n", "product.malnas.priceFrom");
+      sub.textContent = I18n.t("product.malnas.priceFrom");
+      priceEl.appendChild(sub);
+    }
+
+    function closeSizeMenu() {
+      sizeWrap.classList.remove("is-open");
+      sizeBtn.setAttribute("aria-expanded", "false");
+      sizeMenu.hidden = true;
+    }
+
+    function openSizeMenu() {
+      sizeWrap.classList.add("is-open");
+      sizeBtn.setAttribute("aria-expanded", "true");
+      sizeMenu.hidden = false;
+    }
+
+    function setSize(idx) {
+      sizeIdx = Math.max(0, Math.min(SIZES.length - 1, Number(idx) || 0));
+      sizeBtn.textContent = sizeLabel(selectedSize());
+      sizeMenu.querySelectorAll(".pd-select-option").forEach((btn) => {
+        const active = Number(btn.dataset.idx) === sizeIdx;
+        btn.classList.toggle("is-active", active);
+        btn.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      closeSizeMenu();
+      renderPrice();
+    }
+
+    function renderSizes() {
+      sizeMenu.innerHTML = SIZES.map((s, i) => `
+        <li role="none">
+          <button type="button" class="pd-select-option${i === sizeIdx ? " is-active" : ""}" role="option" data-idx="${i}" aria-selected="${i === sizeIdx ? "true" : "false"}">${sizeLabel(s)}</button>
+        </li>
+      `).join("");
+      sizeBtn.textContent = sizeLabel(selectedSize());
+    }
+
+    function renderGallery() {
+      thumbs.innerHTML = GALLERY.map((src, i) => `
+        <button type="button" class="pd-thumb${i === galleryIdx ? " is-active" : ""}" data-idx="${i}" role="listitem" aria-label="${I18n.t("product.malnas.thumb").replace("{n}", String(i + 1))}">
+          <img src="${src}" alt="">
+        </button>
+      `).join("");
+      heroImg.src = GALLERY[galleryIdx];
+    }
+
+    function setGallery(idx) {
+      galleryIdx = idx;
+      renderGallery();
+    }
+
+    function syncCandleField() {
+      candleWrap.hidden = !candleEl.checked;
+      if (candleEl.checked) candleNumber();
+    }
+
+    function syncTextField() {
+      textWrap.hidden = !customTextEl.checked;
+      if (!customTextEl.checked) messageEl.value = "";
+    }
+
+    function buildDetailLines() {
+      const size = selectedSize();
+      const lines = [
+        I18n.t("product.malnas.sizeOption")
+          .replace("{cm}", String(size.cm))
+          .replace("{n}", String(size.servings)),
+      ];
+      if (candleEl.checked) {
+        lines.push(I18n.t("product.malnas.candleDetail").replace("{n}", String(candleNumber())));
+      }
+      if (customTextEl.checked) {
+        const msg = messageEl.value.trim();
+        lines.push(msg ? `${I18n.t("product.malnas.customText")}: “${msg}”` : I18n.t("product.malnas.customText"));
+      }
+      if (plaqueEl.checked) lines.push(I18n.t("product.malnas.plaque"));
+      return lines;
+    }
+
+    function configId() {
+      const size = selectedSize();
+      const msg = customTextEl.checked ? messageEl.value.trim().toLowerCase() : "";
+      return [
+        "malnas-turotorta",
+        size.servings,
+        candleEl.checked ? `c${candleNumber()}` : "c0",
+        plaqueEl.checked ? "p1" : "p0",
+        customTextEl.checked ? `t:${msg}` : "t0",
+      ].join("|");
+    }
+
+    function addToCart() {
+      const size = selectedSize();
+      const lines = buildDetailLines();
+      Cart.addToCart({
+        id: configId(),
+        name: I18n.t("order.product.malnas.name"),
+        detail: lines.join(" · "),
+        summaryLines: lines,
+        price: unitPrice(),
+        qty,
+        img: GALLERY[0],
+      });
+      renderCartPopover();
+      setTimeout(() => openCart(), 0);
+    }
+
+    function renderCartPopover() {
+      const container = document.getElementById("header-cart-items");
+      const totalEl = document.getElementById("header-cart-total");
+      const checkoutBtn = document.getElementById("header-cart-checkout");
+      const pastOrdersBtn = document.getElementById("header-cart-past-orders");
+      if (!container) return;
+      const cartItems = Cart.loadCart();
+      Cart.updateCartBadges(cartItems);
+      container.innerHTML = Cart.renderCartLines(cartItems, { removable: true });
+      const sum = cartItems.reduce((a, c) => a + c.price * (c.qty || 1), 0);
+      totalEl.textContent = formatHuf(sum);
+      const hasItems = cartItems.length > 0;
+      checkoutBtn?.classList.toggle("is-disabled", !hasItems);
+      checkoutBtn?.setAttribute("aria-disabled", hasItems ? "false" : "true");
+      const hasPastOrders = (Cart.loadOrders?.() || []).length > 0;
+      pastOrdersBtn?.classList.toggle("hidden", !hasPastOrders);
+      Cart.bindRemoveButtons(container, () => renderCartPopover());
+    }
+
+    function openCart() {
+      const toggle = document.getElementById("header-cart-btn");
+      const popover = document.getElementById("header-cart-popover");
+      if (!toggle || !popover) return;
+      popover.classList.add("is-open");
+      toggle.setAttribute("aria-expanded", "true");
+    }
+
+    function initCartPopover() {
+      const toggle = document.getElementById("header-cart-btn");
+      const popover = document.getElementById("header-cart-popover");
+      if (!toggle || !popover) return;
+
+      function closeAll() {
+        popover.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const willOpen = !popover.classList.contains("is-open");
+        closeAll();
+        if (willOpen) {
+          renderCartPopover();
+          popover.classList.add("is-open");
+          toggle.setAttribute("aria-expanded", "true");
+        }
+      });
+
+      document.addEventListener("click", (e) => {
+        if (e.target.closest(".header-cart-wrap")) return;
+        closeAll();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeAll();
+      });
+    }
+
+    function refreshUi() {
+      renderSizes();
+      renderGallery();
+      syncCandleField();
+      syncTextField();
+      renderPrice();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      I18n.init();
+      initCartPopover();
+      refreshUi();
+      renderCartPopover();
+
+      thumbs.addEventListener("click", (e) => {
+        const btn = e.target.closest(".pd-thumb");
+        if (!btn) return;
+        setGallery(Number(btn.dataset.idx) || 0);
+      });
+
+      sizeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (sizeWrap.classList.contains("is-open")) closeSizeMenu();
+        else openSizeMenu();
+      });
+      sizeMenu.addEventListener("click", (e) => {
+        const opt = e.target.closest(".pd-select-option");
+        if (!opt) return;
+        e.stopPropagation();
+        setSize(opt.dataset.idx);
+      });
+      document.addEventListener("click", (e) => {
+        if (e.target.closest("#pd-size-wrap")) return;
+        closeSizeMenu();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeSizeMenu();
+      });
+      candleEl.addEventListener("change", () => {
+        syncCandleField();
+        renderPrice();
+        if (candleEl.checked) candleNumberEl.focus();
+      });
+      candleNumberEl.addEventListener("change", () => {
+        candleNumber();
+      });
+      candleNumberEl.addEventListener("input", () => {
+        /* validated on change / add */
+      });
+      plaqueEl.addEventListener("change", renderPrice);
+      customTextEl.addEventListener("change", () => {
+        syncTextField();
+        renderPrice();
+        if (customTextEl.checked) messageEl.focus();
+      });
+      messageEl.addEventListener("input", () => {
+        /* id depends on message when adding; price unchanged */
+      });
+
+      document.getElementById("pd-qty-dec").addEventListener("click", () => {
+        qty = Math.max(1, qty - 1);
+        qtyValue.textContent = String(qty);
+        renderPrice();
+      });
+      document.getElementById("pd-qty-inc").addEventListener("click", () => {
+        qty = Math.min(99, qty + 1);
+        qtyValue.textContent = String(qty);
+        renderPrice();
+      });
+      document.getElementById("pd-add").addEventListener("click", addToCart);
+
+      document.addEventListener("babusgatos:langchange", () => {
+        refreshUi();
+        renderCartPopover();
+      });
+      document.addEventListener("babusgatos:cartchange", () => renderCartPopover());
+      document.addEventListener("babusgatos:orderschange", () => renderCartPopover());
+    });
+  })();
+  </script>
+</body>
+</html>

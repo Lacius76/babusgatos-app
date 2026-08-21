@@ -132,6 +132,9 @@
       pointer-events: none;
       user-select: none;
     }
+    .cart.is-locked .cart-cake-toggle {
+      pointer-events: auto;
+    }
     .cart.is-locked h3,
     .cart.is-locked .cart-line strong,
     .cart.is-locked .cart-line span,
@@ -255,45 +258,122 @@
     }
     .cart-line {
       display: grid;
-      grid-template-columns: 52px 1fr auto;
+      grid-template-columns: 52px minmax(0, 1fr) auto;
       gap: 12px;
       align-items: center;
       padding: 12px 0;
       border-bottom: 1px solid var(--line);
+      min-width: 0;
+    }
+    .cart-line--cake {
+      align-items: start;
+    }
+    .cart-line-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .cart-line-main strong {
+      font-size: 15px;
+      color: var(--brown);
+      overflow-wrap: anywhere;
     }
     .cart-line--editable {
       grid-template-columns: 52px minmax(0, 1fr) auto auto;
       grid-template-areas:
-        "name name name name"
-        "img detail qty remove";
-      gap: 6px 12px;
+        "name name qty remove"
+        "img detail detail detail";
+      gap: 8px 10px;
       align-items: center;
     }
     .cart-line--editable .cart-line-name {
       grid-area: name;
       display: block;
       margin: 0;
+      align-self: center;
+      padding-right: 4px;
     }
-    .cart-line--editable img { grid-area: img; }
-    .cart-line--editable .cart-line-detail { grid-area: detail; }
-    .cart-line--editable .cart-line-qty { grid-area: qty; }
-    .cart-line--editable .cart-line-remove { grid-area: remove; }
+    .cart-line--editable .cart-line-qty {
+      grid-area: qty;
+      align-self: center;
+    }
+    .cart-line--editable .cart-line-remove {
+      grid-area: remove;
+      align-self: center;
+    }
+    .cart-line--editable img {
+      grid-area: img;
+      align-self: start;
+    }
+    .cart-line--editable .cart-line-detail {
+      grid-area: detail;
+      white-space: normal;
+      align-self: start;
+    }
     .cart-line img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; }
     .cart-line strong,
     .cart-line-name { display: block; font-size: 15px; min-width: 0; }
-    .cart-line span,
-    .cart-line-detail {
+    .cart-line-detail,
+    .cart-line > div > span {
+      display: block;
       color: var(--muted);
       font-size: 13px;
+      line-height: 1.35;
       min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
     .cart-line-name {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    .cart-line-price {
+      display: block;
+      margin-top: 4px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--brown);
+      white-space: normal;
+    }
+    .cart-cake-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      margin-top: 4px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: var(--brown);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+      width: fit-content;
+    }
+    .cart-cake-toggle span {
+      display: inline;
+      color: inherit;
+      font-size: inherit;
+      white-space: nowrap;
+      overflow: visible;
+    }
+    .cart-cake-toggle .material-symbols-outlined {
+      font-size: 18px;
+      transition: transform .2s ease;
+    }
+    .cart-cake-toggle.is-open .material-symbols-outlined {
+      transform: rotate(180deg);
+    }
+    .cart-cake-deco-list {
+      list-style: disc;
+      margin: 4px 0 0;
+      padding-left: 18px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--muted);
     }
     .cart-line-qty {
       display: inline-flex;
@@ -931,6 +1011,8 @@
       if (!locked) {
         Cart.bindRemoveButtons(list, refreshCheckout);
         Cart.bindQuantityButtons(list, refreshCheckout);
+      } else {
+        Cart.bindCakeToggleButtons(list);
       }
       return items;
     }

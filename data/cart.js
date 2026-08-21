@@ -288,6 +288,7 @@
     updateQtyAt,
     renderCartLines,
     bindRemoveButtons,
+    bindCakeToggleButtons,
     bindQuantityButtons,
     updateCartBadges,
   };

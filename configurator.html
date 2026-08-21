@@ -59,40 +59,98 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
       padding: 16px 24px;
       border-bottom: 1px solid var(--line);
       background: rgba(255,255,255,.85);
       border-radius: 12px 12px 0 0;
     }
-    .top-bar a {
+    .top-bar-back {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
       color: var(--brown);
       font-weight: 700;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 22px;
+      line-height: 1;
+      border-radius: 9999px;
     }
-    .top-bar strong { font-size: 18px; }
+    .top-bar-back:hover { background: rgba(98, 55, 24, .06); }
+    .top-bar strong {
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+      font-size: clamp(14px, 2.8vw, 18px);
+      line-height: 1.25;
+    }
     .top-bar-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-shrink: 0;
     }
     .lang-switcher {
+      position: relative;
+      display: inline-block;
+    }
+    .lang-switcher-toggle {
       display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      min-width: 52px;
+      height: 32px;
+      padding: 0 6px 0 10px;
       border: 1px solid var(--outline-variant);
       border-radius: 6px;
-      overflow: hidden;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--brown);
+      cursor: pointer;
+    }
+    .lang-switcher-toggle .material-symbols-outlined {
+      font-size: 18px;
+      line-height: 1;
+      color: var(--muted);
+      transition: transform .2s ease;
+    }
+    .lang-switcher.is-open .lang-switcher-toggle .material-symbols-outlined {
+      transform: rotate(180deg);
+    }
+    .lang-switcher-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      min-width: 72px;
+      padding: 4px;
+      border: 1px solid var(--outline-variant);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(54, 38, 28, .16);
+    }
+    .lang-switcher-menu[hidden] {
+      display: none !important;
     }
     .lang-btn {
-      padding: 4px 10px;
+      width: 100%;
+      padding: 8px 10px;
       border: none;
+      border-radius: 6px;
       background: transparent;
       font-size: 12px;
       font-weight: 600;
       color: var(--muted);
       cursor: pointer;
+      text-align: left;
     }
+    .lang-btn:hover { background: rgba(98, 55, 24, .06); }
     .lang-btn--active {
       background: var(--secondary-container);
       color: var(--on-secondary-container);
@@ -267,10 +325,12 @@
     }
     .cfg-grid {
       display: grid;
-      grid-template-columns: 420px 420px;
+      grid-template-columns: minmax(0, 420px) minmax(0, 420px);
       gap: 24px;
       align-items: start;
       justify-content: center;
+      width: 100%;
+      max-width: 100%;
     }
 
     /* Cake preview panel */
@@ -640,20 +700,22 @@
     .cfg-bottom {
       margin-top: 16px;
       display: grid;
-      grid-template-columns: 420px 420px;
+      grid-template-columns: minmax(0, 420px) minmax(0, 420px);
       gap: 24px;
       align-items: end;
       justify-content: center;
+      width: 100%;
+      max-width: 100%;
     }
     .cfg-body.is-summary .cfg-grid {
-      grid-template-columns: 420px;
+      grid-template-columns: minmax(0, 420px);
       gap: 0;
     }
     .cfg-body.is-summary .cfg-options {
       display: none;
     }
     .cfg-body.is-summary .cfg-bottom {
-      grid-template-columns: 420px;
+      grid-template-columns: minmax(0, 420px);
       align-items: stretch;
       gap: 16px;
     }
@@ -686,6 +748,10 @@
       padding: 12px 16px;
       box-shadow: 0 2px 8px rgba(98, 55, 24, .08);
       transition: min-height .2s ease;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .cfg-summary-list {
       list-style: disc;
@@ -808,6 +874,9 @@
       flex-direction: column;
       gap: 16px;
       align-items: center;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
     }
     .cfg-dots {
       display: flex;
@@ -881,15 +950,99 @@
 
     .hidden { display: none !important; }
 
-    @media (max-width: 720px) {
+    @media (max-width: 920px) {
+      .page { padding: 10px; overflow-x: hidden; }
+      .shell { max-width: 100%; }
+      .top-bar { padding: 10px 12px; gap: 8px; }
+      .cfg-body {
+        padding: 20px 12px 16px;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
       .cfg-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+        max-width: 100%;
+      }
+      .cfg-preview {
+        width: min(100%, 420px);
+        max-width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        margin-inline: auto;
+      }
+      .cfg-options {
+        width: 100%;
+        max-width: 100%;
+        min-height: 0;
+        max-height: none;
+        min-width: 0;
+      }
+      .cfg-option {
+        max-width: 100%;
+      }
+      .cfg-option-label {
+        white-space: normal;
+        font-size: 16px;
       }
       .cfg-bottom {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+        max-width: 100%;
+        gap: 14px;
+      }
+      .cfg-body.is-summary .cfg-grid,
+      .cfg-body.is-summary .cfg-bottom {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .cfg-summary {
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+      .cfg-summary-list > li,
+      .cfg-summary-deco,
+      .cfg-summary-price,
+      .cfg-summary-breakdown {
+        white-space: normal;
+      }
+      .cfg-summary-price {
+        transform: none;
+        width: 100%;
+        text-align: right;
+      }
+      .cfg-summary-breakdown {
+        min-width: 0;
+        width: 100%;
       }
       .cfg-right-col {
-        align-items: center;
+        align-items: stretch;
+      }
+      .cfg-dots {
+        justify-content: center;
+      }
+      .cfg-nav {
+        width: 100%;
+        max-width: 100%;
+      }
+      .cfg-back,
+      .cfg-next {
+        font-size: 16px;
+        padding: 12px 16px;
+      }
+      .cfg-step-placeholder {
+        width: 100%;
+        max-width: 420px;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        margin-inline: auto;
+      }
+      .cart-popover {
+        position: fixed;
+        top: 72px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: min(340px, calc(100vw - 24px));
       }
     }
   </style>
@@ -898,13 +1051,19 @@
   <main class="page">
     <section class="shell">
       <header class="top-bar">
-        <a href="elorendeles.html" data-i18n="cfg.back">← Vissza az előrendeléshez</a>
+        <a class="top-bar-back" href="elorendeles.html" data-i18n-aria-label="cfg.back" aria-label="← Vissza az előrendeléshez">←</a>
         <strong id="cfg-page-title" data-i18n="cfg.stepServings">Hány adag legyen?</strong>
         <div class="top-bar-actions">
-          <div class="lang-switcher" role="group" data-i18n-aria-label="lang.label" aria-label="Nyelv">
-            <button type="button" class="lang-btn lang-btn--active" data-lang="hu" aria-pressed="true">HU</button>
-            <button type="button" class="lang-btn" data-lang="de" aria-pressed="false">DE</button>
-            <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+          <div class="lang-switcher" id="lang-switcher">
+            <button type="button" class="lang-switcher-toggle" id="lang-switcher-toggle" aria-expanded="false" aria-haspopup="listbox" data-i18n-aria-label="lang.label" aria-label="Nyelv">
+              <span class="lang-switcher-current" id="lang-switcher-current">HU</span>
+              <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+            </button>
+            <div class="lang-switcher-menu" id="lang-switcher-menu" role="listbox" hidden>
+              <button type="button" class="lang-btn lang-btn--active" data-lang="hu" role="option" aria-pressed="true">HU</button>
+              <button type="button" class="lang-btn" data-lang="de" role="option" aria-pressed="false">DE</button>
+              <button type="button" class="lang-btn" data-lang="en" role="option" aria-pressed="false">EN</button>
+            </div>
           </div>
           <div class="header-cart-wrap">
             <button type="button" class="top-bar-cart" id="header-cart-btn" data-i18n-aria-label="order.cartTitle" aria-label="Kosár" aria-expanded="false" aria-controls="header-cart-popover">
@@ -995,6 +1154,13 @@
     const MESSAGE_MAX_LINES = 3;
     const MESSAGE_MAX_LINE_LEN = 22;
     const MESSAGE_MAX_CHARS = MESSAGE_MAX_LINES * MESSAGE_MAX_LINE_LEN;
+    const CAKE_TEXT_MAX_LINES = 2;
+    // Target on-screen size; SVG slot grows on small previews so text stays readable
+    const CAKE_TEXT_TARGET_CSS_W = 150;
+    const CAKE_TEXT_TARGET_CSS_H = 45;
+    const CAKE_TEXT_SLOT_W_MAX = 210;
+    const CAKE_TEXT_SLOT_H_MAX = 60;
+    const CAKE_TEXT_PAD_X = 6; // keep glyphs inside clip (serif overhang)
 
     const cakeConfig = {
       sizeCm: SIZES[DEFAULT_SIZE_IDX].cm,
@@ -1133,23 +1299,154 @@
       return lines.slice(0, MESSAGE_MAX_LINES);
     }
 
+    function approxMessageWidth(str, fontSize) {
+      // Bold Libre Caslon — slightly wide so edges aren't clipped
+      return String(str || "").length * fontSize * 0.58;
+    }
+
+    function getCakeTextSlot() {
+      const svg = document.querySelector("#cake-preview svg");
+      let scale = 1;
+      if (svg) {
+        const rect = svg.getBoundingClientRect();
+        if (rect.width > 0) scale = rect.width / 400;
+      }
+      const safeScale = Math.max(scale, 0.4);
+      return {
+        w: Math.min(CAKE_TEXT_SLOT_W_MAX, CAKE_TEXT_TARGET_CSS_W / safeScale),
+        h: Math.min(CAKE_TEXT_SLOT_H_MAX, CAKE_TEXT_TARGET_CSS_H / safeScale),
+      };
+    }
+
+    function wrapMessageToWidth(raw, fontSize, maxWidth, maxLines) {
+      const text = normalizeMessage(raw).trim();
+      if (!text) return { lines: [], complete: true };
+
+      const words = text.split(/\s+/);
+      const lines = [];
+      let current = "";
+      let wordIdx = 0;
+
+      const fits = (s) => approxMessageWidth(s, fontSize) <= maxWidth;
+
+      const hardBreakWord = (word) => {
+        const chunks = [];
+        let rest = word;
+        while (rest.length) {
+          if (fits(rest)) {
+            chunks.push(rest);
+            break;
+          }
+          let cut = rest.length - 1;
+          while (cut > 1 && !fits(rest.slice(0, cut))) cut -= 1;
+          chunks.push(rest.slice(0, cut));
+          rest = rest.slice(cut);
+        }
+        return chunks;
+      };
+
+      while (wordIdx < words.length) {
+        const word = words[wordIdx];
+        const candidate = current ? `${current} ${word}` : word;
+
+        if (fits(candidate)) {
+          current = candidate;
+          wordIdx += 1;
+          continue;
+        }
+
+        if (!current) {
+          const chunks = hardBreakWord(word);
+          for (let i = 0; i < chunks.length; i++) {
+            if (lines.length >= maxLines) {
+              return { lines, complete: false };
+            }
+            if (i < chunks.length - 1 || lines.length === maxLines - 1) {
+              lines.push(chunks[i]);
+            } else {
+              current = chunks[i];
+            }
+          }
+          if (lines.length >= maxLines && current) {
+            lines[lines.length - 1] = current;
+            current = "";
+            wordIdx += 1;
+            return { lines: lines.slice(0, maxLines), complete: wordIdx >= words.length && !current };
+          }
+          wordIdx += 1;
+          continue;
+        }
+
+        if (lines.length >= maxLines - 1) {
+          lines.push(current);
+          current = "";
+          return { lines: lines.slice(0, maxLines), complete: false };
+        }
+
+        lines.push(current);
+        current = "";
+      }
+
+      if (current) {
+        if (lines.length < maxLines) lines.push(current);
+        else return { lines: lines.slice(0, maxLines), complete: false };
+      }
+
+      return { lines: lines.slice(0, maxLines), complete: true };
+    }
+
+    function fitCakeMessage(raw) {
+      const text = normalizeMessage(raw).trim();
+      if (!text) return null;
+
+      const slot = getCakeTextSlot();
+      const fitW = Math.max(40, slot.w - CAKE_TEXT_PAD_X * 2);
+      const fitH = Math.max(20, slot.h - 2);
+      let fallback = null;
+      const maxFont = Math.min(36, Math.floor(fitH));
+
+      for (let fontSize = maxFont; fontSize >= 12; fontSize -= 1) {
+        const lineH = fontSize * 1.08;
+        if (lineH > fitH) continue;
+
+        const maxLinesByHeight = Math.max(1, Math.floor(fitH / lineH));
+        const maxLines = Math.min(CAKE_TEXT_MAX_LINES, maxLinesByHeight);
+
+        const { lines, complete } = wrapMessageToWidth(text, fontSize, fitW, maxLines);
+        if (!lines.length) continue;
+
+        const blockH = lines.length * lineH;
+        const maxLineW = Math.max(...lines.map((l) => approxMessageWidth(l, fontSize)));
+        if (maxLineW > fitW + 0.5 || blockH > fitH + 0.5) continue;
+
+        const candidate = { fontSize, lineH, lines, blockH, slotW: slot.w, slotH: slot.h };
+        if (!fallback) fallback = candidate;
+        if (complete) return candidate;
+      }
+
+      return fallback;
+    }
+
     function buildCakeTextSvg(cx, topY, rx, ry, opts) {
-      const lines = wrapMessageLines(opts.message || "");
-      if (!lines.length) return "";
+      const fitted = fitCakeMessage(opts.message || "");
+      if (!fitted || !fitted.lines.length) return "";
       const fill = opts.textColor || "#5d3a1a";
-      const longest = Math.max(...lines.map((l) => l.length), 1);
-      const fontSize = longest > 16 ? 14 : longest > 12 ? 16 : lines.length > 2 ? 15 : 18;
-      const lineH = fontSize + 3;
-      const blockH = lines.length * lineH;
-      const startY = topY - blockH / 2 + fontSize * 0.8;
+      const { fontSize, lineH, lines, blockH, slotW, slotH } = fitted;
+      const startY = topY - blockH / 2 + fontSize * 0.82;
       const tspans = lines.map((line, i) => {
         const y = startY + i * lineH;
         return `<tspan x="${cx}" y="${y.toFixed(1)}">${escapeXml(line) || "\u00a0"}</tspan>`;
       }).join("");
-      const clipRx = rx * 0.78;
-      const clipRy = Math.max(ry * 0.85, blockH / 2 + 4);
-      return `<defs><clipPath id="cake-text-clip"><ellipse cx="${cx}" cy="${topY}" rx="${clipRx}" ry="${clipRy}"/></clipPath></defs>
-        <text clip-path="url(#cake-text-clip)" text-anchor="middle" font-family="Libre Caslon Text, Georgia, serif" font-size="${fontSize}" font-weight="700" fill="${fill}">${tspans}</text>`;
+      const clipX = cx - slotW / 2;
+      const clipY = topY - slotH / 2;
+      // ~2px white outline in screen space
+      const svg = document.querySelector("#cake-preview svg");
+      const scale = svg?.getBoundingClientRect().width > 0
+        ? svg.getBoundingClientRect().width / 400
+        : 1;
+      const strokeW = Math.max(1.5, 2 / Math.max(scale, 0.4));
+      return `<defs><clipPath id="cake-text-clip"><rect x="${clipX.toFixed(1)}" y="${clipY.toFixed(1)}" width="${slotW.toFixed(1)}" height="${slotH.toFixed(1)}" rx="2"/></clipPath></defs>
+        <text clip-path="url(#cake-text-clip)" text-anchor="middle" font-family="Libre Caslon Text, Georgia, serif" font-size="${fontSize}" font-weight="700" fill="${fill}" stroke="#ffffff" stroke-width="${strokeW.toFixed(2)}" stroke-linejoin="round" paint-order="stroke fill">${tspans}</text>`;
     }
 
     function buildDecorationOverlay(ids, cx, topY, rx, ry, opts) {
@@ -2086,7 +2383,7 @@
 
     function renderStep() {
       const titleEl = document.getElementById("cfg-page-title");
-      const backLink = document.querySelector(".top-bar a");
+      const backLink = document.querySelector(".top-bar-back");
       const nav = document.getElementById("cfg-nav");
       const body = document.querySelector(".cfg-body");
       const showStepBack = currentStep > 1;
@@ -2094,30 +2391,26 @@
       nav?.classList.toggle("has-back", showStepBack);
       body?.classList.toggle("is-summary", currentStep === 5);
 
+      if (backLink) {
+        backLink.textContent = "←";
+        backLink.setAttribute("aria-label", I18n.t("cfg.back"));
+        backLink.href = "elorendeles.html";
+      }
+
       if (currentStep === 1) {
         titleEl.textContent = I18n.t("cfg.stepServings");
-        backLink.textContent = I18n.t("cfg.back");
-        backLink.href = "elorendeles.html";
         renderServingsOptions();
       } else if (currentStep === 2) {
         titleEl.textContent = I18n.t("cfg.stepFlavor");
-        backLink.textContent = I18n.t("cfg.back");
-        backLink.href = "elorendeles.html";
         renderFlavorOptions();
       } else if (currentStep === 3) {
         titleEl.textContent = I18n.t("cfg.stepCream");
-        backLink.textContent = I18n.t("cfg.back");
-        backLink.href = "elorendeles.html";
         renderCreamOptions();
       } else if (currentStep === 4) {
         titleEl.textContent = I18n.t("cfg.stepDecoration");
-        backLink.textContent = I18n.t("cfg.back");
-        backLink.href = "elorendeles.html";
         renderDecorationOptions();
       } else {
         titleEl.textContent = I18n.t("cfg.stepSummary");
-        backLink.textContent = I18n.t("cfg.back");
-        backLink.href = "elorendeles.html";
         summaryDecoExpanded = false;
         renderStepPlaceholder();
       }
@@ -2274,6 +2567,57 @@
       Cart.bindRemoveButtons(container, () => renderCartPopover());
     }
 
+    function initLangDropdown() {
+      const root = document.getElementById("lang-switcher");
+      const toggle = document.getElementById("lang-switcher-toggle");
+      const menu = document.getElementById("lang-switcher-menu");
+      const current = document.getElementById("lang-switcher-current");
+      if (!root || !toggle || !menu || !current) return;
+
+      function syncCurrent() {
+        current.textContent = (I18n.getLang() || "hu").toUpperCase();
+      }
+
+      function closeLang() {
+        root.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+        menu.hidden = true;
+      }
+
+      function openLang() {
+        root.classList.add("is-open");
+        toggle.setAttribute("aria-expanded", "true");
+        menu.hidden = false;
+      }
+
+      syncCurrent();
+
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (root.classList.contains("is-open")) closeLang();
+        else openLang();
+      });
+
+      menu.addEventListener("click", (e) => {
+        const btn = e.target.closest(".lang-btn");
+        if (!btn) return;
+        e.stopPropagation();
+        closeLang();
+        syncCurrent();
+      });
+
+      document.addEventListener("click", (e) => {
+        if (e.target.closest("#lang-switcher")) return;
+        closeLang();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeLang();
+      });
+      document.addEventListener("babusgatos:langchange", syncCurrent);
+
+      root._closeLang = closeLang;
+    }
+
     function initCartPopover() {
       const toggle = document.getElementById("header-cart-btn");
       const popover = document.getElementById("header-cart-popover");
@@ -2282,6 +2626,7 @@
       function closeAll() {
         popover.classList.remove("is-open");
         toggle.setAttribute("aria-expanded", "false");
+        document.getElementById("lang-switcher")?._closeLang?.();
       }
 
       toggle.addEventListener("click", (e) => {
@@ -2307,6 +2652,7 @@
     /* ── Init ─────────────────────────────────────────── */
     document.addEventListener("DOMContentLoaded", () => {
       I18n.init();
+      initLangDropdown();
       initCartPopover();
       initOptionsDelegation();
       renderCartPopover();
